@@ -1,3 +1,22 @@
+export class Config { // In case an amount ever needs to be manually adjusted at time of sale
+    dataDir: string;
+
+    constructor(dataDir: string) {
+        this.dataDir = dataDir
+    }
+}
+
+export function instanceOfConfig(object: any): object is Config {
+    let hasProps = (
+        'dataDir' in object
+    )
+    if (!hasProps) return false
+    let goodPropTypes = (
+        typeof object.dataDir == 'string'
+    )
+    return goodPropTypes
+}
+
 export class Item {
     code: string;
     description: string;
@@ -41,8 +60,8 @@ export class Adjustment { // In case an amount ever needs to be manually adjuste
     amount: number;
 
     constructor(note: string, amount: number) {
-        this.note = note,
-            this.amount = amount
+        this.note = note
+        this.amount = amount
     }
 }
 
@@ -99,6 +118,10 @@ export function instanceOfSale(object: any): object is Sale {
 }
 
 export enum AppErrorCodes {
+    MISSING_CONFIG_FILE,
+    CORRUPT_CONFIG_JSON,
+    CORRUPT_CONFIG,
+    INVALID_DIRECTORY_PATH,
     MISSING_DIRECTORY,
     MISSING_ITEMS_FILE,
     MISSING_SALES_FILE,
@@ -108,6 +131,8 @@ export enum AppErrorCodes {
     MISSING_SALES_ARRAY,
     CORRUPT_ITEM_IN_JSON,
     CORRUPT_SALE_IN_JSON,
+    ITEM_NOT_FOUND,
+    QUANTITY_TOO_LOW
 }
 
 export class AppError {
@@ -123,8 +148,20 @@ export class AppError {
         this.code = code
         this.data = data
         switch (this.code) {
+            case AppErrorCodes.MISSING_CONFIG_FILE:
+                this.message = 'The configuration file is missing.'
+                break;
+            case AppErrorCodes.CORRUPT_CONFIG_JSON:
+                this.message = 'The configuration file is not a valid JSON file.'
+                break;
+            case AppErrorCodes.CORRUPT_CONFIG:
+                this.message = 'The configuration is invalid.'
+                break;
+            case AppErrorCodes.INVALID_DIRECTORY_PATH:
+                this.message = 'The configured data directory path is not valid.'
+                break;
             case AppErrorCodes.MISSING_DIRECTORY:
-                this.message = 'The data directory was is missing.'
+                this.message = 'The data directory is missing.'
                 break;
             case AppErrorCodes.MISSING_ITEMS_FILE:
                 this.message = 'The items file is missing.'
@@ -149,6 +186,12 @@ export class AppError {
                 break;
             case AppErrorCodes.CORRUPT_SALE_IN_JSON:
                 this.message = 'A sale in the sales file is invalid.'
+                break;
+            case AppErrorCodes.ITEM_NOT_FOUND:
+                this.message = 'The item does not exist.'
+                break;
+            case AppErrorCodes.QUANTITY_TOO_LOW:
+                this.message = 'The item\'s quantity is too low.'
                 break;
             default:
                 this.message = 'Unspecified error.'

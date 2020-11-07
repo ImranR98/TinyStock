@@ -1,4 +1,18 @@
 import path from 'path'
-import { readData, writeData } from './io'
+import { loadConfig, checkDataDirectory, readData, writeData } from './io'
+import { AppError } from './models'
 
-const dataDir = path.join(__dirname, '../data')
+try {
+    const config = loadConfig()
+    checkDataDirectory(config.dataDir)
+
+    
+
+} catch (err) {
+    if (err instanceof AppError) {
+        err.print()
+    } else {
+        console.error('ERROR:')
+        console.error(err)
+    }
+}

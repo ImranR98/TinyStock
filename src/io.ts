@@ -1,26 +1,44 @@
 import fs from 'fs'
+import path from 'path'
 
-import { Item, Sale, instanceOfItem, instanceOfSale, AppErrorCodes, AppError } from './models'
+import { Item, Sale, instanceOfConfig, instanceOfItem, instanceOfSale, AppErrorCodes, AppError, Config } from './models'
 
-function checkDataDirectory(dataDir: string) {
+export function checkDataDirectory(dataDir: string) {
     if (!fs.existsSync(dataDir)) throw new AppError(AppErrorCodes.MISSING_DIRECTORY)
-    if (!fs.existsSync(`${dataDir}/items.json`)) throw new AppError(AppErrorCodes.MISSING_ITEMS_FILE)
-    if (!fs.existsSync(`${dataDir}/sales.json`)) throw new AppError(AppErrorCodes.MISSING_SALES_FILE)
+    if (!fs.existsSync(path.join(dataDir, '/items.json'))) throw new AppError(AppErrorCodes.MISSING_ITEMS_FILE)
+    if (!fs.existsSync(path.join(dataDir, '/sales.json'))) throw new AppError(AppErrorCodes.MISSING_SALES_FILE)
 }
 
-export async function readData(dataDir: string): Promise<{ items: Item[], sales: Sale[] }> {
+export function loadConfig(): Config {
+    if(!fs.existsSync(path.join(__dirname, `../config.json`))) throw new AppError(AppErrorCodes.MISSING_CONFIG_FILE)
+    let configJSON: any
+    try {
+        configJSON = JSON.parse(fs.readFileSync(path.join(__dirname, `../config.json`)).toString())
+    } catch (err) {
+        throw new AppError(AppErrorCodes.CORRUPT_CONFIG_JSON)
+    }
+    if (!instanceOfConfig(configJSON)) throw new AppError(AppErrorCodes.CORRUPT_CONFIG, configJSON)
+    try {
+        configJSON.dataDir = path.resolve(configJSON.dataDir)
+    } catch (err) {
+        throw new AppError(AppErrorCodes.INVALID_DIRECTORY_PATH)
+    }
+    return configJSON
+}
+
+export function readData(dataDir: string): { items: Item[], sales: Sale[] } {
     checkDataDirectory(dataDir)
 
     let itemsJSON: any
     let salesJSON: any
 
     try {
-        itemsJSON = JSON.parse(fs.readFileSync(`${dataDir}/items.json`).toString())
+        itemsJSON = JSON.parse(fs.readFileSync(path.join(dataDir, '/items.json')).toString())
     } catch (err) {
         throw new AppError(AppErrorCodes.CORRUPT_ITEMS_JSON)
     }
     try {
-        salesJSON = JSON.parse(fs.readFileSync(`${dataDir}/sales.json`).toString())
+        salesJSON = JSON.parse(fs.readFileSync(path.join(dataDir, '/sales.json')).toString())
     } catch (err) {
         throw new AppError(AppErrorCodes.CORRUPT_SALES_JSON)
     }
@@ -43,12 +61,12 @@ export async function readData(dataDir: string): Promise<{ items: Item[], sales:
     let items: Item[] = itemsJSON
     let sales: Sale[] = salesJSON
 
-    return {items, sales}
+    return { items, sales }
 }
 
-export async function writeData(dataDir: string, items: Item[], sales: Sale[]) {
+export function writeData(dataDir: string, items: Item[], sales: Sale[]) {
     checkDataDirectory(dataDir)
 
-    fs.writeFileSync(`${dataDir}/items.json`, JSON.stringify(items, null, '\t'))
-    fs.writeFileSync(`${dataDir}/sales.json`, JSON.stringify(sales, null, '\t'))
+    fs.writeFileSync(path.join(dataDir, '/items.json'), JSON.stringify(items, null, '\t'))
+    fs.writeFileSync(path.join(dataDir, '/sales.json'), JSON.stringify(sales, null, '\t'))
 }

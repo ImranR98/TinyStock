@@ -1,4 +1,5 @@
-import { Adjustment, Item, Sale } from './models'
+import { Adjustment, AppError, AppErrorCodes, Item, Sale } from './models'
+import { writeData } from './io'
 
 export function createTestData(): { items: Item[], sales: Sale[] } {
     let items: Item[] = []
@@ -32,3 +33,18 @@ export function createTestData(): { items: Item[], sales: Sale[] } {
     return { items, sales }
 }
 
+export function findItemIndex(items: Item[], code: string, setQuantity: number | null) {
+    let itemIndex = items.findIndex(item => (item.code == code.trim() && item.setQuantity == setQuantity))
+    if (!itemIndex) throw new AppError(AppErrorCodes.ITEM_NOT_FOUND, { code, setQuantity })
+    return itemIndex
+}
+
+export function makeSale(dataDir: string, items: Item[], sales: Sale[], saleItems: Item[], adjustments: Adjustment[]) {
+    saleItems.forEach(saleItem => {
+        let itemIndex = findItemIndex(items, saleItem.code, saleItem.setQuantity)
+        if (items[itemIndex].quantity < saleItem.quantity) throw new AppError(AppErrorCodes.QUANTITY_TOO_LOW, { saleItem, item: items[itemIndex] })
+        items[itemIndex].quantity -= saleItem.quantity
+    })
+    sales.push(new Sale(null, new Date(), saleItems, adjustments))
+    writeData(dataDir, items, sales)
+}
