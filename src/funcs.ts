@@ -1,6 +1,6 @@
 import readline from 'readline'
 import { Adjustment, AppError, AppErrorCodes, Item, Sale } from './models'
-import { writeItems, writeSales } from './io'
+import { readItems, readSales, writeItems, writeSales } from './io'
 
 export function createTestData(): { items: Item[], sales: Sale[] } {
     let items: Item[] = []
@@ -47,20 +47,30 @@ export function prompt(prompt: string): Promise<string> {
     })
 }
 
-export function addItem(dataDir: string, items: Item[], newItem: Item) {
+export function addItem(dataDir: string, newItem: Item) {
+    let items = readItems(dataDir)
     let existingItem = items.find(item => (item.code == newItem.code && item.setQuantity == newItem.setQuantity))
     if (existingItem) throw new AppError(AppErrorCodes.ITEM_EXISTS)
     items.push(newItem)
     writeItems(dataDir, items)
 }
 
-export function findItemIndex(items: Item[], code: string, setQuantity: number | null) {
+export function findItem(dataDir: string, code: string, setQuantity: number | null) {
+    let items = readItems(dataDir)
+    let item = items.find(item => (item.code == code.trim() && item.setQuantity == setQuantity))
+    if (!item) throw new AppError(AppErrorCodes.ITEM_NOT_FOUND, { code, setQuantity })
+    return item
+}
+
+function findItemIndex(items: Item[], code: string, setQuantity: number | null) {
     let itemIndex = items.findIndex(item => (item.code == code.trim() && item.setQuantity == setQuantity))
     if (!itemIndex) throw new AppError(AppErrorCodes.ITEM_NOT_FOUND, { code, setQuantity })
     return itemIndex
 }
 
-export function makeSale(dataDir: string, items: Item[], sales: Sale[], saleItems: Item[], adjustments: Adjustment[]) {
+export function makeSale(dataDir: string, saleItems: Item[], adjustments: Adjustment[]) {
+    let items = readItems(dataDir)
+    let sales = readSales(dataDir)
     saleItems.forEach(saleItem => {
         let itemIndex = findItemIndex(items, saleItem.code, saleItem.setQuantity)
         if (items[itemIndex].quantity < saleItem.quantity) throw new AppError(AppErrorCodes.QUANTITY_TOO_LOW, { saleItem, item: items[itemIndex] })

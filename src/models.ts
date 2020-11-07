@@ -141,9 +141,10 @@ export class AppError {
     data: any;
     message: string
 
-    print = () => console.error(
-        `${this.message}\n${this.data ? 'Data:\n' + (typeof this.data == 'object' ? JSON.stringify(this.data, null, '\t') : this.data) : 'No further data available.'}`
-    )
+    print = (withData: boolean = false) => {
+        console.error('\x1b[31m%s\x1b[0m', `${this.message}`)
+        if (withData) console.error('\x1b[31m%s\x1b[0m', `${this.data ? '\nData:\n' + (typeof this.data == 'object' ? JSON.stringify(this.data, null, '\t') : this.data) : 'No further data.'}`)
+    }
 
     constructor(code: AppErrorCodes, data: any = null) {
         this.code = code

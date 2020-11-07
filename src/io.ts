@@ -26,25 +26,18 @@ export function loadConfig(): Config {
     return configJSON
 }
 
-export function readData(dataDir: string): { items: Item[], sales: Sale[] } {
+export function readItems(dataDir: string): Item[] {
     checkDataDirectory(dataDir)
 
     let itemsJSON: any
-    let salesJSON: any
 
     try {
         itemsJSON = JSON.parse(fs.readFileSync(path.join(dataDir, '/items.json')).toString())
     } catch (err) {
         throw new AppError(AppErrorCodes.CORRUPT_ITEMS_JSON)
     }
-    try {
-        salesJSON = JSON.parse(fs.readFileSync(path.join(dataDir, '/sales.json')).toString())
-    } catch (err) {
-        throw new AppError(AppErrorCodes.CORRUPT_SALES_JSON)
-    }
 
     if (typeof itemsJSON?.length !== 'number') throw new AppError(AppErrorCodes.MISSING_ITEMS_ARRAY)
-    if (typeof salesJSON?.length !== 'number') throw new AppError(AppErrorCodes.MISSING_SALES_ARRAY)
 
     let itemsValid = true
     for (let i = 0; i < itemsJSON.length; i++) {
@@ -52,16 +45,33 @@ export function readData(dataDir: string): { items: Item[], sales: Sale[] } {
         if (!itemsValid) throw new AppError(AppErrorCodes.CORRUPT_ITEM_IN_JSON, itemsJSON[i])
     }
 
+    let items: Item[] = itemsJSON
+
+    return items
+}
+
+export function readSales(dataDir: string): Sale[] {
+    checkDataDirectory(dataDir)
+
+    let salesJSON: any
+
+    try {
+        salesJSON = JSON.parse(fs.readFileSync(path.join(dataDir, '/sales.json')).toString())
+    } catch (err) {
+        throw new AppError(AppErrorCodes.CORRUPT_SALES_JSON)
+    }
+
+    if (typeof salesJSON?.length !== 'number') throw new AppError(AppErrorCodes.MISSING_SALES_ARRAY)
+
     let salesValid = true
     for (let i = 0; i < salesJSON.length; i++) {
         if (!instanceOfSale(salesJSON[i])) salesValid = false
         if (!salesValid) throw new AppError(AppErrorCodes.CORRUPT_SALE_IN_JSON, salesJSON[i])
     }
 
-    let items: Item[] = itemsJSON
     let sales: Sale[] = salesJSON
 
-    return { items, sales }
+    return sales
 }
 
 export function writeItems(dataDir: string, items: Item[]) {
