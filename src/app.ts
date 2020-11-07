@@ -1,12 +1,12 @@
 import path from 'path'
-import { loadConfig, checkDataDirectory, readData, writeData } from './io'
+import { loadConfig, checkDataDirectory } from './io'
 import { AppError } from './models'
 
 try {
     const config = loadConfig()
     checkDataDirectory(config.dataDir)
 
-    
+    // ...
 
 } catch (err) {
     if (err instanceof AppError) {

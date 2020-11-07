@@ -1,5 +1,5 @@
 import { Adjustment, AppError, AppErrorCodes, Item, Sale } from './models'
-import { writeData } from './io'
+import { writeItems, writeSales } from './io'
 
 export function createTestData(): { items: Item[], sales: Sale[] } {
     let items: Item[] = []
@@ -33,6 +33,13 @@ export function createTestData(): { items: Item[], sales: Sale[] } {
     return { items, sales }
 }
 
+export function addItem(dataDir: string, items: Item[], newItem: Item) {
+    let existingItem = items.find(item => (item.code == newItem.code && item.setQuantity == newItem.setQuantity))
+    if (existingItem) throw new AppError(AppErrorCodes.ITEM_EXISTS)
+    items.push(newItem)
+    writeItems(dataDir, items)
+}
+
 export function findItemIndex(items: Item[], code: string, setQuantity: number | null) {
     let itemIndex = items.findIndex(item => (item.code == code.trim() && item.setQuantity == setQuantity))
     if (!itemIndex) throw new AppError(AppErrorCodes.ITEM_NOT_FOUND, { code, setQuantity })
@@ -46,5 +53,6 @@ export function makeSale(dataDir: string, items: Item[], sales: Sale[], saleItem
         items[itemIndex].quantity -= saleItem.quantity
     })
     sales.push(new Sale(null, new Date(), saleItems, adjustments))
-    writeData(dataDir, items, sales)
+    writeItems(dataDir, items)
+    writeSales(dataDir, sales)
 }

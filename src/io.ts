@@ -64,9 +64,14 @@ export function readData(dataDir: string): { items: Item[], sales: Sale[] } {
     return { items, sales }
 }
 
-export function writeData(dataDir: string, items: Item[], sales: Sale[]) {
+export function writeItems(dataDir: string, items: Item[]) {
     checkDataDirectory(dataDir)
 
     fs.writeFileSync(path.join(dataDir, '/items.json'), JSON.stringify(items, null, '\t'))
+}
+
+export function writeSales(dataDir: string, sales: Sale[]) {
+    checkDataDirectory(dataDir)
+
     fs.writeFileSync(path.join(dataDir, '/sales.json'), JSON.stringify(sales, null, '\t'))
 }

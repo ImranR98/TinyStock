@@ -132,7 +132,8 @@ export enum AppErrorCodes {
     CORRUPT_ITEM_IN_JSON,
     CORRUPT_SALE_IN_JSON,
     ITEM_NOT_FOUND,
-    QUANTITY_TOO_LOW
+    QUANTITY_TOO_LOW,
+    ITEM_EXISTS
 }
 
 export class AppError {
@@ -192,6 +193,9 @@ export class AppError {
                 break;
             case AppErrorCodes.QUANTITY_TOO_LOW:
                 this.message = 'The item\'s quantity is too low.'
+                break;
+            case AppErrorCodes.ITEM_EXISTS:
+                this.message = 'This item already exists.'
                 break;
             default:
                 this.message = 'Unspecified error.'
