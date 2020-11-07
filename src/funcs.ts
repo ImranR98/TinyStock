@@ -34,13 +34,13 @@ export function createTestData(): { items: Item[], sales: Sale[] } {
     return { items, sales }
 }
 
-export function prompt(prompt: string) {
+export function prompt(prompt: string): Promise<string> {
     return new Promise((resolve, reject) => {
         const interf = readline.createInterface({
             input: process.stdin,
             output: process.stdout
         })
-        interf.question(prompt + ' ', (answer) => {
+        interf.question(prompt + ' ', (answer: string) => {
             interf.close()
             resolve(answer)
         })
