@@ -19,7 +19,7 @@ const app = async () => {
         let choice = await prompt('Enter the option number:')
         switch (choice.trim()) {
             case '0':
-                console.log('\x1b[33m%s\x1b[0m', 'Bye.')
+                console.log('\x1b[33m%s\x1b[0m', 'Bye!')
                 loop = false
                 break;
             case '1':

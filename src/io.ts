@@ -3,10 +3,16 @@ import path from 'path'
 
 import { Item, Sale, instanceOfConfig, instanceOfItem, instanceOfSale, AppErrorCodes, AppError, Config } from './models'
 
-export function checkDataDirectory(dataDir: string) {
+export function checkDataDirectory(dataDir: string, createFilesIfNeeded: boolean = true) {
     if (!fs.existsSync(dataDir)) throw new AppError(AppErrorCodes.MISSING_DIRECTORY)
-    if (!fs.existsSync(path.join(dataDir, '/items.json'))) throw new AppError(AppErrorCodes.MISSING_ITEMS_FILE)
-    if (!fs.existsSync(path.join(dataDir, '/sales.json'))) throw new AppError(AppErrorCodes.MISSING_SALES_FILE)
+    if (!fs.existsSync(path.join(dataDir, '/items.json'))) {
+        if (!createFilesIfNeeded) throw new AppError(AppErrorCodes.MISSING_ITEMS_FILE)
+        else fs.writeFileSync(path.join(dataDir, '/items.json'), '')
+    }
+    if (!fs.existsSync(path.join(dataDir, '/sales.json'))) {
+        if (!createFilesIfNeeded) throw new AppError(AppErrorCodes.MISSING_SALES_FILE)
+        else fs.writeFileSync(path.join(dataDir, '/items.json'), '')
+    }
 }
 
 export function loadConfig(): Config {
