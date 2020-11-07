@@ -1,3 +1,4 @@
+import readline from 'readline'
 import { Adjustment, AppError, AppErrorCodes, Item, Sale } from './models'
 import { writeItems, writeSales } from './io'
 
@@ -31,6 +32,19 @@ export function createTestData(): { items: Item[], sales: Sale[] } {
     }
 
     return { items, sales }
+}
+
+export function prompt(prompt: string) {
+    return new Promise((resolve, reject) => {
+        const interf = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout
+        })
+        interf.question(prompt + ' ', (answer) => {
+            interf.close()
+            resolve(answer)
+        })
+    })
 }
 
 export function addItem(dataDir: string, items: Item[], newItem: Item) {

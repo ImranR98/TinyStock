@@ -1,18 +1,19 @@
-import path from 'path'
 import { loadConfig, checkDataDirectory } from './io'
 import { AppError } from './models'
+import { prompt } from './funcs'
 
-try {
+const app = async () => {
     const config = loadConfig()
     checkDataDirectory(config.dataDir)
 
-    // ...
+    
+}
 
-} catch (err) {
+app().then(() => console.log('Done')).catch(err => {
     if (err instanceof AppError) {
         err.print()
     } else {
         console.error('ERROR:')
         console.error(err)
     }
-}
+})
