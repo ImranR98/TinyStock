@@ -64,7 +64,7 @@ export function findItem(dataDir: string, code: string, setQuantity: number | nu
 
 function findItemIndex(items: Item[], code: string, setQuantity: number | null) {
     let itemIndex = items.findIndex(item => (item.code == code.trim() && item.setQuantity == setQuantity))
-    if (!itemIndex) throw new AppError(AppErrorCodes.ITEM_NOT_FOUND, { code, setQuantity })
+    if (itemIndex == -1) throw new AppError(AppErrorCodes.ITEM_NOT_FOUND, { code, setQuantity })
     return itemIndex
 }
 
