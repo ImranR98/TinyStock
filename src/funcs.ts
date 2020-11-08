@@ -2,13 +2,13 @@ import readline from 'readline'
 import { Adjustment, AppError, AppErrorCodes, Item, Sale } from './models'
 import { readItems, readSales, writeItems, writeSales } from './io'
 
-export function createTestData(): { items: Item[], sales: Sale[] } {
+export function createTestData(itemsNum: number = 30, salesNum: number = 10, maxItemsPerSale: number = 10, chanceOfAdjustment: number = 0.6): { items: Item[], sales: Sale[] } {
     let items: Item[] = []
-    for (let i = 1; i <= 30; i++) {
+    for (let i = 1; i <= itemsNum; i++) {
         items.push({
             code: `ITEM${i}`,
             description: `Test item ${i}`,
-            quantity: Math.round(Math.random() * 20),
+            quantity: Math.round(Math.random() * 200),
             setQuantity: Math.random() < 0.7 ? null : Math.round(Math.random() * 10),
             category: "Test Category",
             price: i * 1000
@@ -16,16 +16,22 @@ export function createTestData(): { items: Item[], sales: Sale[] } {
     }
 
     let sales: Sale[] = []
-    for (let i = 1; i <= 10; i++) {
+    for (let i = 1; i <= salesNum; i++) {
+        let saleItems: Item[] = []
+        let saleItemsNum: number = Math.round(Math.random() * maxItemsPerSale)
+        if (!saleItemsNum) saleItemsNum++
+        for (let i = 0; i < saleItemsNum; i++) {
+            let saleItem = JSON.parse(JSON.stringify(items[Math.round(Math.random() * (items.length - 1))]))
+            let saleQuantity = Math.round(Math.random() * saleItem.quantity)
+            if (!saleQuantity) saleQuantity++
+            saleItem.quantity = saleQuantity
+            saleItems.push(saleItem)
+        }
         sales.push({
             id: `SALE${i}`,
             date: new Date(),
-            items: [
-                items[Math.round(Math.random() * (items.length - 1))],
-                items[Math.round(Math.random() * (items.length - 1))],
-                items[Math.round(Math.random() * (items.length - 1))]
-            ],
-            adjustments: Math.random() < 0.6 ? [] : [
+            items: saleItems,
+            adjustments: Math.random() < chanceOfAdjustment ? [] : [
                 new Adjustment(`Test Adjustment ${i}`, Math.random() < 0.5 ? Math.round(Math.random() * 100) : Math.round(Math.random() * 100) * -1)
             ]
         })
