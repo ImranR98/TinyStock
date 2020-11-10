@@ -1,3 +1,5 @@
+// Old CLI interface - unused
+
 import { loadConfig, checkDataDirectory } from './io'
 import { Adjustment, AppError, AppErrorCodes, Item } from './models'
 import { prompt, addItem, findItem, makeSale } from './funcs'

@@ -40,19 +40,6 @@ export function createTestData(itemsNum: number = 30, salesNum: number = 10, max
     return { items, sales }
 }
 
-export function prompt(prompt: string): Promise<string> {
-    return new Promise((resolve, reject) => {
-        const interf = readline.createInterface({
-            input: process.stdin,
-            output: process.stdout
-        })
-        interf.question(prompt + ' ', (answer: string) => {
-            interf.close()
-            resolve(answer)
-        })
-    })
-}
-
 export function addItem(dataDir: string, newItem: Item) {
     let items = readItems(dataDir)
     let existingItem = items.find(item => (item.code == newItem.code && item.setQuantity == newItem.setQuantity))

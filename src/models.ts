@@ -1,22 +1,3 @@
-export class Config { // In case an amount ever needs to be manually adjusted at time of sale
-    dataDir: string;
-
-    constructor(dataDir: string) {
-        this.dataDir = dataDir
-    }
-}
-
-export function instanceOfConfig(object: any): object is Config {
-    let hasProps = (
-        'dataDir' in object
-    )
-    if (!hasProps) return false
-    let goodPropTypes = (
-        typeof object.dataDir == 'string'
-    )
-    return goodPropTypes
-}
-
 export class Item {
     code: string;
     description: string;
@@ -118,9 +99,6 @@ export function instanceOfSale(object: any): object is Sale {
 }
 
 export enum AppErrorCodes {
-    MISSING_CONFIG_FILE,
-    CORRUPT_CONFIG_JSON,
-    CORRUPT_CONFIG,
     INVALID_DIRECTORY_PATH,
     MISSING_DIRECTORY,
     MISSING_ITEMS_FILE,
@@ -133,7 +111,11 @@ export enum AppErrorCodes {
     CORRUPT_SALE_IN_JSON,
     ITEM_NOT_FOUND,
     QUANTITY_TOO_LOW,
-    ITEM_EXISTS
+    ITEM_EXISTS,
+    INVALID_ITEM,
+    INVALID_SALE,
+    MISSING_ARGUMENT,
+    INVALID_ARGUMENT
 }
 
 export class AppError {
@@ -141,26 +123,12 @@ export class AppError {
     data: any;
     message: string
 
-    print = (withData: boolean = false) => {
-        console.error('\x1b[31m%s\x1b[0m', `${this.message}`)
-        if (withData) console.error('\x1b[31m%s\x1b[0m', `${this.data ? '\nData:\n' + (typeof this.data == 'object' ? JSON.stringify(this.data, null, '\t') : this.data) : 'No further data.'}`)
-    }
-
     constructor(code: AppErrorCodes, data: any = null) {
         this.code = code
         this.data = data
         switch (this.code) {
-            case AppErrorCodes.MISSING_CONFIG_FILE:
-                this.message = 'The configuration file is missing.'
-                break;
-            case AppErrorCodes.CORRUPT_CONFIG_JSON:
-                this.message = 'The configuration file is not a valid JSON file.'
-                break;
-            case AppErrorCodes.CORRUPT_CONFIG:
-                this.message = 'The configuration is invalid.'
-                break;
             case AppErrorCodes.INVALID_DIRECTORY_PATH:
-                this.message = 'The configured data directory path is not valid.'
+                this.message = 'The data directory path is not valid.'
                 break;
             case AppErrorCodes.MISSING_DIRECTORY:
                 this.message = 'The data directory is missing.'
@@ -197,6 +165,18 @@ export class AppError {
                 break;
             case AppErrorCodes.ITEM_EXISTS:
                 this.message = 'This item already exists.'
+                break;
+            case AppErrorCodes.INVALID_ITEM:
+                this.message = 'Item invalid.'
+                break;
+            case AppErrorCodes.INVALID_SALE:
+                this.message = 'Sale invalid.'
+                break;
+            case AppErrorCodes.MISSING_ARGUMENT:
+                this.message = 'One or more arguments are missing.'
+                break;
+            case AppErrorCodes.INVALID_ARGUMENT:
+                this.message = 'One or more arguments are invalid.'
                 break;
             default:
                 this.message = 'Unspecified error.'

@@ -1,4 +1,13 @@
+# dependencies
 /node_modules
+
+# compiled output
 /dist
+/build
+
+# IDE - VSCode
+.vscode/*
+.history/*
+
+# App Specific
 /data
-config.json
