@@ -3,7 +3,7 @@ import express from 'express'
 import path from 'path'
 
 import { addItem, findItem, makeSale } from './funcs'
-import { AppError, AppErrorCodes, instanceOfItem, instanceOfSale } from './models'
+import { AppError, AppErrorCodes, instanceOfItem, instanceOfSale } from 'tinystock-models'
 
 const PORT = 7259
 
@@ -46,7 +46,7 @@ if (app) {
 const expressApp: express.Application = express()
 
 expressApp.use(express.json())
-expressApp.use(express.static(path.join(__dirname, "/../frontend/dist/frontend")))
+expressApp.use(express.static(path.join(__dirname, "/../../frontend-dist")))
 
 expressApp.get("/api/hello", async (req, res) => {
   res.send({ data: "Hello World" })
@@ -89,7 +89,7 @@ expressApp.get("/api/makeSale", async (req, res) => {
 })
 
 expressApp.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "/../frontend/dist/frontend/index.html"))
+  res.sendFile(path.join(__dirname, "/../../frontend-dist/index.html"))
 })
 
 expressApp.listen(process.env.PORT || PORT, () => {

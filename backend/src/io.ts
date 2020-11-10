@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 
-import { Item, Sale, instanceOfItem, instanceOfSale, AppErrorCodes, AppError } from './models'
+import { Item, Sale, instanceOfItem, instanceOfSale, AppErrorCodes, AppError } from 'tinystock-models'
 
 export function checkDataDirectory(dataDir: string, createFilesIfNeeded: boolean = true) {
     if (!fs.existsSync(dataDir)) throw new AppError(AppErrorCodes.MISSING_DIRECTORY)

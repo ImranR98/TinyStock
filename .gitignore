@@ -1,13 +1,2 @@
-# dependencies
-/node_modules
-
-# compiled output
-/dist
+/frontend-dist
 /build
-
-# IDE - VSCode
-.vscode/*
-.history/*
-
-# App Specific
-/data

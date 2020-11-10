@@ -12,7 +12,7 @@ export class HomeComponent implements OnInit {
   constructor(private apiService: ApiService) { }
 
   ngOnInit(): void {
-    this.apiService.helloWorld().then((result: { result: string}) => this.message = result.result).catch(err => this.message = JSON.parse(err))
+    this.apiService.helloWorld().then((result: { data: string }) => this.message = result.data).catch(err => this.message = JSON.parse(err))
   }
 
 }

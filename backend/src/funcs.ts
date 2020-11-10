@@ -1,6 +1,9 @@
-import readline from 'readline'
-import { Adjustment, AppError, AppErrorCodes, Item, Sale } from './models'
+import { Adjustment, AppError, AppErrorCodes, Item, Sale } from 'tinystock-models'
 import { readItems, readSales, writeItems, writeSales } from './io'
+
+export function test() {
+    return 'test'
+}
 
 export function createTestData(itemsNum: number = 30, salesNum: number = 10, maxItemsPerSale: number = 10, chanceOfAdjustment: number = 0.6): { items: Item[], sales: Sale[] } {
     let items: Item[] = []

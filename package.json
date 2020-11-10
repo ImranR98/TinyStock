@@ -1,24 +1,26 @@
 {
   "name": "tinystock",
   "version": "1.0.0",
-  "description": "",
-  "main": "dist/app.js",
+  "description": "Tiny stock keeping App.",
+  "main": "backend/dist/main.js",
   "scripts": {
-    "start": "node dist/main.js",
-    "tsc": "tsc",
-    "dev": "ts-node-dev --respawn --poll ./src/main.ts"
+    "models-dev": "npm run dev --prefix ./models",
+    "back-dev": "npm run dev --prefix ./backend",
+    "front-dev": "npm run start --prefix ./frontend",
+    "app": "npm run electron --prefix ./backend",
+    "models-build": "npm run build --prefix ./models",
+    "back-build": "npm run build --prefix ./backend",
+    "front-build": "npm run build --prefix ./frontend",
+    "app-build": "npm run build-electron --prefix ./backend"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ImranR98/TinyStock.git"
   },
   "author": "Imran Remtulla",
   "license": "ISC",
-  "dependencies": {
-    "@types/node": "^14.14.6",
-    "@types/express": "^4.17.8",
-    "express": "^4.17.1"
+  "bugs": {
+    "url": "https://github.com/ImranR98/TinyStock/issues"
   },
-  "devDependencies": {
-    "ts-node-dev": "^1.0.0",
-    "typescript": "^4.0.5",
-    "electron": "^10.1.5",
-    "electron-packager": "^15.1.0"
-  }
+  "homepage": "https://github.com/ImranR98/TinyStock#readme"
 }

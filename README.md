@@ -2,31 +2,31 @@
 Tiny stock keeping App.
 
 ## Development
+This is a standard client-server Web app packaged in an Electron container.
 
-### Backend
+Although they are meant to be packaged together, the backend and frontend run independently and often do during development.
 
-All backend code is built with Node.
+All below commands are run from the root directory.
 
-The `main.ts` file is the entrypoint. It handles Electron but can be run independently as well.
+### Directory Structure
+- The `models` directory contains a `models.ts` file shared between the backend and frontend. It is treated as a separate npm module that is build then installed in the front/back-ends. All build artifacts are stored here too.
+- The `backend` directory contains all backend code. Build artifacts are stored in `backend/dist`.
+- The `frontend` directory contains all frontend code. Build artifacts are stored in `frontend-dist`.
 
-Before running for the first time, run `npm i` to install dependencies.
+### Building
+Each module must be built before it can run. They must be built in this order:
+1. Build `models` module: `npm run models-build`.
+2. Build `backend` module: `npm run back-build`.
+3. Build `frontend` module: `npm run front-build`.
 
-Run `npm run back` for a dev server. The app will automatically reload if you change any of the source files. This will not launch an Electron instance but can be accessed using a browser or other tool.
-
-Run `npm run build-back` to build the project. The build artifacts will be stored in the `/dist` directory, and are used by Electron.
-
-### Frontend
-
-The frontend is built with Angular and is stored in the frontend directory.
-
-Before running for the first time, run `npm i` and `npm install -g @angular/cli` (from inside the `/frontend` directory) to install dependencies and the Angular CLI.
-
-Run `npm run front` for a dev server. Navigate to `http://localhost:4200/` in a browser. The app will automatically reload if you change any of the source files.
-
-Run `npm run build-front` to build the project. The build artifacts will be stored in the `frontend/dist/frontend` directory.
+### Running in Development
+When developing, the modules can be set to run continuously and automatically recompile when relevant files change.
+1. Continuously build the `models` module: `npm run models-dev`.
+2. Continously run the `backend` module without building: `npm run back-dev`.
+3. Continuously run the `frontend` module without building: `npm run front-dev`.
+Note that the frontend cannot run (well) if the backend is not already running, and neither will work if the models have not been compiled.
 
 ### Electron
+Once all modules have been built, the application can be run in an electron container using `npm run app`.
 
-Run `npm run app` to run the most recent build of the backend (which serves the most recent build of the frontend) in an Electron container.
-
-Run `npm run build-app` to use the most recent backend and frontend builds to compile an Electron app for the host platform. Builds are stored in `/build`.
+The electron app can be compiled for the host platform using `npm run build-app`. Build artifacts are stored in the `build` directory.
