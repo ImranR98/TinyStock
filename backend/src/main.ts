@@ -2,8 +2,9 @@ import { app, BrowserWindow } from 'electron'
 import express from 'express'
 import path from 'path'
 
-import { addItem, findItem, makeSale } from './funcs'
+import { validateDataDir, addItem, findItem, makeSale } from './funcs'
 import { AppError, AppErrorCodes, instanceOfItem, instanceOfSale } from 'tinystock-models'
+import { checkDataDirectory } from './io'
 
 const PORT = 7259
 
@@ -48,11 +49,18 @@ const expressApp: express.Application = express()
 expressApp.use(express.json())
 expressApp.use(express.static(path.join(__dirname, "/../../frontend-dist")))
 
-expressApp.get("/api/hello", async (req, res) => {
-  res.send({ data: "Hello World" })
+expressApp.post("/api/validateDataDir", async (req, res) => {
+  try {
+    if (req.body.dataDir == undefined) throw new AppError(AppErrorCodes.MISSING_ARGUMENT)
+    if (typeof req.body.dataDir != 'string') throw new AppError(AppErrorCodes.INVALID_ARGUMENT)
+    validateDataDir(req.body.dataDir)
+    res.send()
+  } catch (err) {
+    res.status(400).send(err)
+  }
 })
 
-expressApp.get("/api/addItem", async (req, res) => {
+expressApp.post("/api/addItem", async (req, res) => {
   try {
     if (req.body.item == undefined || req.body.dataDir == undefined) throw new AppError(AppErrorCodes.MISSING_ARGUMENT)
     if (typeof req.body.dataDir != 'string') throw new AppError(AppErrorCodes.INVALID_ARGUMENT)
@@ -64,25 +72,28 @@ expressApp.get("/api/addItem", async (req, res) => {
   }
 })
 
-expressApp.get("/api/findItem", async (req, res) => {
+expressApp.post("/api/findItem", async (req, res) => {
   try {
     if (req.body.code == undefined || req.body.dataDir == undefined) throw new AppError(AppErrorCodes.MISSING_ARGUMENT)
     if (typeof req.body.dataDir != 'string') throw new AppError(AppErrorCodes.INVALID_ARGUMENT)
     if (typeof req.body.code != 'string') throw new AppError(AppErrorCodes.INVALID_ARGUMENT)
-    findItem(req.body.dataDir, req.body.code, typeof req.body.setQuantity == 'number' ? req.body.setQuantity : null)
-    res.send()
+    res.send({ item: findItem(req.body.dataDir, req.body.code, typeof req.body.setQuantity == 'number' ? req.body.setQuantity : null) })
   } catch (err) {
     res.status(400).send(err)
   }
 })
 
-expressApp.get("/api/makeSale", async (req, res) => {
+expressApp.post("/api/makeSale", async (req, res) => {
   try {
-    if (req.body.sale == undefined || req.body.dataDir == undefined) throw new AppError(AppErrorCodes.MISSING_ARGUMENT)
+    if (req.body.saleItems == undefined || req.body.adjustments == undefined || req.body.dataDir == undefined) throw new AppError(AppErrorCodes.MISSING_ARGUMENT)
     if (typeof req.body.dataDir != 'string') throw new AppError(AppErrorCodes.INVALID_ARGUMENT)
-    if (!instanceOfItem(req.body.sale)) throw new AppError(AppErrorCodes.INVALID_SALE)
-    addItem(req.body.dataDir, req.body.sale)
-    res.send()
+    if (!Array.isArray(req.body.saleItems.length)) throw new AppError(AppErrorCodes.INVALID_ARGUMENT)
+    if (!Array.isArray(req.body.adjustments.length)) throw new AppError(AppErrorCodes.INVALID_ARGUMENT)
+    for (let i = 0; i < req.body.saleItems.length; i++)
+      if (!instanceOfItem(req.body.saleItems[i])) throw new AppError(AppErrorCodes.INVALID_ITEM)
+    for (let i = 0; i < req.body.adjustments.length; i++)
+      if (!instanceOfItem(req.body.adjustments[i])) throw new AppError(AppErrorCodes.INVALID_ITEM)
+    res.send({ sale: makeSale(req.body.dataDir, req.body.saleItems, req.body.adjustments) })
   } catch (err) {
     res.status(400).send(err)
   }

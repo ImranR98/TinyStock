@@ -3,16 +3,12 @@ import path from 'path'
 
 import { Item, Sale, instanceOfItem, instanceOfSale, AppErrorCodes, AppError } from 'tinystock-models'
 
-export function checkDataDirectory(dataDir: string, createFilesIfNeeded: boolean = true) {
+export function checkDataDirectory(dataDir: string) {
     if (!fs.existsSync(dataDir)) throw new AppError(AppErrorCodes.MISSING_DIRECTORY)
-    if (!fs.existsSync(path.join(dataDir, '/items.json'))) {
-        if (!createFilesIfNeeded) throw new AppError(AppErrorCodes.MISSING_ITEMS_FILE)
-        else fs.writeFileSync(path.join(dataDir, '/items.json'), '[]')
-    }
-    if (!fs.existsSync(path.join(dataDir, '/sales.json'))) {
-        if (!createFilesIfNeeded) throw new AppError(AppErrorCodes.MISSING_SALES_FILE)
-        else fs.writeFileSync(path.join(dataDir, '/sales.json'), '[]')
-    }
+    if (!fs.existsSync(path.join(dataDir, '/items.json')))
+        fs.writeFileSync(path.join(dataDir, '/items.json'), '[]')
+    if (!fs.existsSync(path.join(dataDir, '/sales.json')))
+        fs.writeFileSync(path.join(dataDir, '/sales.json'), '[]')
 }
 
 export function readItems(dataDir: string): Item[] {

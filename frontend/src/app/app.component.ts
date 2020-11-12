@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { ApiService } from './services/api.service';
 
 @Component({
   selector: 'app-root',
@@ -7,4 +9,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AppComponent {
   title = 'TinyStock';
+
+  constructor(private apiService: ApiService, private router: Router) {
+    this.apiService.dataDirValue.subscribe(dataDir => {
+      if (!dataDir) this.router.navigate(['configuration'])
+    })
+  }
 }

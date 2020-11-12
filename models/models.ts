@@ -87,8 +87,8 @@ export function instanceOfSale(object: any): object is Sale {
     } else if (goodPropTypes && typeof object.date != 'object') {
         goodPropTypes = false
     }
-    if (goodPropTypes && typeof object.items.length != 'number') goodPropTypes = false
-    if (goodPropTypes && typeof object.adjustments.length != 'number') goodPropTypes = false
+    if (goodPropTypes && !Array.isArray(object.items.length)) goodPropTypes = false
+    if (goodPropTypes && !Array.isArray(object.adjustments.length)) goodPropTypes = false
     for (let i = 0; i < object.items.length && goodPropTypes; i++) {
         if (!instanceOfItem(object.items[i])) goodPropTypes = false
     }
@@ -99,10 +99,7 @@ export function instanceOfSale(object: any): object is Sale {
 }
 
 export enum AppErrorCodes {
-    INVALID_DIRECTORY_PATH,
     MISSING_DIRECTORY,
-    MISSING_ITEMS_FILE,
-    MISSING_SALES_FILE,
     CORRUPT_ITEMS_JSON,
     CORRUPT_SALES_JSON,
     MISSING_ITEMS_ARRAY,
@@ -121,66 +118,22 @@ export enum AppErrorCodes {
 export class AppError {
     code: AppErrorCodes;
     data: any;
-    message: string
 
     constructor(code: AppErrorCodes, data: any = null) {
         this.code = code
         this.data = data
-        switch (this.code) {
-            case AppErrorCodes.INVALID_DIRECTORY_PATH:
-                this.message = 'The data directory path is not valid.'
-                break;
-            case AppErrorCodes.MISSING_DIRECTORY:
-                this.message = 'The data directory is missing.'
-                break;
-            case AppErrorCodes.MISSING_ITEMS_FILE:
-                this.message = 'The items file is missing.'
-                break;
-            case AppErrorCodes.MISSING_SALES_FILE:
-                this.message = 'The sales file is missing.'
-                break;
-            case AppErrorCodes.CORRUPT_ITEMS_JSON:
-                this.message = 'The items file is not a valid JSON file.'
-                break;
-            case AppErrorCodes.CORRUPT_SALES_JSON:
-                this.message = 'The sales file is not a valid JSON file.'
-                break;
-            case AppErrorCodes.MISSING_ITEMS_ARRAY:
-                this.message = 'The items file does not contain an array.'
-                break;
-            case AppErrorCodes.MISSING_SALES_ARRAY:
-                this.message = 'The sales file does not contain an array.'
-                break;
-            case AppErrorCodes.CORRUPT_ITEM_IN_JSON:
-                this.message = 'An item in the items file is invalid.'
-                break;
-            case AppErrorCodes.CORRUPT_SALE_IN_JSON:
-                this.message = 'A sale in the sales file is invalid.'
-                break;
-            case AppErrorCodes.ITEM_NOT_FOUND:
-                this.message = 'The item does not exist.'
-                break;
-            case AppErrorCodes.QUANTITY_TOO_LOW:
-                this.message = 'The item\'s quantity is too low.'
-                break;
-            case AppErrorCodes.ITEM_EXISTS:
-                this.message = 'This item already exists.'
-                break;
-            case AppErrorCodes.INVALID_ITEM:
-                this.message = 'Item invalid.'
-                break;
-            case AppErrorCodes.INVALID_SALE:
-                this.message = 'Sale invalid.'
-                break;
-            case AppErrorCodes.MISSING_ARGUMENT:
-                this.message = 'One or more arguments are missing.'
-                break;
-            case AppErrorCodes.INVALID_ARGUMENT:
-                this.message = 'One or more arguments are invalid.'
-                break;
-            default:
-                this.message = 'Unspecified error.'
-                break;
-        }
     }
+}
+
+export function instanceOfAppError(object: any): object is AppError {
+    let hasProps = (
+        'code' in object &&
+        'data' in object
+    )
+    if (!hasProps) return false
+    let goodPropTypes = (
+        typeof object.code == 'number' &&
+        typeof object.data == 'object'
+    )
+    return goodPropTypes
 }

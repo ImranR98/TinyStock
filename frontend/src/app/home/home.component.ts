@@ -1,18 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { ApiService } from '../api.service';
+import { ApiService } from '../services/api.service';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit {
-  message: string = 'Loading'
+export class HomeComponent {
+  constructor() { }
 
-  constructor(private apiService: ApiService) { }
-
-  ngOnInit(): void {
-    this.apiService.helloWorld().then((result: { data: string }) => this.message = result.data).catch(err => this.message = JSON.parse(err))
+  getTimePhrase = (now: Date = new Date()) => {
+    if (now.getHours() == 0 || now.getHours() >= 19) return 'Evening'
+    if (now.getHours() >= 12) return 'Afternoon'
+    return 'Morning'
   }
-
 }

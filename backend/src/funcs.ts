@@ -1,8 +1,8 @@
 import { Adjustment, AppError, AppErrorCodes, Item, Sale } from 'tinystock-models'
-import { readItems, readSales, writeItems, writeSales } from './io'
+import { readItems, readSales, writeItems, writeSales, checkDataDirectory } from './io'
 
-export function test() {
-    return 'test'
+export function validateDataDir(dataDir: string) {
+    return checkDataDirectory(dataDir)
 }
 
 export function createTestData(itemsNum: number = 30, salesNum: number = 10, maxItemsPerSale: number = 10, chanceOfAdjustment: number = 0.6): { items: Item[], sales: Sale[] } {
@@ -72,7 +72,9 @@ export function makeSale(dataDir: string, saleItems: Item[], adjustments: Adjust
         if (items[itemIndex].quantity < saleItem.quantity) throw new AppError(AppErrorCodes.QUANTITY_TOO_LOW, { saleItem, item: items[itemIndex] })
         items[itemIndex].quantity -= saleItem.quantity
     })
-    sales.push(new Sale(null, new Date(), saleItems, adjustments))
+    let sale = new Sale(null, new Date(), saleItems, adjustments)
+    sales.push(sale)
     writeItems(dataDir, items)
     writeSales(dataDir, sales)
+    return sale
 }
