@@ -7,11 +7,11 @@ export class Item {
     price: number;
 
     constructor(code: string, description: string, setQuantity: number | null, quantity: number, category: string, price: number) {
-        this.code = code
-        this.description = description
+        this.code = code.trim()
+        this.description = description.trim()
         this.setQuantity = setQuantity
         this.quantity = quantity
-        this.category = category
+        this.category = category.trim()
         this.price = price
     }
 }
@@ -31,9 +31,19 @@ export function instanceOfItem(object: any): object is Item {
         typeof object.description == 'string' &&
         typeof object.quantity == 'number' &&
         typeof object.category == 'string' &&
-        typeof object.price == 'number'
+        typeof object.price == 'number' &&
+        (typeof object.setQuantity == 'number' || object.setQuantity == null)
     )
-    return goodPropTypes
+    if (!goodPropTypes) return false
+    let validProps = (
+        object.code.trim() != '' &&
+        object.description.trim != '' &&
+        object.quantity >= 0 &&
+        object.category.trim() != '' &&
+        object.price >= 0 &&
+        (object.setQuantity > 0 || object.setQuantity == null)
+    )
+    return validProps
 }
 
 export class Adjustment { // In case an amount ever needs to be manually adjusted at time of sale
@@ -41,7 +51,7 @@ export class Adjustment { // In case an amount ever needs to be manually adjuste
     amount: number;
 
     constructor(note: string, amount: number) {
-        this.note = note
+        this.note = note.trim()
         this.amount = amount
     }
 }
@@ -56,7 +66,11 @@ function instanceOfAdjustment(object: any): object is Adjustment {
         typeof object.note == 'string' &&
         typeof object.amount == 'number'
     )
-    return goodPropTypes
+    if (!goodPropTypes) return false
+    let validProps = (
+        object.note.trim() != ''
+    )
+    return validProps
 }
 
 export class Sale {
@@ -66,7 +80,7 @@ export class Sale {
     adjustments: Adjustment[];
 
     constructor(id: string | null, date: Date, items: Item[], adjustments: Adjustment[]) {
-        this.id = id ? id : Math.round(Math.random() * 10000000000000000).toString(),
+        this.id = id ? id.trim() : Math.round(Math.random() * 10000000000000000).toString(),
             this.date = date,
             this.items = items,
             this.adjustments = adjustments
@@ -82,9 +96,10 @@ export function instanceOfSale(object: any): object is Sale {
     )
     if (!hasProps) return false
     let goodPropTypes = typeof object.id == 'string'
+    if (goodPropTypes && object.id.trim() == '') goodPropTypes = false
     if (goodPropTypes && typeof object.date == 'string') {
         try { new Date(object.date) } catch (err) { goodPropTypes = false }
-    } else if (goodPropTypes && typeof object.date != 'object') {
+    } else if (goodPropTypes && !(object.date instanceof Date)) {
         goodPropTypes = false
     }
     if (goodPropTypes && !Array.isArray(object.items.length)) goodPropTypes = false
@@ -135,5 +150,9 @@ export function instanceOfAppError(object: any): object is AppError {
         typeof object.code == 'number' &&
         typeof object.data == 'object'
     )
-    return goodPropTypes
+    if (!goodPropTypes) return false
+    let validProps = (
+        object.code in AppErrorCodes
+    )
+    return validProps
 }

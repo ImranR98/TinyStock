@@ -1,0 +1,37 @@
+<div fxLayout="column" fxLayoutGap="1em" class="stdMargin">
+    <div fxLayout="row" fxLayoutGap="1em" fxLayoutAlign="default center">
+        <button mat-icon-button (click)="back()">
+            <mat-icon svgIcon="back"></mat-icon>
+        </button>
+        <span class="bigText">Edit Item</span>
+    </div>
+</div>
+<form [formGroup]="editItemForm" fxLayout="column" fxLayoutGap="1em" class="stdMargin" (keyup.enter)="edit()">
+    <div fxLayout="row" fxLayoutGap="1em" fxLayout.lt-sm="column">
+        <mat-form-field fxFlex="fill">
+            <input matInput formControlName="code" placeholder="Item Code" type="text" required>
+            <mat-hint>You can only change this by deleting and recreating the item</mat-hint>
+        </mat-form-field>
+        <mat-form-field fxFlex="fill">
+            <input matInput formControlName="quantity" placeholder="Quantity" type="number" required>
+        </mat-form-field>
+    </div>
+    <mat-form-field>
+        <input matInput formControlName="description" placeholder="Description" type="text" required>
+    </mat-form-field>
+    <mat-form-field>
+        <input matInput formControlName="category" placeholder="Category" type="text" required>
+    </mat-form-field>
+    <mat-form-field>
+        <input matInput formControlName="price" placeholder="Price" type="number" required>
+    </mat-form-field>
+    <mat-form-field *ngIf="editItemForm.controls['setQuantity'].value">
+        <input matInput formControlName="setQuantity" placeholder="Set Quantity" type="number">
+        <mat-hint>You can only change this by deleting and recreating the item</mat-hint>
+    </mat-form-field>
+    <small *ngIf="!editItemForm.controls['setQuantity'].value">* This is a single item, not a set.</small>
+    <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutAlign="center">
+        <button mat-raised-button color="primary" [disabled]="!editItemForm.valid || loading"
+            (click)="edit()">Save</button>
+    </div>
+</form>

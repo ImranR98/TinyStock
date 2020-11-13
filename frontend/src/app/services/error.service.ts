@@ -71,10 +71,12 @@ export class ErrorService {
     let standardError: { message: string, actionable: boolean } = { message: 'Unknown Error', actionable: actionable }
 
     if (error instanceof HttpErrorResponse) {
-      if (instanceOfAppError(error.error)) {
+      if (error.status == 404) {
+        standardError.message = error.statusText
+      } else if (instanceOfAppError(error.error)) {
         standardError.message = this.getAppErrorMessage(error.error.code)
       } else if (error.status == 200) {
-        // Requests to a non-existent route may result in the hosted app HTML itself being returned with a 200 status
+        // GET requests to a non-existent route may result in the hosted app HTML itself being returned with a 200 status
         // It would result in an error since it's not valid JSON
         standardError.message = '404 - Not Found'
       } else {

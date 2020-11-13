@@ -1,0 +1,35 @@
+<div fxLayout="column" fxLayoutGap="1em" class="stdMargin">
+    <div fxLayout="row" fxLayoutGap="1em" fxLayoutAlign="default center">
+        <button mat-icon-button (click)="back()">
+            <mat-icon svgIcon="back"></mat-icon>
+        </button>
+        <span class="bigText">Add Item</span>
+    </div>
+</div>
+<form [formGroup]="addItemForm" fxLayout="column" fxLayoutGap="1em" class="stdMargin" (keyup.enter)="add()">
+    <div fxLayout="row" fxLayoutGap="1em" fxLayout.lt-sm="column">
+        <mat-form-field fxFlex="fill">
+            <input matInput formControlName="code" placeholder="Item Code" type="text" required>
+        </mat-form-field>
+        <mat-form-field fxFlex="fill">
+            <input matInput formControlName="quantity" placeholder="Quantity" type="number" required>
+        </mat-form-field>
+    </div>
+    <mat-form-field>
+        <input matInput formControlName="description" placeholder="Description" type="text" required>
+    </mat-form-field>
+    <mat-form-field>
+        <input matInput formControlName="category" placeholder="Category" type="text" required>
+    </mat-form-field>
+    <mat-form-field>
+        <input matInput formControlName="price" placeholder="Price" type="number" required>
+    </mat-form-field>
+    <mat-form-field>
+        <input matInput formControlName="setQuantity" placeholder="Set Quantity" type="number">
+        <mat-hint>Leave this empty if the item is not a set</mat-hint>
+    </mat-form-field>
+    <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutAlign="center">
+        <button mat-raised-button color="primary" [disabled]="!addItemForm.valid || submitting"
+            (click)="add()">Add</button>
+    </div>
+</form>

@@ -43,14 +43,6 @@ export function createTestData(itemsNum: number = 30, salesNum: number = 10, max
     return { items, sales }
 }
 
-export function addItem(dataDir: string, newItem: Item) {
-    let items = readItems(dataDir)
-    let existingItem = items.find(item => (item.code == newItem.code && item.setQuantity == newItem.setQuantity))
-    if (existingItem) throw new AppError(AppErrorCodes.ITEM_EXISTS)
-    items.push(newItem)
-    writeItems(dataDir, items)
-}
-
 export function findItem(dataDir: string, code: string, setQuantity: number | null) {
     let items = readItems(dataDir)
     let item = items.find(item => (item.code == code.trim() && item.setQuantity == setQuantity))
@@ -62,6 +54,26 @@ function findItemIndex(items: Item[], code: string, setQuantity: number | null) 
     let itemIndex = items.findIndex(item => (item.code == code.trim() && item.setQuantity == setQuantity))
     if (itemIndex == -1) throw new AppError(AppErrorCodes.ITEM_NOT_FOUND, { code, setQuantity })
     return itemIndex
+}
+
+export function addItem(dataDir: string, newItem: Item) {
+    let items = readItems(dataDir)
+    try {
+        findItemIndex(items, newItem.code, newItem.setQuantity)
+        throw new AppError(AppErrorCodes.ITEM_EXISTS)
+    } catch (err) {
+        if (!(err instanceof AppError)) throw err
+        if (err.code != AppErrorCodes.ITEM_NOT_FOUND) throw err
+    }
+    items.push(newItem)
+    writeItems(dataDir, items)
+}
+
+export function editItem(dataDir: string, item: Item) {
+    let items = readItems(dataDir)
+    let itemIndex = findItemIndex(items, item.code, item.setQuantity)
+    items[itemIndex] = item
+    writeItems(dataDir, items)
 }
 
 export function makeSale(dataDir: string, saleItems: Item[], adjustments: Adjustment[]) {

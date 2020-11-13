@@ -41,15 +41,25 @@ export class ApiService {
     return this.http.post(this.host + '/api/validateDataDir', { dataDir }).toPromise()
   }
 
+  items() {
+    return this.http.post(this.host + '/api/items', { dataDir: this.dataDir }).toPromise() as Promise<Item[]>
+  }
+
   addItem(item: Item) {
+    if (typeof item.setQuantity == 'string') item.setQuantity = null
     return this.http.post(this.host + '/api/addItem', { dataDir: this.dataDir, item }).toPromise()
   }
 
+  editItem(item: Item) {
+    if (typeof item.setQuantity == 'string') item.setQuantity = null
+    return this.http.post(this.host + '/api/editItem', { dataDir: this.dataDir, item }).toPromise()
+  }
+
   findItem(code: string, setQuantity: string | null) {
-    return this.http.post(this.host + '/api/findItem', { dataDir: this.dataDir, code, setQuantity }).toPromise()
+    return this.http.post(this.host + '/api/findItem', { dataDir: this.dataDir, code, setQuantity }).toPromise() as Promise<Item>
   }
 
   makeSale(saleItems: Item[], adjustments: Adjustment[]) {
-    return this.http.post(this.host + '/api/makeSale', { dataDir: this.dataDir, saleItems, adjustments }).toPromise()
+    return this.http.post(this.host + '/api/makeSale', { dataDir: this.dataDir, saleItems, adjustments }).toPromise() as Promise<Sale>
   }
 }

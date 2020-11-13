@@ -1,8 +1,8 @@
 <div fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="1em" style="height: 100%;">
     <span class="bigText">Good {{getTimePhrase()}}!</span>
     <div fxLayout="row" fxLayoutAlign="center" fxLayoutGap="1em">
-        <button mat-raised-button color="accent">View Items</button>
-        <button mat-raised-button color="primary">Add Item</button>
+        <button mat-raised-button color="accent" routerLink="/items">View Items</button>
+        <button mat-raised-button color="primary" routerLink="/addItem">Add Item</button>
         <button mat-raised-button color="primary">Make Sale</button>
     </div>
 </div>
