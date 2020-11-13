@@ -14,23 +14,28 @@ const routes: Routes = [
   },
   {
     path: 'home',
-    component: HomeComponent
+    component: HomeComponent,
+    data: { animation: 'home' }
   },
   {
     path: 'configuration',
-    component: ConfigurationComponent
+    component: ConfigurationComponent,
+    data: { animation: 'configuration' }
   },
   {
     path: 'items',
-    component: ItemsComponent
+    component: ItemsComponent,
+    data: { animation: 'items' }
   },
   {
     path: 'addItem',
-    component: AddItemComponent
+    component: AddItemComponent,
+    data: { animation: 'addItem' }
   },
   {
     path: 'editItem',
-    component: EditItemComponent
+    component: EditItemComponent,
+    data: { animation: 'editItem' }
   },
   {
     path: '**',
