@@ -42,12 +42,11 @@ html {
   color: #FFFFFF;
 }
 
-
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
-.stdMargin {
-  margin: 1em !important;
+.stdPadding {
+  padding: 1em !important;
 }
 
 .bigText {
@@ -56,4 +55,8 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .autoOverflow {
   overflow: auto;
+}
+
+.fillHeight {
+  height: 100%;
 }

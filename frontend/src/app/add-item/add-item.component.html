@@ -1,4 +1,4 @@
-<div fxLayout="column" fxLayoutGap="1em" class="stdMargin">
+<div fxLayout="column" fxLayoutGap="1em" class="stdPadding">
     <div fxLayout="row" fxLayoutGap="1em" fxLayoutAlign="default center">
         <button mat-icon-button (click)="back()">
             <mat-icon svgIcon="back"></mat-icon>
@@ -6,7 +6,7 @@
         <span class="bigText">Add Item</span>
     </div>
 </div>
-<form [formGroup]="addItemForm" fxLayout="column" fxLayoutGap="1em" class="stdMargin" (keyup.enter)="add()">
+<form [formGroup]="addItemForm" fxLayout="column" fxLayoutGap="1em" class="stdPadding" (keyup.enter)="add()">
     <div fxLayout="row" fxLayoutGap="1em" fxLayout.lt-sm="column">
         <mat-form-field fxFlex="fill">
             <input matInput formControlName="code" placeholder="Item Code" type="text" required>

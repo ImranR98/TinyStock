@@ -1,4 +1,4 @@
-<div fxLayout="column" fxLayoutGap="1em" class="stdMargin">
+<div fxLayout="column" fxLayoutGap="1em" class="stdPadding">
     <div fxLayout="row" fxLayoutGap="1em" fxLayoutAlign="default center">
         <button mat-icon-button (click)="back()">
             <mat-icon svgIcon="back"></mat-icon>
@@ -9,7 +9,7 @@
         <span>{{(displayedItems | async).length}} Items</span>
         <button mat-raised-button color="primary" routerLink="/addItem">Add</button>
     </div>
-    <div class="autoOverflow">
+    <div>
         <table *ngIf="displayedItems.value.length > 0" mat-table [dataSource]="displayedItems" fxFill>
             <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
             <tr mat-row *matRowDef="let myRowData; columns: columnsToDisplay"></tr>
