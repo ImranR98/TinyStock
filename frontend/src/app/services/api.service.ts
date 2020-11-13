@@ -50,13 +50,17 @@ export class ApiService {
     return this.http.post(this.host + '/api/addItem', { dataDir: this.dataDir, item }).toPromise()
   }
 
+  findItem(code: string, setQuantity: string | null) {
+    return this.http.post(this.host + '/api/findItem', { dataDir: this.dataDir, code, setQuantity }).toPromise() as Promise<Item>
+  }
+
   editItem(item: Item) {
     if (typeof item.setQuantity == 'string') item.setQuantity = null
     return this.http.post(this.host + '/api/editItem', { dataDir: this.dataDir, item }).toPromise()
   }
 
-  findItem(code: string, setQuantity: string | null) {
-    return this.http.post(this.host + '/api/findItem', { dataDir: this.dataDir, code, setQuantity }).toPromise() as Promise<Item>
+  deleteItem(code: string, setQuantity: string | null) {
+    return this.http.post(this.host + '/api/deleteItem', { dataDir: this.dataDir, code, setQuantity }).toPromise()
   }
 
   makeSale(saleItems: Item[], adjustments: Adjustment[]) {

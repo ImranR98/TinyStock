@@ -2,8 +2,8 @@ import { app, BrowserWindow } from 'electron'
 import express from 'express'
 import path from 'path'
 
-import { validateDataDir, addItem, findItem, makeSale, editItem } from './funcs'
-import { AppError, AppErrorCodes, instanceOfItem } from 'tinystock-models'
+import { validateDataDir, addItem, findItem, makeSale, editItem, deleteItem } from './funcs'
+import { AppError, AppErrorCodes, instanceOfAppError, instanceOfItem } from 'tinystock-models'
 import { readItems } from './io'
 
 const PORT = 7259
@@ -56,7 +56,8 @@ expressApp.post("/api/validateDataDir", async (req, res) => {
     validateDataDir(req.body.dataDir)
     res.send()
   } catch (err) {
-    res.status(400).send(err)
+    if (instanceOfAppError(err)) res.status(400).send(err)
+    else res.status(500).send(err)
   }
 })
 
@@ -66,7 +67,8 @@ expressApp.post('/api/items', async (req, res) => {
     if (typeof req.body.dataDir != 'string') throw new AppError(AppErrorCodes.INVALID_ARGUMENT)
     res.send(readItems(req.body.dataDir))
   } catch (err) {
-    res.status(400).send(err)
+    if (instanceOfAppError(err)) res.status(400).send(err)
+    else res.status(500).send(err)
   }
 })
 
@@ -78,7 +80,20 @@ expressApp.post("/api/addItem", async (req, res) => {
     addItem(req.body.dataDir, req.body.item)
     res.send()
   } catch (err) {
-    res.status(400).send(err)
+    if (instanceOfAppError(err)) res.status(400).send(err)
+    else res.status(500).send(err)
+  }
+})
+
+expressApp.post("/api/findItem", async (req, res) => {
+  try {
+    if (req.body.code == undefined || req.body.dataDir == undefined) throw new AppError(AppErrorCodes.MISSING_ARGUMENT)
+    if (typeof req.body.dataDir != 'string') throw new AppError(AppErrorCodes.INVALID_ARGUMENT)
+    if (typeof req.body.code != 'string') throw new AppError(AppErrorCodes.INVALID_ARGUMENT)
+    res.send(findItem(req.body.dataDir, req.body.code, typeof req.body.setQuantity == 'number' ? req.body.setQuantity : null))
+  } catch (err) {
+    if (instanceOfAppError(err)) res.status(400).send(err)
+    else res.status(500).send(err)
   }
 })
 
@@ -90,18 +105,21 @@ expressApp.post("/api/editItem", async (req, res) => {
     editItem(req.body.dataDir, req.body.item)
     res.send()
   } catch (err) {
-    res.status(400).send(err)
+    if (instanceOfAppError(err)) res.status(400).send(err)
+    else res.status(500).send(err)
   }
 })
 
-expressApp.post("/api/findItem", async (req, res) => {
+expressApp.post("/api/deleteItem", async (req, res) => {
   try {
     if (req.body.code == undefined || req.body.dataDir == undefined) throw new AppError(AppErrorCodes.MISSING_ARGUMENT)
     if (typeof req.body.dataDir != 'string') throw new AppError(AppErrorCodes.INVALID_ARGUMENT)
     if (typeof req.body.code != 'string') throw new AppError(AppErrorCodes.INVALID_ARGUMENT)
-    res.send(findItem(req.body.dataDir, req.body.code, typeof req.body.setQuantity == 'number' ? req.body.setQuantity : null))
+    deleteItem(req.body.dataDir, req.body.code, typeof req.body.setQuantity == 'number' ? req.body.setQuantity : null)
+    res.send()
   } catch (err) {
-    res.status(400).send(err)
+    if (instanceOfAppError(err)) res.status(400).send(err)
+    else res.status(500).send(err)
   }
 })
 
@@ -117,7 +135,8 @@ expressApp.post("/api/makeSale", async (req, res) => {
       if (!instanceOfItem(req.body.adjustments[i])) throw new AppError(AppErrorCodes.INVALID_ITEM)
     res.send(makeSale(req.body.dataDir, req.body.saleItems, req.body.adjustments))
   } catch (err) {
-    res.status(400).send(err)
+    if (instanceOfAppError(err)) res.status(400).send(err)
+    else res.status(500).send(err)
   }
 })
 

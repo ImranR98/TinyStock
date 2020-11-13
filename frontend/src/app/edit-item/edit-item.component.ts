@@ -18,12 +18,12 @@ export class EditItemComponent implements OnInit {
   loading = false
 
   editItemForm = new FormGroup({
-    code: new FormControl({value: '', disabled: true}, Validators.required),
-    setQuantity: new FormControl({value: null, disabled: true}),
-    description: new FormControl({value: '', disabled: this.loading}, Validators.required),
-    quantity: new FormControl({value: '', disabled: this.loading}, Validators.required),
-    category: new FormControl({value: '', disabled: this.loading}, Validators.required),
-    price: new FormControl({value: '', disabled: this.loading}, Validators.required),
+    code: new FormControl({ value: '', disabled: true }, Validators.required),
+    setQuantity: new FormControl({ value: null, disabled: true }),
+    description: new FormControl({ value: '', disabled: this.loading }, Validators.required),
+    quantity: new FormControl({ value: '', disabled: this.loading }, Validators.required),
+    category: new FormControl({ value: '', disabled: this.loading }, Validators.required),
+    price: new FormControl({ value: '', disabled: this.loading }, Validators.required),
   });
 
   ngOnInit() {
@@ -65,6 +65,20 @@ export class EditItemComponent implements OnInit {
           this.errorService.showError(err)
         })
       }
+    }
+  }
+
+  delete() {
+    if (confirm('Are you sure you want to delete this item?')) {
+      this.loading = true
+      this.apiService.deleteItem(this.editItemForm.controls['code'].value, this.editItemForm.controls['setQuantity'].value).then(() => {
+        this.loading = false
+        this.errorService.showSimpleSnackBar('Deleted')
+        this.back()
+      }).catch(err => {
+        this.loading = false
+        this.errorService.showError(err)
+      })
     }
   }
 

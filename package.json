@@ -1,5 +1,5 @@
 {
-  "name": "tinystock",
+  "name": "tinystock-app",
   "version": "1.0.0",
   "description": "Tiny stock keeping App.",
   "main": "backend/dist/main.js",

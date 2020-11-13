@@ -30,8 +30,10 @@
         <mat-hint>You can only change this by deleting and recreating the item</mat-hint>
     </mat-form-field>
     <small *ngIf="!editItemForm.controls['setQuantity'].value">* This is a single item, not a set.</small>
-    <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutAlign="center">
+    <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutAlign="center" fxLayoutGap="1em">
         <button mat-raised-button color="primary" [disabled]="!editItemForm.valid || loading"
             (click)="edit()">Save</button>
+        <button mat-raised-button color="warn" [disabled]="loading"
+            (click)="delete()">Delete</button>
     </div>
 </form>

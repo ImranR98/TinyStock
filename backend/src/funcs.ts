@@ -76,6 +76,13 @@ export function editItem(dataDir: string, item: Item) {
     writeItems(dataDir, items)
 }
 
+export function deleteItem(dataDir: string, code: string, setQuantity: number | null) {
+    let items = readItems(dataDir)
+    let itemIndex = findItemIndex(items, code, setQuantity)
+    items.splice(itemIndex)
+    writeItems(dataDir, items)
+}
+
 export function makeSale(dataDir: string, saleItems: Item[], adjustments: Adjustment[]) {
     let items = readItems(dataDir)
     let sales = readSales(dataDir)
