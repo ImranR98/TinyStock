@@ -1,0 +1,68 @@
+
+@import '~@angular/material/theming';
+@include mat-core();
+
+$light-primary: mat-palette($mat-green, 800);
+$light-accent: mat-palette($mat-amber);
+$light-warn: mat-palette($mat-red);
+
+$dark-primary: mat-palette($mat-green, 'A400');
+$dark-accent: mat-palette($mat-amber);
+$dark-warn: mat-palette($mat-red, 'A100');
+
+$light-theme: mat-light-theme((
+  color: (
+    primary: $light-primary,
+    accent: $light-accent,
+    warn: $light-warn,
+  )
+));
+
+$dark-theme: mat-dark-theme((
+  color: (
+    primary: $dark-primary,
+    accent: $dark-accent,
+    warn: $dark-warn,
+  )
+));
+
+// @media (prefers-color-scheme: light) {
+//   @include angular-material-theme($light-theme);
+
+//   html {
+//     background-color: #FFFFFF;
+//     color: #000000;
+//   }
+// }
+
+@include angular-material-theme($dark-theme);
+
+html {
+  background-color: #222222;
+  color: #FFFFFF;
+}
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.stdPadding {
+  padding: 1em !important;
+}
+
+.stdPaddingNoTop {
+  padding-left: 1em !important;
+  padding-right: 1em !important;
+  padding-bottom: 1em !important;
+}
+
+.bigText {
+  font-size: x-large !important;
+}
+
+.autoOverflow {
+  overflow: auto;
+}
+
+.fillHeight {
+  height: 100%;
+}

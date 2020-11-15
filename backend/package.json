@@ -1,0 +1,29 @@
+{
+  "name": "tinystock",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/main.js",
+  "scripts": {
+    "start": "node dist/main.js",
+    "build": "tsc",
+    "dev": "ts-node-dev --respawn --poll ./src/main.ts",
+    "electron": "electron .",
+    "build-electron-linux": "electron-packager . --out=../build --overwrite --extra-resource=../frontend-dist --platform=linux --icon=icons/icon.png --version-string.CompanyName='Imran Remtulla'--version-string.ProductName=TinyStock",
+    "build-electron-windows": "electron-packager . --out=../build --overwrite --extra-resource=../frontend-dist --platform=win32 --icon=icons/icon.ico --version-string.CompanyName='Imran Remtulla'--version-string.ProductName=TinyStock",
+    "build-electron-mac": "electron-packager . --out=../build --overwrite --extra-resource=../frontend-dist --platform=darwin --icon=icons/icon.png --version-string.CompanyName='Imran Remtulla'--version-string.ProductName=TinyStock"
+  },
+  "author": "Imran Remtulla",
+  "license": "ISC",
+  "dependencies": {
+    "@types/express": "^4.17.8",
+    "@types/node": "^14.14.6",
+    "express": "^4.17.1",
+    "tinystock-models": "file:../models"
+  },
+  "devDependencies": {
+    "electron": "^10.1.5",
+    "electron-packager": "^15.1.0",
+    "ts-node-dev": "^1.0.0",
+    "typescript": "^4.0.5"
+  }
+}

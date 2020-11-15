@@ -1,0 +1,25 @@
+<div fxLayout="column" fxLayoutGap="1em" class="stdPadding">
+    <div fxLayout="row" fxLayoutGap="1em" fxLayoutAlign="default center">
+        <button [disabled]="needDataDir" mat-icon-button (click)="back()">
+            <mat-icon svgIcon="back"></mat-icon>
+        </button>
+        <span class="bigText">Configuration</span>
+    </div>
+    <mat-card *ngIf="needDataDir">
+        <small>TinyStock needs a valid configuration to work.</small>
+    </mat-card>
+    <form [formGroup]="configForm" fxLayout="column" fxLayoutGap="1em">
+        <mat-form-field>
+            <input matInput formControlName="dataDir" placeholder="Data Directory Path" type="text" required autofocus>
+            <mat-hint>This is where appication data is stored</mat-hint>
+        </mat-form-field>
+        <mat-form-field>
+            <input matInput formControlName="host" placeholder="Host URL" type="text">
+            <mat-hint>Leave this empty if unsure</mat-hint>
+        </mat-form-field>
+        <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutAlign="center">
+            <button mat-raised-button color="primary" [disabled]="!configForm.valid || submitting"
+                (click)="save()">Save</button>
+        </div>
+    </form>
+</div>

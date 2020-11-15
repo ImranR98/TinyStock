@@ -1,4 +1,2 @@
-/node_modules
-/dist
-/data
-config.json
+/frontend-dist
+/build

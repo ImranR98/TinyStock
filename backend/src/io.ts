@@ -1,35 +1,14 @@
 import fs from 'fs'
 import path from 'path'
 
-import { Item, Sale, instanceOfConfig, instanceOfItem, instanceOfSale, AppErrorCodes, AppError, Config } from './models'
+import { Item, Sale, instanceOfItem, instanceOfSale, AppErrorCodes, AppError } from 'tinystock-models'
 
-export function checkDataDirectory(dataDir: string, createFilesIfNeeded: boolean = true) {
+export function checkDataDirectory(dataDir: string) {
     if (!fs.existsSync(dataDir)) throw new AppError(AppErrorCodes.MISSING_DIRECTORY)
-    if (!fs.existsSync(path.join(dataDir, '/items.json'))) {
-        if (!createFilesIfNeeded) throw new AppError(AppErrorCodes.MISSING_ITEMS_FILE)
-        else fs.writeFileSync(path.join(dataDir, '/items.json'), '[]')
-    }
-    if (!fs.existsSync(path.join(dataDir, '/sales.json'))) {
-        if (!createFilesIfNeeded) throw new AppError(AppErrorCodes.MISSING_SALES_FILE)
-        else fs.writeFileSync(path.join(dataDir, '/sales.json'), '[]')
-    }
-}
-
-export function loadConfig(): Config {
-    if(!fs.existsSync(path.join(__dirname, `../config.json`))) throw new AppError(AppErrorCodes.MISSING_CONFIG_FILE)
-    let configJSON: any
-    try {
-        configJSON = JSON.parse(fs.readFileSync(path.join(__dirname, `../config.json`)).toString())
-    } catch (err) {
-        throw new AppError(AppErrorCodes.CORRUPT_CONFIG_JSON)
-    }
-    if (!instanceOfConfig(configJSON)) throw new AppError(AppErrorCodes.CORRUPT_CONFIG, configJSON)
-    try {
-        configJSON.dataDir = path.resolve(configJSON.dataDir)
-    } catch (err) {
-        throw new AppError(AppErrorCodes.INVALID_DIRECTORY_PATH)
-    }
-    return configJSON
+    if (!fs.existsSync(path.join(dataDir, '/items.json')))
+        fs.writeFileSync(path.join(dataDir, '/items.json'), '[]')
+    if (!fs.existsSync(path.join(dataDir, '/sales.json')))
+        fs.writeFileSync(path.join(dataDir, '/sales.json'), '[]')
 }
 
 export function readItems(dataDir: string): Item[] {

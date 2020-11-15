@@ -1,6 +1,9 @@
-import readline from 'readline'
-import { Adjustment, AppError, AppErrorCodes, Item, Sale } from './models'
-import { readItems, readSales, writeItems, writeSales } from './io'
+import { Adjustment, AppError, AppErrorCodes, Item, Sale } from 'tinystock-models'
+import { readItems, readSales, writeItems, writeSales, checkDataDirectory } from './io'
+
+export function validateDataDir(dataDir: string) {
+    return checkDataDirectory(dataDir)
+}
 
 export function createTestData(itemsNum: number = 30, salesNum: number = 10, maxItemsPerSale: number = 10, chanceOfAdjustment: number = 0.6): { items: Item[], sales: Sale[] } {
     let items: Item[] = []
@@ -40,27 +43,6 @@ export function createTestData(itemsNum: number = 30, salesNum: number = 10, max
     return { items, sales }
 }
 
-export function prompt(prompt: string): Promise<string> {
-    return new Promise((resolve, reject) => {
-        const interf = readline.createInterface({
-            input: process.stdin,
-            output: process.stdout
-        })
-        interf.question(prompt + ' ', (answer: string) => {
-            interf.close()
-            resolve(answer)
-        })
-    })
-}
-
-export function addItem(dataDir: string, newItem: Item) {
-    let items = readItems(dataDir)
-    let existingItem = items.find(item => (item.code == newItem.code && item.setQuantity == newItem.setQuantity))
-    if (existingItem) throw new AppError(AppErrorCodes.ITEM_EXISTS)
-    items.push(newItem)
-    writeItems(dataDir, items)
-}
-
 export function findItem(dataDir: string, code: string, setQuantity: number | null) {
     let items = readItems(dataDir)
     let item = items.find(item => (item.code == code.trim() && item.setQuantity == setQuantity))
@@ -74,6 +56,33 @@ function findItemIndex(items: Item[], code: string, setQuantity: number | null) 
     return itemIndex
 }
 
+export function addItem(dataDir: string, newItem: Item) {
+    let items = readItems(dataDir)
+    try {
+        findItemIndex(items, newItem.code, newItem.setQuantity)
+        throw new AppError(AppErrorCodes.ITEM_EXISTS)
+    } catch (err) {
+        if (!(err instanceof AppError)) throw err
+        if (err.code != AppErrorCodes.ITEM_NOT_FOUND) throw err
+    }
+    items.push(newItem)
+    writeItems(dataDir, items)
+}
+
+export function editItem(dataDir: string, item: Item) {
+    let items = readItems(dataDir)
+    let itemIndex = findItemIndex(items, item.code, item.setQuantity)
+    items[itemIndex] = item
+    writeItems(dataDir, items)
+}
+
+export function deleteItem(dataDir: string, code: string, setQuantity: number | null) {
+    let items = readItems(dataDir)
+    let itemIndex = findItemIndex(items, code, setQuantity)
+    items.splice(itemIndex)
+    writeItems(dataDir, items)
+}
+
 export function makeSale(dataDir: string, saleItems: Item[], adjustments: Adjustment[]) {
     let items = readItems(dataDir)
     let sales = readSales(dataDir)
@@ -82,7 +91,9 @@ export function makeSale(dataDir: string, saleItems: Item[], adjustments: Adjust
         if (items[itemIndex].quantity < saleItem.quantity) throw new AppError(AppErrorCodes.QUANTITY_TOO_LOW, { saleItem, item: items[itemIndex] })
         items[itemIndex].quantity -= saleItem.quantity
     })
-    sales.push(new Sale(null, new Date(), saleItems, adjustments))
+    let sale = new Sale(null, new Date(), saleItems, adjustments)
+    sales.push(sale)
     writeItems(dataDir, items)
     writeSales(dataDir, sales)
+    return sale
 }
