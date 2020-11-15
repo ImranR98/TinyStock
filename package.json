@@ -11,7 +11,9 @@
     "models-build": "npm run build --prefix ./models",
     "back-build": "npm run build --prefix ./backend",
     "front-build": "npm run build --prefix ./frontend",
-    "app-build": "npm run build-electron --prefix ./backend"
+    "app-build-linux": "npm run build-electron-linux --prefix ./backend",
+    "app-build-windows": "npm run build-electron-windows --prefix ./backend",
+    "app-build-mac": "npm run build-electron-mac --prefix ./backend"
   },
   "repository": {
     "type": "git",

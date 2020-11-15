@@ -29,4 +29,4 @@ Note that the frontend cannot run (well) if the backend is not already running, 
 ### Electron
 Once all modules have been built, the application can be run in an electron container using `npm run app`.
 
-The electron app can be compiled for the host platform using `npm run build-app`. Build artifacts are stored in the `build` directory.
+The electron app can be compiled using `npm run app-build-linux`, `npm run app-build-windows`, or `npm run app-build-mac` for Linux, Windows, or MacOS respectively. Build artifacts are stored in the `build` directory.
