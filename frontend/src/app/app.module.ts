@@ -24,6 +24,7 @@ import { MatCardModule } from '@angular/material/card'
 import { ItemsComponent } from './items/items.component';
 import { AddItemComponent } from './add-item/add-item.component';
 import { EditItemComponent } from './edit-item/edit-item.component';
+import { MakeSaleComponent } from './make-sale/make-sale.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { EditItemComponent } from './edit-item/edit-item.component';
     ConfigurationComponent,
     ItemsComponent,
     AddItemComponent,
-    EditItemComponent
+    EditItemComponent,
+    MakeSaleComponent
   ],
   imports: [
     BrowserModule,
