@@ -26,7 +26,7 @@ export class ConfigurationComponent implements OnInit {
   ngOnInit() {
     this.apiService.dataDirValue.subscribe(dataDir => {
       this.configForm.controls['dataDir'].setValue(dataDir)
-      if (dataDir.trim() != '') this.needDataDir = false
+      if (dataDir?.trim() != '') this.needDataDir = false
     })
     this.apiService.hostValue.subscribe(host => {
       this.configForm.controls['host'].setValue(host)
