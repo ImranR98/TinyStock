@@ -9,8 +9,8 @@
         <span>{{(displayedItems | async).length}} Items</span>
         <button mat-raised-button color="primary" routerLink="/addItem">Add</button>
     </div>
-    <div>
-        <table *ngIf="displayedItems.value.length > 0" mat-table [dataSource]="displayedItems" fxFill>
+    <div class="autoOverflow" *ngIf="displayedItems.value.length > 0">
+        <table mat-table [dataSource]="displayedItems" fxFill>
             <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
             <tr mat-row *matRowDef="let myRowData; columns: columnsToDisplay"></tr>
             <ng-container matColumnDef="code">

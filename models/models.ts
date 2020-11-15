@@ -56,7 +56,7 @@ export class Adjustment { // In case an amount ever needs to be manually adjuste
     }
 }
 
-function instanceOfAdjustment(object: any): object is Adjustment {
+export function instanceOfAdjustment(object: any): object is Adjustment {
     let hasProps = (
         'note' in object &&
         'amount' in object
@@ -102,8 +102,8 @@ export function instanceOfSale(object: any): object is Sale {
     } else if (goodPropTypes && !(object.date instanceof Date)) {
         goodPropTypes = false
     }
-    if (goodPropTypes && !Array.isArray(object.items.length)) goodPropTypes = false
-    if (goodPropTypes && !Array.isArray(object.adjustments.length)) goodPropTypes = false
+    if (goodPropTypes && !Array.isArray(object.items)) goodPropTypes = false
+    if (goodPropTypes && !Array.isArray(object.adjustments)) goodPropTypes = false
     for (let i = 0; i < object.items.length && goodPropTypes; i++) {
         if (!instanceOfItem(object.items[i])) goodPropTypes = false
     }
@@ -125,6 +125,7 @@ export enum AppErrorCodes {
     QUANTITY_TOO_LOW,
     ITEM_EXISTS,
     INVALID_ITEM,
+    INVALID_ADJUSTMENT,
     INVALID_SALE,
     MISSING_ARGUMENT,
     INVALID_ARGUMENT

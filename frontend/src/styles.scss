@@ -49,6 +49,12 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   padding: 1em !important;
 }
 
+.stdPaddingNoTop {
+  padding-left: 1em !important;
+  padding-right: 1em !important;
+  padding-bottom: 1em !important;
+}
+
 .bigText {
   font-size: x-large !important;
 }

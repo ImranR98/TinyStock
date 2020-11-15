@@ -52,6 +52,9 @@ export class ErrorService {
       case AppErrorCodes.INVALID_ITEM:
         return 'The item is invalid'
         break;
+      case AppErrorCodes.INVALID_ADJUSTMENT:
+        return 'The adjustment is invalid'
+        break;
       case AppErrorCodes.INVALID_SALE:
         return 'This sale is invalid'
         break;

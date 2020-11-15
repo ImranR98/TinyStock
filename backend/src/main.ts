@@ -3,7 +3,7 @@ import express from 'express'
 import path from 'path'
 
 import { validateDataDir, addItem, findItem, makeSale, editItem, deleteItem } from './funcs'
-import { AppError, AppErrorCodes, instanceOfAppError, instanceOfItem } from 'tinystock-models'
+import { AppError, AppErrorCodes, instanceOfAppError, instanceOfItem, instanceOfAdjustment } from 'tinystock-models'
 import { readItems } from './io'
 
 const PORT = 7259
@@ -127,12 +127,12 @@ expressApp.post("/api/makeSale", async (req, res) => {
   try {
     if (req.body.saleItems == undefined || req.body.adjustments == undefined || req.body.dataDir == undefined) throw new AppError(AppErrorCodes.MISSING_ARGUMENT)
     if (typeof req.body.dataDir != 'string') throw new AppError(AppErrorCodes.INVALID_ARGUMENT)
-    if (!Array.isArray(req.body.saleItems.length)) throw new AppError(AppErrorCodes.INVALID_ARGUMENT)
-    if (!Array.isArray(req.body.adjustments.length)) throw new AppError(AppErrorCodes.INVALID_ARGUMENT)
+    if (!Array.isArray(req.body.saleItems)) throw new AppError(AppErrorCodes.INVALID_ARGUMENT)
+    if (!Array.isArray(req.body.adjustments)) throw new AppError(AppErrorCodes.INVALID_ARGUMENT)
     for (let i = 0; i < req.body.saleItems.length; i++)
       if (!instanceOfItem(req.body.saleItems[i])) throw new AppError(AppErrorCodes.INVALID_ITEM)
     for (let i = 0; i < req.body.adjustments.length; i++)
-      if (!instanceOfItem(req.body.adjustments[i])) throw new AppError(AppErrorCodes.INVALID_ITEM)
+      if (!instanceOfAdjustment(req.body.adjustments[i])) throw new AppError(AppErrorCodes.INVALID_ADJUSTMENT)
     res.send(makeSale(req.body.dataDir, req.body.saleItems, req.body.adjustments))
   } catch (err) {
     if (instanceOfAppError(err)) res.status(400).send(err)
