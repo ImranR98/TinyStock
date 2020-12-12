@@ -59,7 +59,7 @@ export class ConfigurationComponent implements OnInit {
   save() {
     if (this.configForm.valid) {
       this.submitting = true
-      this.apiService.createOrCheckDataDir(this.configForm.controls['host'].value?.trim(), this.configForm.controls['dataDir'].value?.trim(), this.configForm.controls['password'].value).then(() => {
+      this.apiService.configure(this.configForm.controls['host'].value?.trim(), this.configForm.controls['dataDir'].value?.trim(), this.configForm.controls['password'].value).then(() => {
         this.submitting = false
         this.apiService.host = this.configForm.controls['host'].value?.trim()
         this.apiService.dataDir = this.configForm.controls['dataDir'].value?.trim()

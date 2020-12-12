@@ -1,8 +1,12 @@
+// Main App process
+// Handles Electron container
+// Serves requests from client
+
 import { app, BrowserWindow } from 'electron'
 import express from 'express'
 import path from 'path'
 
-import { createOrCheckDataDir, addItem, findItem, makeSale, editItem, deleteItem } from './funcs'
+import { configure, addItem, findItem, makeSale, editItem, deleteItem, changePassword } from './funcs'
 import { AppError, AppErrorCodes, instanceOfAppError, instanceOfItem, instanceOfAdjustment } from 'tinystock-models'
 import { readItems } from './io'
 
@@ -47,7 +51,7 @@ if (app) {
 const expressApp: express.Application = express()
 
 expressApp.use(express.json())
-expressApp.use(express.static(path.join(__dirname, "/../../frontend-dist")))
+expressApp.use(express.static(path.join(__dirname, '/../../frontend-dist')))
 
 const checkStandardArgs = (obj: any) => {
   if (obj.dataDir == undefined || obj.password == undefined) throw new AppError(AppErrorCodes.MISSING_ARGUMENT)
@@ -55,10 +59,10 @@ const checkStandardArgs = (obj: any) => {
   if (obj.password.length == 0) throw new AppError(AppErrorCodes.INVALID_ARGUMENT)
 }
 
-expressApp.post("/api/createOrCheckDataDir", async (req, res) => {
+expressApp.post('/api/configure', async (req, res) => {
   try {
     checkStandardArgs(req.body)
-    createOrCheckDataDir(req.body.dataDir, req.body.password)
+    configure(req.body.dataDir, req.body.password)
     res.send()
   } catch (err) {
     if (instanceOfAppError(err)) res.status(400).send(err)
@@ -76,7 +80,7 @@ expressApp.post('/api/items', async (req, res) => {
   }
 })
 
-expressApp.post("/api/addItem", async (req, res) => {
+expressApp.post('/api/addItem', async (req, res) => {
   try {
     checkStandardArgs(req.body)
     if (req.body.item == undefined) throw new AppError(AppErrorCodes.MISSING_ARGUMENT)
@@ -89,7 +93,7 @@ expressApp.post("/api/addItem", async (req, res) => {
   }
 })
 
-expressApp.post("/api/findItem", async (req, res) => {
+expressApp.post('/api/findItem', async (req, res) => {
   try {
     checkStandardArgs(req.body)
     if (req.body.code == undefined) throw new AppError(AppErrorCodes.MISSING_ARGUMENT)
@@ -101,7 +105,7 @@ expressApp.post("/api/findItem", async (req, res) => {
   }
 })
 
-expressApp.post("/api/editItem", async (req, res) => {
+expressApp.post('/api/editItem', async (req, res) => {
   try {
     checkStandardArgs(req.body)
     if (req.body.item == undefined) throw new AppError(AppErrorCodes.MISSING_ARGUMENT)
@@ -114,7 +118,7 @@ expressApp.post("/api/editItem", async (req, res) => {
   }
 })
 
-expressApp.post("/api/deleteItem", async (req, res) => {
+expressApp.post('/api/deleteItem', async (req, res) => {
   try {
     checkStandardArgs(req.body)
     if (req.body.code == undefined) throw new AppError(AppErrorCodes.MISSING_ARGUMENT)
@@ -127,7 +131,7 @@ expressApp.post("/api/deleteItem", async (req, res) => {
   }
 })
 
-expressApp.post("/api/makeSale", async (req, res) => {
+expressApp.post('/api/makeSale', async (req, res) => {
   try {
     checkStandardArgs(req.body)
     if (req.body.saleItems == undefined || req.body.adjustments == undefined) throw new AppError(AppErrorCodes.MISSING_ARGUMENT)
@@ -144,8 +148,21 @@ expressApp.post("/api/makeSale", async (req, res) => {
   }
 })
 
-expressApp.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "/../../frontend-dist/index.html"))
+expressApp.post('/api/changePassword', async (req, res) => {
+  try {
+    checkStandardArgs(req.body)
+    if (req.body.newPassword == undefined) throw new AppError(AppErrorCodes.MISSING_ARGUMENT)
+    if (typeof req.body.newPassword != 'string') throw new AppError(AppErrorCodes.INVALID_ARGUMENT)
+    changePassword(req.body.dataDir, req.body.password, req.body.newPassword)
+    res.send()
+  } catch (err) {
+    if (instanceOfAppError(err)) res.status(400).send(err)
+    else res.status(500).send(err)
+  }
+})
+
+expressApp.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '/../../frontend-dist/index.html'))
 })
 
 expressApp.listen(process.env.PORT || PORT, () => {

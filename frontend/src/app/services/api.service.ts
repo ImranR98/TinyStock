@@ -69,8 +69,8 @@ export class ApiService {
     else return !!JSON.parse(rememberPassword)
   }
 
-  createOrCheckDataDir(host: string, dataDir: string, password: string) {
-    return this.http.post(host + '/api/createOrCheckDataDir', { dataDir, password }).toPromise()
+  configure(host: string, dataDir: string, password: string) {
+    return this.http.post(host + '/api/configure', { dataDir, password }).toPromise()
   }
 
   items() {

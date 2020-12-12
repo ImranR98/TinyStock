@@ -1,3 +1,6 @@
+// Contains functions related to data IO for use in funcs.ts
+// References functions from crypto.ts
+
 import fs from 'fs'
 import path from 'path'
 
@@ -7,19 +10,6 @@ import { encrypt, decrypt, hashPassword } from './crypto'
 
 const markerFileName = 'MarkerFile-DO_NOT_DELETE.json' // Data directory will be treated as empty if this does not exist
 const markerFileContent = 'TinyStock' // Content used to test encryption password
-
-export function createOrCheckDataDirectory(dataDir: string, password: string) {
-    if (!fs.existsSync(dataDir)) throw new AppError(AppErrorCodes.MISSING_DIRECTORY)
-    if (fs.existsSync(path.join(dataDir, '/' + markerFileName))) {
-        let content = readEncryptedFile(path.join(dataDir, '/' + markerFileName), password)
-        if (content != markerFileContent) throw new AppError(AppErrorCodes.WRONG_DECRYPTION_PASSWORD)
-    }
-    else {
-        writeEncryptedFile(path.join(dataDir, '/' + markerFileName), markerFileContent, password)
-        writeEncryptedFile(path.join(dataDir, '/items.json'), '[]', password)
-        writeEncryptedFile(path.join(dataDir, '/sales.json'), '[]', password)
-    }
-}
 
 export function readEncryptedFile(path: string, password: string) {
     let encryptedJSON: any
@@ -39,6 +29,19 @@ export function writeEncryptedFile(path: string, data: string, password: string)
     let passwordHash = hashPassword(password)
     let encryptedData: EncryptedData = encrypt(data, passwordHash)
     fs.writeFileSync(path, JSON.stringify(encryptedData, null, '\t'))
+}
+
+export function createOrCheckDataDirectory(dataDir: string, password: string) {
+    if (!fs.existsSync(dataDir)) throw new AppError(AppErrorCodes.MISSING_DIRECTORY)
+    if (fs.existsSync(path.join(dataDir, '/' + markerFileName))) {
+        let content = readEncryptedFile(path.join(dataDir, '/' + markerFileName), password)
+        if (content != markerFileContent) throw new AppError(AppErrorCodes.WRONG_DECRYPTION_PASSWORD)
+    }
+    else {
+        writeEncryptedFile(path.join(dataDir, '/' + markerFileName), markerFileContent, password)
+        writeEncryptedFile(path.join(dataDir, '/items.json'), '[]', password)
+        writeEncryptedFile(path.join(dataDir, '/sales.json'), '[]', password)
+    }
 }
 
 export function readItems(dataDir: string, password: string): Item[] {
@@ -97,4 +100,14 @@ export function writeItems(dataDir: string, items: Item[], password: string) {
 export function writeSales(dataDir: string, sales: Sale[], password: string) {
     createOrCheckDataDirectory(dataDir, password)
     writeEncryptedFile(path.join(dataDir, '/sales.json'), JSON.stringify(sales, null, '\t'), password)
+}
+
+export function changeEncryptionPassword (dataDir: string, password: string, newPassword: string) {
+    const items = readItems(dataDir, password)
+    const sales = readSales(dataDir, password)
+    const marker = readEncryptedFile(path.join(dataDir, '/' + markerFileName), password)
+    if (marker != markerFileContent) throw new AppError(AppErrorCodes.WRONG_DECRYPTION_PASSWORD)
+    writeItems(dataDir, items, newPassword)
+    writeSales(dataDir, sales, newPassword)
+    writeEncryptedFile(path.join(dataDir, '/' + markerFileName), markerFileContent, newPassword)
 }
