@@ -5,7 +5,9 @@
         </button>
         <span class="bigText">Configuration</span>
     </div>
+    <mat-divider></mat-divider>
     <form [formGroup]="configForm" fxLayout="column" fxLayoutGap="1em">
+        <span class="mediumText">Configure New/Existing Data Folder</span>
         <mat-form-field>
             <input #dataDir matInput formControlName="dataDir" placeholder="Data Directory Path" type="text" required>
             <mat-hint>This is where TinyStock data is stored</mat-hint>
@@ -14,30 +16,49 @@
             <small>TinyStock needs the path to a folder where application data can be stored.
                 You may use an empty folder or an existing TinyStock data folder.</small>
         </mat-card>
-        <div fxLayout="row" fxLayout.lt-md="column" fxLayoutGap="1em" fxLayoutAlign="default center" fxLayoutAlign.lt-md="default default">
+        <div fxLayout="row" fxLayout.lt-md="column" fxLayoutGap="1em" fxLayoutAlign="default center"
+            fxLayoutAlign.lt-md="default default">
             <mat-form-field fxFlex="100%">
                 <input #password matInput formControlName="password" placeholder="Password" type="password">
-                <mat-hint>Minimum 12 characters - UNRECOVERABLE</mat-hint>
+                <mat-hint>Minimum {{getMinPasswordLength()}} characters - UNRECOVERABLE</mat-hint>
             </mat-form-field>
             <mat-checkbox fxFlex="20%" matInput formControlName="rememberPassword">Remember Password</mat-checkbox>
         </div>
         <mat-card *ngIf="needPassword" fxLayout="column" fxLayoutGap="1em">
-            <small>TinyStock data must be password protected. If you're using an existing TinyStock data
+            <small>TinyStock data must be password protected. If you're using an existing data
                 folder,
                 enter its existing password.</small>
             <small>If you're setting the password for the first time, make a note of it in a safe place, as there is NO
                 WAY
                 to recover it.</small>
-            <small>Passwords must be at least 12 characters long.</small>
-            <small>If you choose to 'remember' the password, you won't have to enter it here on every app launch but it will be available to anyone with access to this computer.</small>
+            <small>Passwords must be at least {{getMinPasswordLength()}} characters long.</small>
+            <small>If you choose to 'remember' the password, you won't have to enter it here on every app launch but it
+                will be available to anyone with access to this computer.</small>
         </mat-card>
         <mat-form-field>
             <input matInput formControlName="host" placeholder="Host URL" type="text">
             <mat-hint>Leave this empty if unsure</mat-hint>
         </mat-form-field>
-        <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutAlign="center">
-            <button mat-raised-button color="primary" [disabled]="!configForm.valid || submitting" (click)="save()">Test
-                & Save</button>
+        <button mat-raised-button color="primary" [disabled]="!configForm.valid || needPassword || submitting"
+            (click)="save()">Test
+            & Save</button>
+    </form>
+    <mat-divider *ngIf="directoryExists"></mat-divider>
+    <form *ngIf="directoryExists" [formGroup]="changePasswordForm" fxLayout="column" fxLayoutGap="1em">
+        <span class="mediumText">Change Password of Existing Data Folder</span>
+        <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutAlign="default center" fxLayoutAlign.lt-sm="default default"
+            fxLayoutGap="1em">
+            <mat-form-field fxFlex="100%">
+                <input matInput formControlName="newPassword" placeholder="New Password" type="password">
+                <mat-hint>Minimum {{getMinPasswordLength()}} characters - UNRECOVERABLE</mat-hint>
+            </mat-form-field>
+            <button mat-raised-button color="primary"
+                [disabled]="!changePasswordForm.valid || needNewPassword || submitting || !configForm.controls['password'].valid"
+                (click)="changePassword()">Change</button>
         </div>
+        <mat-card *ngIf="needNewPassword || !configForm.controls['password'].valid" fxLayout="column" fxLayoutGap="1em">
+            <small *ngIf="needNewPassword">Passwords must be at least {{getMinPasswordLength()}} characters long.</small>
+            <small *ngIf="!configForm.controls['password'].valid">Enter the existing password in the top section.</small>
+        </mat-card>
     </form>
 </div>

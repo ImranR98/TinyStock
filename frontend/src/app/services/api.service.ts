@@ -10,6 +10,8 @@ export class ApiService {
 
   constructor(private http: HttpClient) { }
 
+  minPasswordLength = 5
+
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
   };
@@ -60,13 +62,17 @@ export class ApiService {
   set rememberPassword(rememberPassword: boolean) {
     this.rememberPasswordValue.next(rememberPassword)
     localStorage.setItem('rememberPassword', JSON.stringify(rememberPassword))
-    if (!rememberPassword) localStorage.removeItem('password')
+    if (!rememberPassword) this.clearPassword()
   }
 
   get rememberPassword() {
     let rememberPassword = localStorage.getItem('rememberPassword')
     if (!rememberPassword) return false
     else return !!JSON.parse(rememberPassword)
+  }
+
+  clearPassword() {
+    localStorage.removeItem('password')
   }
 
   configure(host: string, dataDir: string, password: string) {
@@ -97,5 +103,9 @@ export class ApiService {
 
   makeSale(saleItems: Item[], adjustments: Adjustment[]) {
     return this.http.post(this.host + '/api/makeSale', { dataDir: this.dataDir, password: this.password, saleItems, adjustments }).toPromise() as Promise<Sale>
+  }
+
+  changePassword(password: string, newPassword: string) {
+    return this.http.post(this.host + '/api/changePassword', { dataDir: this.dataDir, password, newPassword }).toPromise() as Promise<Sale>
   }
 }

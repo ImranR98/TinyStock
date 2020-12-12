@@ -26,23 +26,37 @@ export class ConfigurationComponent implements OnInit {
     host: new FormControl(''),
   });
 
+  changePasswordForm = new FormGroup({
+    newPassword: new FormControl('', Validators.required),
+  })
+
   needDataDir = true
   needPassword = true
+  needNewPassword = true
+
+  directoryExists = false
 
   ngOnInit() {
     this.configForm.controls['dataDir'].valueChanges.subscribe((value: string) => {
       this.needDataDir = (value.trim() == '')
     })
     this.configForm.controls['password'].valueChanges.subscribe((value: string) => {
-      this.needPassword = (value.trim() == '')
+      this.needPassword = (value.length < this.apiService.minPasswordLength)
+    })
+    this.changePasswordForm.controls['newPassword'].valueChanges.subscribe((value: string) => {
+      this.needNewPassword = (value.length < this.apiService.minPasswordLength)
     })
     this.apiService.dataDirValue.subscribe(dataDir => {
       this.configForm.controls['dataDir'].setValue(dataDir)
       setTimeout(() => {
-        if (dataDir.trim().length == 0)
+        if (dataDir.trim().length == 0) {
           this.dataDirElement.nativeElement.focus()
-        else
+          this.directoryExists = false
+        }
+        else {
           this.passwordElement.nativeElement.focus()
+          this.directoryExists = true
+        }
       })
     })
     this.apiService.passwordValue.subscribe(password => {
@@ -57,7 +71,7 @@ export class ConfigurationComponent implements OnInit {
   }
 
   save() {
-    if (this.configForm.valid) {
+    if (this.configForm.valid && this.configForm.controls['password'].value.length > this.apiService.minPasswordLength) {
       this.submitting = true
       this.apiService.configure(this.configForm.controls['host'].value?.trim(), this.configForm.controls['dataDir'].value?.trim(), this.configForm.controls['password'].value).then(() => {
         this.submitting = false
@@ -74,8 +88,27 @@ export class ConfigurationComponent implements OnInit {
     }
   }
 
+  changePassword() {
+    if (this.changePasswordForm.valid && this.changePasswordForm.controls['newPassword'].value.length > this.apiService.minPasswordLength && this.configForm.controls['password'].valid) {
+      this.submitting = true
+      this.apiService.changePassword(this.configForm.controls['password'].value, this.changePasswordForm.controls['newPassword'].value).then(() => {
+        this.submitting = false
+        this.apiService.password = this.changePasswordForm.controls['newPassword'].value
+        this.errorService.showSimpleSnackBar('Password changed')
+        this.router.navigate(['/home'])
+      }).catch(err => {
+        this.submitting = false
+        this.errorService.showError(err)
+      })
+    }
+  }
+
   back() {
     this.location.back()
+  }
+
+  getMinPasswordLength() {
+    return this.apiService.minPasswordLength
   }
 
 }

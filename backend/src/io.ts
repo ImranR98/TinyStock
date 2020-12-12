@@ -107,7 +107,7 @@ export function changeEncryptionPassword (dataDir: string, password: string, new
     const sales = readSales(dataDir, password)
     const marker = readEncryptedFile(path.join(dataDir, '/' + markerFileName), password)
     if (marker != markerFileContent) throw new AppError(AppErrorCodes.WRONG_DECRYPTION_PASSWORD)
+    writeEncryptedFile(path.join(dataDir, '/' + markerFileName), markerFileContent, newPassword)
     writeItems(dataDir, items, newPassword)
     writeSales(dataDir, sales, newPassword)
-    writeEncryptedFile(path.join(dataDir, '/' + markerFileName), markerFileContent, newPassword)
 }
