@@ -16,12 +16,15 @@ let win: BrowserWindow | null
 
 const createWindow = () => {
   win = new BrowserWindow({
-    width: 600,
-    height: 600,
+    width: 1080,
+    height: 720,
     backgroundColor: '#ffffff',
     autoHideMenuBar: true,
-    //icon: `file://...`
+    icon: `file://resources/app/icons/icon.png`,
+    show: false
   })
+  win.maximize()
+  win.show()
 
   win.title = 'Hold on...'
   win.loadURL(`http://localhost:${process.env.PORT || PORT}`)
