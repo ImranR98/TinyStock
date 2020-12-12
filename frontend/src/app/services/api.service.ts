@@ -18,7 +18,9 @@ export class ApiService {
 
   dataDirValue = new BehaviorSubject(this.dataDir)
 
-  passwordValue = new BehaviorSubject(this.password)
+  passwordValue = new BehaviorSubject(this.rememberPassword ? this.password : '')
+
+  rememberPasswordValue = new BehaviorSubject(this.rememberPassword)
 
   set host(host: string | null) {
     this.hostValue.next(host)
@@ -44,17 +46,31 @@ export class ApiService {
 
   set password(password: string) {
     this.passwordValue.next(password)
-    localStorage.setItem('password', password)
+    if (this.rememberPassword) localStorage.setItem('password', password)
   }
 
   get password() {
-    let password = localStorage.getItem('password')
-    if (!password) return ''
-    else return password
+    if (this.rememberPassword) {
+      let password = localStorage.getItem('password')
+      if (!password) return ''
+      else return password
+    } else return this.passwordValue.value
   }
 
-  createOrCheckDataDir(dataDir: string) {
-    return this.http.post(this.host + '/api/createOrCheckDataDir', { dataDir, password: this.password }).toPromise()
+  set rememberPassword(rememberPassword: boolean) {
+    this.rememberPasswordValue.next(rememberPassword)
+    localStorage.setItem('rememberPassword', JSON.stringify(rememberPassword))
+    if (!rememberPassword) localStorage.removeItem('password')
+  }
+
+  get rememberPassword() {
+    let rememberPassword = localStorage.getItem('rememberPassword')
+    if (!rememberPassword) return false
+    else return !!JSON.parse(rememberPassword)
+  }
+
+  createOrCheckDataDir(host: string, dataDir: string, password: string) {
+    return this.http.post(host + '/api/createOrCheckDataDir', { dataDir, password }).toPromise()
   }
 
   items() {

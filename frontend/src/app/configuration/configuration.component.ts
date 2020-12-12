@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
@@ -12,13 +12,17 @@ import { ErrorService } from '../services/error.service';
 })
 export class ConfigurationComponent implements OnInit {
 
+  @ViewChild('password') passwordElement: ElementRef;
+  @ViewChild('dataDir') dataDirElement: ElementRef;
+
   constructor(private apiService: ApiService, private errorService: ErrorService, private router: Router, private location: Location) { }
 
   submitting = false
 
   configForm = new FormGroup({
     dataDir: new FormControl('', Validators.required),
-    password: new FormControl(''),
+    password: new FormControl('', Validators.required),
+    rememberPassword: new FormControl(false),
     host: new FormControl(''),
   });
 
@@ -34,6 +38,12 @@ export class ConfigurationComponent implements OnInit {
     })
     this.apiService.dataDirValue.subscribe(dataDir => {
       this.configForm.controls['dataDir'].setValue(dataDir)
+      setTimeout(() => {
+        if (dataDir.trim().length == 0)
+          this.dataDirElement.nativeElement.focus()
+        else
+          this.passwordElement.nativeElement.focus()
+      })
     })
     this.apiService.passwordValue.subscribe(password => {
       this.configForm.controls['password'].setValue(password)
@@ -41,21 +51,23 @@ export class ConfigurationComponent implements OnInit {
     this.apiService.hostValue.subscribe(host => {
       this.configForm.controls['host'].setValue(host)
     })
+    this.apiService.rememberPasswordValue.subscribe(rememberPassword => {
+      this.configForm.controls['rememberPassword'].setValue(rememberPassword)
+    })
   }
 
   save() {
     if (this.configForm.valid) {
       this.submitting = true
-      this.apiService.host = this.configForm.controls['host'].value?.trim()
-      let oldPassword = this.apiService.password
-      this.apiService.password = this.configForm.controls['password'].value
-      this.apiService.createOrCheckDataDir(this.configForm.controls['dataDir'].value?.trim()).then(() => {
+      this.apiService.createOrCheckDataDir(this.configForm.controls['host'].value?.trim(), this.configForm.controls['dataDir'].value?.trim(), this.configForm.controls['password'].value).then(() => {
         this.submitting = false
+        this.apiService.host = this.configForm.controls['host'].value?.trim()
         this.apiService.dataDir = this.configForm.controls['dataDir'].value?.trim()
+        this.apiService.rememberPassword = this.configForm.controls['rememberPassword'].value
+        this.apiService.password = this.configForm.controls['password'].value
         this.errorService.showSimpleSnackBar('Configuration saved')
         this.router.navigate(['/home'])
       }).catch(err => {
-        this.apiService.password = oldPassword
         this.submitting = false
         this.errorService.showError(err)
       })

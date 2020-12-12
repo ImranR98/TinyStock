@@ -52,6 +52,7 @@ expressApp.use(express.static(path.join(__dirname, "/../../frontend-dist")))
 const checkStandardArgs = (obj: any) => {
   if (obj.dataDir == undefined || obj.password == undefined) throw new AppError(AppErrorCodes.MISSING_ARGUMENT)
   if (typeof obj.dataDir != 'string' || typeof obj.password != 'string') throw new AppError(AppErrorCodes.INVALID_ARGUMENT)
+  if (obj.password.length == 0) throw new AppError(AppErrorCodes.INVALID_ARGUMENT)
 }
 
 expressApp.post("/api/createOrCheckDataDir", async (req, res) => {
