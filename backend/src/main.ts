@@ -20,7 +20,6 @@ const createWindow = () => {
     height: 720,
     backgroundColor: '#ffffff',
     autoHideMenuBar: true,
-    icon: `file://resources/app/icons/icon.png`,
     show: false
   })
   win.maximize()
