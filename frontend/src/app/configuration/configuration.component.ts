@@ -18,15 +18,25 @@ export class ConfigurationComponent implements OnInit {
 
   configForm = new FormGroup({
     dataDir: new FormControl('', Validators.required),
+    password: new FormControl(''),
     host: new FormControl(''),
   });
 
   needDataDir = true
+  needPassword = true
 
   ngOnInit() {
+    this.configForm.controls['dataDir'].valueChanges.subscribe((value: string) => {
+      this.needDataDir = (value.trim() == '')
+    })
+    this.configForm.controls['password'].valueChanges.subscribe((value: string) => {
+      this.needPassword = (value.trim() == '')
+    })
     this.apiService.dataDirValue.subscribe(dataDir => {
       this.configForm.controls['dataDir'].setValue(dataDir)
-      if (dataDir?.trim() != '') this.needDataDir = false
+    })
+    this.apiService.passwordValue.subscribe(password => {
+      this.configForm.controls['password'].setValue(password)
     })
     this.apiService.hostValue.subscribe(host => {
       this.configForm.controls['host'].setValue(host)
@@ -37,12 +47,15 @@ export class ConfigurationComponent implements OnInit {
     if (this.configForm.valid) {
       this.submitting = true
       this.apiService.host = this.configForm.controls['host'].value?.trim()
-      this.apiService.validateDataDir(this.configForm.controls['dataDir'].value?.trim()).then(() => {
+      let oldPassword = this.apiService.password
+      this.apiService.password = this.configForm.controls['password'].value
+      this.apiService.createOrCheckDataDir(this.configForm.controls['dataDir'].value?.trim()).then(() => {
         this.submitting = false
         this.apiService.dataDir = this.configForm.controls['dataDir'].value?.trim()
         this.errorService.showSimpleSnackBar('Configuration saved')
         this.router.navigate(['/home'])
       }).catch(err => {
+        this.apiService.password = oldPassword
         this.submitting = false
         this.errorService.showError(err)
       })

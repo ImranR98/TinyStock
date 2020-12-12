@@ -32,6 +32,5 @@ Once all modules have been built, the application can be run in an electron cont
 The electron app can be compiled using `npm run app-build-linux`, `npm run app-build-windows`, or `npm run app-build-mac` for Linux, Windows, or MacOS respectively. Build artifacts are stored in the `build` directory.
 
 ## To Do
-
-- [ ] Encrypt saved data with password.
-- [ ] Add report pages to see total sales, top items, etc.
+- Add a 'change password' function
+- Add report pages to see total sales, top items, etc.

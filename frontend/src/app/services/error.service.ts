@@ -2,13 +2,14 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { instanceOfAppError, AppErrorCodes } from 'tinystock-models'
+import { ApiService } from './api.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ErrorService {
 
-  constructor(private snackBar: MatSnackBar) { }
+  constructor(private snackBar: MatSnackBar, private apiService: ApiService) { }
 
   showSimpleSnackBar(message: string) {
     this.snackBar.dismiss()
@@ -22,11 +23,17 @@ export class ErrorService {
       case AppErrorCodes.MISSING_DIRECTORY:
         return 'The data directory is missing'
         break;
+      case AppErrorCodes.CORRUPT_ENCRYPTED_JSON:
+        return 'The encrypted file is not a valid JSON file'
+        break;
+      case AppErrorCodes.WRONG_DECRYPTION_PASSWORD:
+        return 'Wrong password'
+        break;
       case AppErrorCodes.CORRUPT_ITEMS_JSON:
-        return 'The items file is not a valid JSON file'
+        return 'The items data is not valid JSON'
         break;
       case AppErrorCodes.CORRUPT_SALES_JSON:
-        return 'The sales file is not a valid JSON file'
+        return 'The sales data is not valid JSON'
         break;
       case AppErrorCodes.MISSING_ITEMS_ARRAY:
         return 'The items file does not contain an array'
@@ -58,6 +65,9 @@ export class ErrorService {
       case AppErrorCodes.INVALID_SALE:
         return 'This sale is invalid'
         break;
+      case AppErrorCodes.INVALID_ENCRYPTED_JSON:
+        return 'The encrypted file is valid JSON but not in the correct format'
+        break;
       case AppErrorCodes.MISSING_ARGUMENT:
         return 'One or more arguments are missing'
         break;
@@ -70,14 +80,26 @@ export class ErrorService {
     }
   }
 
+  getFixedCallback(appErrorCode: AppErrorCodes) {
+    switch (appErrorCode) {
+      case AppErrorCodes.MISSING_DIRECTORY:
+        return () => this.apiService.dataDir = ''
+        break;
+      case AppErrorCodes.WRONG_DECRYPTION_PASSWORD:
+        return () => this.apiService.password = ''
+        break;
+    }
+  }
+
   standardizeError(error: any, actionable: boolean = false) {
-    let standardError: { message: string, actionable: boolean } = { message: 'Unknown Error', actionable: actionable }
+    let standardError: { message: string, actionable: boolean, fixedCallback: any } = { message: 'Unknown Error', actionable: actionable, fixedCallback: null }
 
     if (error instanceof HttpErrorResponse) {
       if (error.status == 404) {
         standardError.message = error.statusText
       } else if (instanceOfAppError(error.error)) {
         standardError.message = this.getAppErrorMessage(error.error.code)
+        standardError.fixedCallback = this.getFixedCallback(error.error.code)
       } else if (error.status == 200) {
         // GET requests to a non-existent route may result in the hosted app HTML itself being returned with a 200 status
         // It would result in an error since it's not valid JSON
@@ -94,9 +116,9 @@ export class ErrorService {
     return standardError
   }
 
-  showError(error: any, callback: Function = null, duration: number = 5000) {
-    console.log(error)
-    error = this.standardizeError(error, (!!callback))
+  showError(originalError: any, callback: Function = null, duration: number = 5000) {
+    console.log(originalError)
+    let error = this.standardizeError(originalError, (!!callback))
     this.snackBar.dismiss()
     let actionText = 'Okay'
     if (callback) {
@@ -115,7 +137,9 @@ export class ErrorService {
         }
       })
     }
-
+    if (error.fixedCallback) {
+      error.fixedCallback()
+    }
   }
 
   clearError() {
