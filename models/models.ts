@@ -115,6 +115,8 @@ export function instanceOfSale(object: any): object is Sale {
 
 export enum AppErrorCodes {
     MISSING_DIRECTORY,
+    CORRUPT_ENCRYPTED_JSON,
+    WRONG_DECRYPTION_PASSWORD,
     CORRUPT_ITEMS_JSON,
     CORRUPT_SALES_JSON,
     MISSING_ITEMS_ARRAY,
@@ -127,8 +129,9 @@ export enum AppErrorCodes {
     INVALID_ITEM,
     INVALID_ADJUSTMENT,
     INVALID_SALE,
+    INVALID_ENCRYPTED_JSON,
     MISSING_ARGUMENT,
-    INVALID_ARGUMENT
+    INVALID_ARGUMENT,
 }
 
 export class AppError {
@@ -154,6 +157,34 @@ export function instanceOfAppError(object: any): object is AppError {
     if (!goodPropTypes) return false
     let validProps = (
         object.code in AppErrorCodes
+    )
+    return validProps
+}
+
+export class EncryptedData {
+    iv: string;
+    content: string;
+
+    constructor(iv: string, content: string) {
+        this.iv = iv.trim()
+        this.content = content.trim()
+    }
+}
+
+export function instanceOfEncryptedData(object: any): object is EncryptedData {
+    let hasProps = (
+        'iv' in object &&
+        'content' in object
+    )
+    if (!hasProps) return false
+    let goodPropTypes = (
+        typeof object.iv == 'string' &&
+        typeof object.content == 'string'
+    )
+    if (!goodPropTypes) return false
+    let validProps = (
+        object.iv.trim() != '' &&
+        object.content.trim() != ''
     )
     return validProps
 }

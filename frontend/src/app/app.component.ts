@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiService } from './services/api.service';
 import { MatIconRegistry } from '@angular/material/icon'
@@ -24,9 +24,14 @@ export class AppComponent {
     this.apiService.dataDirValue.subscribe(dataDir => {
       if (!dataDir) this.router.navigate(['configuration'])
     })
+    this.apiService.passwordValue.subscribe(password => {
+      if (!password) this.router.navigate(['configuration'])
+    })
     this.matIconRegistry.addSvgIcon(
       "back",
       this.domSanitizer.bypassSecurityTrustResourceUrl("../assets/back.svg")
     )
   }
+
+
 }

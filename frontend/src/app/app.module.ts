@@ -20,6 +20,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar'
 import { MatIconModule } from '@angular/material/icon'
 import { MatTableModule } from '@angular/material/table'
 import { MatCardModule } from '@angular/material/card'
+import { MatCheckboxModule } from '@angular/material/checkbox'
+import { MatDividerModule } from '@angular/material/divider'
 
 import { ItemsComponent } from './items/items.component';
 import { AddItemComponent } from './add-item/add-item.component';
@@ -49,7 +51,9 @@ import { MakeSaleComponent } from './make-sale/make-sale.component';
     MatSnackBarModule,
     MatIconModule,
     MatTableModule,
-    MatCardModule
+    MatCardModule,
+    MatCheckboxModule,
+    MatDividerModule
   ],
   providers: [],
   bootstrap: [AppComponent]
