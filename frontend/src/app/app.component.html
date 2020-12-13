@@ -1,3 +1,6 @@
-<div [@routeAnimations]="prepareRoute(outlet)" class="fillHeight">
-    <router-outlet #outlet="outlet"></router-outlet>
+<div class="fillHeight background" fxLayout="column">
+    <div [@routeAnimations]="prepareRoute(outlet)" class="background">
+        <router-outlet #outlet="outlet"></router-outlet>
+    </div>
+    <div class="background" fxFlex="100%"></div>
 </div>

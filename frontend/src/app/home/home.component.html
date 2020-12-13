@@ -1,7 +1,16 @@
-<div fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="1em" class="fillHeight">
-    <span class="bigText">Good {{getTimePhrase()}}!</span>
-    <div fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="1em">
-        <div fxLayout="row" fxLayoutAlign="center center" fxLayout.lt-sm="column" fxLayoutGap="1em">
+<div fxLayout="column" fxLayoutGap="1em" class="fillHeight">
+    <div fxLayout="row" fxLayoutGap="1em" class="stdPadding" fxLayoutAlign="end">
+        <span class="themeCircle" style="background-color: #FFFFFF;" (click)="switchTheme(0)" matTooltip="Light"
+            [ngClass]="{ 'themeCircleSelected': (theme == 0), 'themeCircleDeselected': (theme != 0) }"></span>
+        <span class="themeCircle" style="background-color: #222222;" (click)="switchTheme(1)" matTooltip="Dark"
+            [ngClass]="{ 'themeCircleSelected': (theme == 1), 'themeCircleDeselected': (theme != 1) }"></span>
+        <span class="themeCircle" style="background: linear-gradient(135deg, #FFFFFF 49.99%, #222222 50.11%);"
+            (click)="switchTheme(2)" matTooltip="Auto"
+            [ngClass]="{ 'themeCircleSelected': (theme == 2), 'themeCircleDeselected': (theme != 2) }"></span>
+    </div>
+    <div fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="1em" fxFlex="100%">
+        <span class="bigText">Good {{getTimePhrase()}}!</span>
+        <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap="1em">
             <button mat-raised-button routerLink="/configuration">Configuration</button>
             <button mat-raised-button color="accent" routerLink="/items">Items</button>
             <button mat-raised-button color="primary" routerLink="/makeSale">Make Sale</button>

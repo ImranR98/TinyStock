@@ -2,8 +2,8 @@
 @import '~@angular/material/theming';
 @include mat-core();
 
-$light-primary: mat-palette($mat-green, 800);
-$light-accent: mat-palette($mat-amber);
+$light-primary: mat-palette($mat-indigo);
+$light-accent: mat-palette($mat-red);
 $light-warn: mat-palette($mat-red);
 
 $dark-primary: mat-palette($mat-green, 'A400');
@@ -26,23 +26,60 @@ $dark-theme: mat-dark-theme((
   )
 ));
 
-// @media (prefers-color-scheme: light) {
-//   @include angular-material-theme($light-theme);
+@mixin lightTheme {
+  @include angular-material-theme($light-theme);
 
-//   html {
-//     background-color: #FFFFFF;
-//     color: #000000;
-//   }
-// }
+  .background {
+    background-color: #FFFFFF;
+    color: #000000;
+  }
 
-@include angular-material-theme($dark-theme);
+  .themeCircleSelected {
+    border: 2px solid #FFFFFF;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.25), 0 6px 20px 0 rgba(0, 0, 0, 0.25);
+  }
 
-html {
-  background-color: #222222;
-  color: #FFFFFF;
+  .themeCircleDeselected {
+    border: 2px solid #222222;
+  }
 }
 
-html, body { height: 100%; }
+@mixin darkTheme {
+  @include angular-material-theme($dark-theme);
+
+  .background {
+    background-color: #222222;
+    color: #FFFFFF;
+  }
+
+  .themeCircleSelected {
+    border: 2px solid #222222;
+    box-shadow: 0 4px 8px 0 rgba(255, 255, 255, 0.25), 0 6px 20px 0 rgba(255, 255, 255, 0.25);
+  }
+
+  .themeCircleDeselected {
+    border: 2px solid #FFFFFF;
+  }
+}
+
+.lightTheme {
+  @include lightTheme();
+}
+
+.darkTheme {
+  @include darkTheme();
+}
+
+.responsiveTheme {
+  @media (prefers-color-scheme: light) {
+    @include lightTheme();
+  }
+  @media (prefers-color-scheme: dark) {
+    @include darkTheme();
+  }
+}
+
+html, body { height: 100%; background-color: #222222; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .stdPadding {
@@ -68,5 +105,15 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 
 .fillHeight {
-  height: 100%;
+  height: 100vh;
+}
+
+.themeCircle {
+  height: 1em;
+  width: 1em;
+  border-radius: 50%;
+}
+
+.stdX5PaddingTop {
+  padding-top: 5em !important;
 }

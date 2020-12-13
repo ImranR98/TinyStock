@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { ApiService } from '../services/api.service';
 import { ErrorService } from '../services/error.service';
+import { themes, ThemeService } from '../services/theme.service';
 
 @Component({
   selector: 'app-configuration',

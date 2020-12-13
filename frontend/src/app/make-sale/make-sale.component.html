@@ -5,6 +5,7 @@
         </button>
         <span class="bigText">Make Sale</span>
     </div>
+    <mat-divider></mat-divider>
     <div *ngIf="saleItems.value.length > 0" class="autoOverflow">
         <table mat-table [dataSource]="saleItems" fxFill>
             <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
