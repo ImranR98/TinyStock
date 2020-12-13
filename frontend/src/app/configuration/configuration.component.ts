@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { ApiService } from '../services/api.service';
 import { ErrorService } from '../services/error.service';
-import { themes, ThemeService } from '../services/theme.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-configuration',
@@ -16,7 +16,7 @@ export class ConfigurationComponent implements OnInit {
   @ViewChild('password') passwordElement: ElementRef;
   @ViewChild('dataDir') dataDirElement: ElementRef;
 
-  constructor(private apiService: ApiService, private errorService: ErrorService, private router: Router, private location: Location) { }
+  constructor(private apiService: ApiService, private errorService: ErrorService, private router: Router, private location: Location, private Http: HttpClient) { }
 
   submitting = false
 
@@ -29,6 +29,13 @@ export class ConfigurationComponent implements OnInit {
 
   changePasswordForm = new FormGroup({
     newPassword: new FormControl('', Validators.required),
+  })
+
+  importForm = new FormGroup({
+    itemsInput: new FormControl('', Validators.required),
+    items: new FormControl('', Validators.required),
+    salesInput: new FormControl('', Validators.required),
+    sales: new FormControl('', Validators.required)
   })
 
   needDataDir = true
@@ -96,6 +103,84 @@ export class ConfigurationComponent implements OnInit {
         this.submitting = false
         this.apiService.password = this.changePasswordForm.controls['newPassword'].value
         this.errorService.showSimpleSnackBar('Password changed')
+        this.router.navigate(['/home'])
+      }).catch(err => {
+        this.submitting = false
+        this.errorService.showError(err)
+      })
+    }
+  }
+
+  onItemsFileChange(event) {
+    if (event.target.files.length > 0) {
+      const file = event.target.files[0];
+      this.importForm.patchValue({
+        items: file
+      });
+    }
+  }
+
+  onSalesFileChange(event) {
+    if (event.target.files.length > 0) {
+      const file = event.target.files[0];
+      this.importForm.patchValue({
+        sales: file
+      });
+    }
+  }
+
+  readFile(blob: Blob): Promise<string> {
+    return new Promise((resolve, reject) => {
+      let reader = new FileReader()
+      reader.readAsText(blob)
+      reader.onload = () => {
+        resolve(reader.result.toString())
+      }
+    })
+  }
+
+  downloadJSONObject(object: any, fileName: string) {
+    const str = JSON.stringify(object)
+    const bytes = new TextEncoder().encode(str)
+    const blob = new Blob([bytes], {
+      type: "application/json;charset=utf-8"
+    })
+    let url = window.URL.createObjectURL(blob);
+    let a = document.createElement('a');
+    document.body.appendChild(a);
+    a.setAttribute('style', 'display: none');
+    a.href = url;
+    a.download = fileName;
+    a.click();
+    window.URL.revokeObjectURL(url);
+    a.remove();
+  }
+
+  async export() {
+    try {
+      let items = await this.apiService.items()
+      let sales = await this.apiService.sales()
+      this.downloadJSONObject(items, 'items.json')
+      this.downloadJSONObject(sales, 'sales.json')
+    } catch (err) {
+      this.errorService.showError(err)
+    }
+  }
+
+  async importFiles() {
+    if (this.importForm.valid && confirm('Import these data files? Any existing data will be irreversibly replaced.')) {
+      let items = []
+      let sales = []
+      try {
+        items = JSON.parse(await this.readFile(this.importForm.get('items').value))
+        sales = JSON.parse(await this.readFile(this.importForm.get('items').value))
+      } catch (err) {
+        this.errorService.showError(err)
+      }
+      this.submitting = true
+      this.apiService.importData(items, sales).then(() => {
+        this.submitting = false
+        this.errorService.showSimpleSnackBar('Data Imported')
         this.router.navigate(['/home'])
       }).catch(err => {
         this.submitting = false

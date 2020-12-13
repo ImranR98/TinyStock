@@ -1,8 +1,8 @@
 // Contains functions directly accessed by main.ts
 // References functions from io.ts
 
-import { Adjustment, AppError, AppErrorCodes, Item, Sale } from 'tinystock-models'
-import { readItems, readSales, writeItems, writeSales, createOrCheckDataDirectory, changeEncryptionPassword } from './io'
+import { Adjustment, AppError, AppErrorCodes, instanceOfItem, Item, Sale } from 'tinystock-models'
+import { readItems, readSales, writeItems, writeSales, createOrCheckDataDirectory, changeEncryptionPassword, validatePassword } from './io'
 
 export function configure(dataDir: string, password: string) {
     return createOrCheckDataDirectory(dataDir, password)
@@ -44,6 +44,14 @@ export function createTestData(itemsNum: number = 30, salesNum: number = 10, max
     }
 
     return { items, sales }
+}
+
+export function items(dataDir: string, password: string) {
+    return readItems(dataDir, password)
+}
+
+export function sales(dataDir: string, password: string) {
+    return readSales(dataDir, password)
 }
 
 export function findItem(dataDir: string, code: string, setQuantity: number | null, password: string) {
@@ -101,6 +109,12 @@ export function makeSale(dataDir: string, saleItems: Item[], adjustments: Adjust
     return sale
 }
 
-export function changePassword (dataDir: string, password: string, newPassword: string) {
+export function changePassword(dataDir: string, password: string, newPassword: string) {
     changeEncryptionPassword(dataDir, password, newPassword)
+}
+
+export function importData(dataDir: string, password: string, items: Item[], sales: Sale[]) {
+    validatePassword(dataDir, password)
+    writeItems(dataDir, items, password)
+    writeSales(dataDir, sales, password)
 }

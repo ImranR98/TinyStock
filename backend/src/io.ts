@@ -4,7 +4,7 @@
 import fs from 'fs'
 import path from 'path'
 
-import { Item, Sale, instanceOfItem, instanceOfSale, AppErrorCodes, AppError, instanceOfEncryptedData, EncryptedData } from 'tinystock-models'
+import { Item, Sale, instanceOfItem, instanceOfSale, AppErrorCodes, AppError, instanceOfEncryptedData, EncryptedData, instanceOfItems, instanceOfSales } from 'tinystock-models'
 
 import { encrypt, decrypt, hashPassword } from './crypto'
 
@@ -44,6 +44,12 @@ export function createOrCheckDataDirectory(dataDir: string, password: string) {
     }
 }
 
+export function validatePassword(dataDir: string, password: string) {
+    createOrCheckDataDirectory(dataDir, password)
+    let content = readEncryptedFile(path.join(dataDir, '/' + markerFileName), password)
+    if (content != markerFileContent) throw new AppError(AppErrorCodes.WRONG_DECRYPTION_PASSWORD)
+}
+
 export function readItems(dataDir: string, password: string): Item[] {
     createOrCheckDataDirectory(dataDir, password)
 
@@ -55,13 +61,7 @@ export function readItems(dataDir: string, password: string): Item[] {
         throw new AppError(AppErrorCodes.CORRUPT_ITEMS_JSON)
     }
 
-    if (typeof itemsJSON?.length !== 'number') throw new AppError(AppErrorCodes.MISSING_ITEMS_ARRAY)
-
-    let itemsValid = true
-    for (let i = 0; i < itemsJSON.length; i++) {
-        if (!instanceOfItem(itemsJSON[i])) itemsValid = false
-        if (!itemsValid) throw new AppError(AppErrorCodes.CORRUPT_ITEM_IN_JSON, itemsJSON[i])
-    }
+    if (!instanceOfItems(itemsJSON)) throw new AppError(AppErrorCodes.CORRUPT_ITEM_IN_JSON)
 
     let items: Item[] = itemsJSON
 
@@ -79,13 +79,7 @@ export function readSales(dataDir: string, password: string): Sale[] {
         throw new AppError(AppErrorCodes.CORRUPT_SALES_JSON)
     }
 
-    if (typeof salesJSON?.length !== 'number') throw new AppError(AppErrorCodes.MISSING_SALES_ARRAY)
-
-    let salesValid = true
-    for (let i = 0; i < salesJSON.length; i++) {
-        if (!instanceOfSale(salesJSON[i])) salesValid = false
-        if (!salesValid) throw new AppError(AppErrorCodes.CORRUPT_SALE_IN_JSON, salesJSON[i])
-    }
+    if (!instanceOfSales(salesJSON)) throw new AppError(AppErrorCodes.CORRUPT_ITEM_IN_JSON)
 
     let sales: Sale[] = salesJSON
 
@@ -102,7 +96,7 @@ export function writeSales(dataDir: string, sales: Sale[], password: string) {
     writeEncryptedFile(path.join(dataDir, '/sales.json'), JSON.stringify(sales, null, '\t'), password)
 }
 
-export function changeEncryptionPassword (dataDir: string, password: string, newPassword: string) {
+export function changeEncryptionPassword(dataDir: string, password: string, newPassword: string) {
     const items = readItems(dataDir, password)
     const sales = readSales(dataDir, password)
     const marker = readEncryptedFile(path.join(dataDir, '/' + markerFileName), password)

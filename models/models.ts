@@ -46,6 +46,15 @@ export function instanceOfItem(object: any): object is Item {
     return validProps
 }
 
+export function instanceOfItems(object: any): object is Item[] {
+    if (!Array.isArray(object)) return false
+    let itemsValid = true
+    for (let i = 0; i < object.length && itemsValid; i++) {
+        if (!instanceOfItem(object[i])) itemsValid = false
+    }
+    return itemsValid
+}
+
 export class Adjustment { // In case an amount ever needs to be manually adjusted at time of sale
     note: string;
     amount: number;
@@ -111,6 +120,15 @@ export function instanceOfSale(object: any): object is Sale {
         if (!instanceOfAdjustment(object.adjustments[i])) goodPropTypes = false
     }
     return goodPropTypes
+}
+
+export function instanceOfSales(object: any): object is Sale[] {
+    if (!Array.isArray(object)) return false
+    let salesValid = true
+    for (let i = 0; i < object.length && salesValid; i++) {
+        if (!instanceOfSale(object[i])) salesValid = false
+    }
+    return salesValid
 }
 
 export enum AppErrorCodes {

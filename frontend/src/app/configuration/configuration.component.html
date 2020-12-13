@@ -39,26 +39,66 @@
             <input matInput formControlName="host" placeholder="Host URL" type="text">
             <mat-hint>Leave this empty if unsure</mat-hint>
         </mat-form-field>
-        <button mat-raised-button color="primary" [disabled]="!configForm.valid || needPassword || submitting"
-            (click)="save()">Test
-            & Save</button>
+        <div fxLayout="column" fxLayoutAlign="default start" fxLayoutAlign.lt-sm="default default">
+            <button mat-raised-button color="primary" [disabled]="!configForm.valid || needPassword || submitting"
+                (click)="save()">Test
+                & Save</button>
+        </div>
     </form>
     <mat-divider *ngIf="directoryExists"></mat-divider>
     <form *ngIf="directoryExists" [formGroup]="changePasswordForm" fxLayout="column" fxLayoutGap="1em">
         <span class="mediumText">Change Password of Existing Data Folder</span>
-        <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutAlign="default center" fxLayoutAlign.lt-sm="default default"
-            fxLayoutGap="1em">
-            <mat-form-field fxFlex="100%">
-                <input matInput formControlName="newPassword" placeholder="New Password" type="password">
-                <mat-hint>Minimum {{getMinPasswordLength()}} characters - UNRECOVERABLE</mat-hint>
-            </mat-form-field>
-            <button mat-raised-button color="primary"
+        <mat-form-field fxFlex="100%">
+            <input matInput formControlName="newPassword" placeholder="New Password" type="password">
+            <mat-hint>Minimum {{getMinPasswordLength()}} characters - UNRECOVERABLE</mat-hint>
+        </mat-form-field>
+        <div fxLayout="column" fxLayoutAlign="default start" fxLayoutAlign.lt-sm="default default">
+            <button mat-raised-button color="accent"
                 [disabled]="!changePasswordForm.valid || needNewPassword || submitting || !configForm.controls['password'].valid"
                 (click)="changePassword()">Change</button>
         </div>
         <mat-card *ngIf="needNewPassword || !configForm.controls['password'].valid" fxLayout="column" fxLayoutGap="1em">
-            <small *ngIf="needNewPassword">Passwords must be at least {{getMinPasswordLength()}} characters long.</small>
-            <small *ngIf="!configForm.controls['password'].valid">Enter the existing password in the top section.</small>
+            <small *ngIf="needNewPassword">Passwords must be at least {{getMinPasswordLength()}} characters
+                long.</small>
+            <small *ngIf="!configForm.controls['password'].valid">Enter the existing password in the top
+                section.</small>
+        </mat-card>
+    </form>
+    <mat-divider *ngIf="directoryExists"></mat-divider>
+    <div *ngIf="directoryExists" fxLayout="column" fxLayoutGap="1em">
+        <span class="mediumText">Export Data</span>
+        <div fxLayout="column" fxLayoutAlign="default start" fxLayoutAlign.lt-sm="default default">
+            <button mat-raised-button color="accent" [disabled]="submitting" (click)="export()">Export</button>
+        </div>
+        <mat-card fxLayout="column" fxLayoutGap="1em">
+            <small>Use this to download an unencrypted copy of TinyStock data.</small>
+        </mat-card>
+    </div>
+    <mat-divider *ngIf="directoryExists"></mat-divider>
+    <form *ngIf="directoryExists" [formGroup]="importForm" fxLayout="column" fxLayoutGap="1em">
+        <span class="mediumText">Import Data</span>
+        <div fxLayout="row" fxLayoutGap="1em" fxLayout.lt-sm="column">
+            <div fxLayout="column">
+                <label for="items-upload" class="custom-file-upload">Items</label>
+                <input id="items-upload" formControlName="itemsInput" placeholder="Items" type="file"
+                    (change)="onItemsFileChange($event)" required>
+            </div>
+            <div fxLayout="column">
+                <label for="sales-upload" class="custom-file-upload">Sales</label>
+                <input id="sales-upload" formControlName="salesInput" placeholder="Sales" type="file"
+                    (change)="onSalesFileChange($event)" required>
+            </div>
+        </div>
+        <div fxLayout="column" fxLayoutAlign="default start" fxLayoutAlign.lt-sm="default default">
+            <button mat-raised-button color="accent" [disabled]="!importForm.valid || submitting"
+                (click)="importFiles()">Import</button>
+        </div>
+        <mat-card *ngIf="!importForm.valid" fxLayout="column" fxLayoutGap="1em">
+            <small>Use this to import TinyStock data files to irreversibly replace any existing data.</small>
+            <small>Make sure the files are plain, unencrypted JSON.</small>
+            <small>Make sure your configuration has been saved with a valid password. This password will be checked
+                against any existing data before replacement.</small>
+            <small>The password will also be used to encrypt the new data.</small>
         </mat-card>
     </form>
 </div>

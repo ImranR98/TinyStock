@@ -6,9 +6,8 @@ import { app, BrowserWindow } from 'electron'
 import express from 'express'
 import path from 'path'
 
-import { configure, addItem, findItem, makeSale, editItem, deleteItem, changePassword } from './funcs'
-import { AppError, AppErrorCodes, instanceOfAppError, instanceOfItem, instanceOfAdjustment } from 'tinystock-models'
-import { readItems } from './io'
+import { configure, addItem, findItem, makeSale, editItem, deleteItem, changePassword, importData, items, sales } from './funcs'
+import { AppError, AppErrorCodes, instanceOfAppError, instanceOfItem, instanceOfAdjustment, instanceOfItems, instanceOfSales } from 'tinystock-models'
 
 const PORT = 7259
 
@@ -75,7 +74,17 @@ expressApp.post('/api/configure', async (req, res) => {
 expressApp.post('/api/items', async (req, res) => {
   try {
     checkStandardArgs(req.body)
-    res.send(readItems(req.body.dataDir, req.body.password))
+    res.send(items(req.body.dataDir, req.body.password))
+  } catch (err) {
+    if (instanceOfAppError(err)) res.status(400).send(err)
+    else res.status(500).send(err)
+  }
+})
+
+expressApp.post('/api/sales', async (req, res) => {
+  try {
+    checkStandardArgs(req.body)
+    res.send(sales(req.body.dataDir, req.body.password))
   } catch (err) {
     if (instanceOfAppError(err)) res.status(400).send(err)
     else res.status(500).send(err)
@@ -157,6 +166,19 @@ expressApp.post('/api/changePassword', async (req, res) => {
     if (typeof req.body.newPassword != 'string') throw new AppError(AppErrorCodes.INVALID_ARGUMENT)
     changePassword(req.body.dataDir, req.body.password, req.body.newPassword)
     res.send()
+  } catch (err) {
+    if (instanceOfAppError(err)) res.status(400).send(err)
+    else res.status(500).send(err)
+  }
+})
+
+expressApp.post('/api/importData', async (req, res) => {
+  try {
+    checkStandardArgs(req.body)
+    if (req.body.items == undefined || req.body.sales == undefined) throw new AppError(AppErrorCodes.MISSING_ARGUMENT)
+    if (!instanceOfItems(req.body.items)) throw new AppError(AppErrorCodes.CORRUPT_ITEM_IN_JSON)
+    if (!instanceOfSales(req.body.sales)) throw new AppError(AppErrorCodes.CORRUPT_SALE_IN_JSON)
+    importData(req.body.dataDir, req.body.password, req.body.items, req.body.sales)
   } catch (err) {
     if (instanceOfAppError(err)) res.status(400).send(err)
     else res.status(500).send(err)

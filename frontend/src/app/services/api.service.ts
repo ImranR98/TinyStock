@@ -83,6 +83,10 @@ export class ApiService {
     return this.http.post(this.host + '/api/items', { dataDir: this.dataDir, password: this.password }).toPromise() as Promise<Item[]>
   }
 
+  sales() {
+    return this.http.post(this.host + '/api/sales', { dataDir: this.dataDir, password: this.password }).toPromise() as Promise<Item[]>
+  }
+
   addItem(item: Item) {
     if (typeof item.setQuantity == 'string') item.setQuantity = null
     return this.http.post(this.host + '/api/addItem', { dataDir: this.dataDir, password: this.password, item }).toPromise()
@@ -107,5 +111,9 @@ export class ApiService {
 
   changePassword(password: string, newPassword: string) {
     return this.http.post(this.host + '/api/changePassword', { dataDir: this.dataDir, password, newPassword }).toPromise() as Promise<Sale>
+  }
+
+  importData(items: Item[], sales: Sale[]) {
+    return this.http.post(this.host + '/api/changePassword', { dataDir: this.dataDir, password: this.password, items, sales }).toPromise() as Promise<Sale>
   }
 }
