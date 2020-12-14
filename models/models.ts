@@ -1,10 +1,10 @@
 export class Item {
-    code: string;
-    description: string;
-    setQuantity: number | null; // If this is null, the item is not a set
-    quantity: number;
-    category: string;
-    price: number;
+    code: string
+    description: string
+    setQuantity: number | null // If this is null, the item is not a set
+    quantity: number
+    category: string
+    price: number
 
     constructor(code: string, description: string, setQuantity: number | null, quantity: number, category: string, price: number) {
         this.code = code.trim()
@@ -56,8 +56,8 @@ export function instanceOfItems(object: any): object is Item[] {
 }
 
 export class Adjustment { // In case an amount ever needs to be manually adjusted at time of sale
-    note: string;
-    amount: number;
+    note: string
+    amount: number
 
     constructor(note: string, amount: number) {
         this.note = note.trim()
@@ -83,10 +83,10 @@ export function instanceOfAdjustment(object: any): object is Adjustment {
 }
 
 export class Sale {
-    id: string;
-    date: Date;
-    items: Item[];
-    adjustments: Adjustment[];
+    id: string
+    date: Date
+    items: Item[]
+    adjustments: Adjustment[]
 
     constructor(id: string | null, date: Date, items: Item[], adjustments: Adjustment[]) {
         this.id = id ? id.trim() : Math.round(Math.random() * 10000000000000000).toString(),
@@ -153,8 +153,8 @@ export enum AppErrorCodes {
 }
 
 export class AppError {
-    code: AppErrorCodes;
-    data: any;
+    code: AppErrorCodes
+    data: any
 
     constructor(code: AppErrorCodes, data: any = null) {
         this.code = code
@@ -180,25 +180,33 @@ export function instanceOfAppError(object: any): object is AppError {
 }
 
 export class EncryptedData {
-    iv: string;
-    content: string;
+    iv: string
+    content: string
+    date: Date
 
     constructor(iv: string, content: string) {
         this.iv = iv.trim()
         this.content = content.trim()
+        this.date = new Date()
     }
 }
 
 export function instanceOfEncryptedData(object: any): object is EncryptedData {
     let hasProps = (
         'iv' in object &&
-        'content' in object
+        'content' in object &&
+        'date' in object
     )
     if (!hasProps) return false
     let goodPropTypes = (
         typeof object.iv == 'string' &&
         typeof object.content == 'string'
     )
+    if (goodPropTypes && typeof object.date == 'string') {
+        try { new Date(object.date) } catch (err) { goodPropTypes = false }
+    } else if (goodPropTypes && !(object.date instanceof Date)) {
+        goodPropTypes = false
+    }
     if (!goodPropTypes) return false
     let validProps = (
         object.iv.trim() != '' &&
