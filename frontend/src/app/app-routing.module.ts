@@ -6,6 +6,7 @@ import { EditItemComponent } from './edit-item/edit-item.component';
 import { HomeComponent } from './home/home.component';
 import { ItemsComponent } from './items/items.component';
 import { MakeSaleComponent } from './make-sale/make-sale.component';
+import { SalesComponent } from './sales/sales.component';
 
 const routes: Routes = [
   {
@@ -42,6 +43,11 @@ const routes: Routes = [
     path: 'makeSale',
     component: MakeSaleComponent,
     data: { animation: 'makeSale' }
+  },
+  {
+    path: 'sales',
+    component: SalesComponent,
+    data: { animation: 'sales' }
   },
   {
     path: '**',

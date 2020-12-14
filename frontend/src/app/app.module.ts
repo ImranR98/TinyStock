@@ -28,6 +28,7 @@ import { ItemsComponent } from './items/items.component';
 import { AddItemComponent } from './add-item/add-item.component';
 import { EditItemComponent } from './edit-item/edit-item.component';
 import { MakeSaleComponent } from './make-sale/make-sale.component';
+import { SalesComponent } from './sales/sales.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,8 @@ import { MakeSaleComponent } from './make-sale/make-sale.component';
     ItemsComponent,
     AddItemComponent,
     EditItemComponent,
-    MakeSaleComponent
+    MakeSaleComponent,
+    SalesComponent
   ],
   imports: [
     BrowserModule,

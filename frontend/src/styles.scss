@@ -3,7 +3,7 @@
 @include mat-core();
 
 $light-primary: mat-palette($mat-indigo);
-$light-accent: mat-palette($mat-red);
+$light-accent: mat-palette($mat-deep-orange);
 $light-warn: mat-palette($mat-red);
 
 $dark-primary: mat-palette($mat-green, 'A400');
@@ -30,12 +30,12 @@ $dark-theme: mat-dark-theme((
   @include angular-material-theme($light-theme);
 
   .background {
-    background-color: #FFFFFF;
+    background-color: #EEEEEE;
     color: #000000;
   }
 
   .themeCircleSelected {
-    border: 2px solid #FFFFFF;
+    border: 2px solid #EEEEEE;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.25), 0 6px 20px 0 rgba(0, 0, 0, 0.25);
   }
 
@@ -49,7 +49,7 @@ $dark-theme: mat-dark-theme((
 
   .background {
     background-color: #222222;
-    color: #FFFFFF;
+    color: #EEEEEE;
   }
 
   .themeCircleSelected {
@@ -58,7 +58,7 @@ $dark-theme: mat-dark-theme((
   }
 
   .themeCircleDeselected {
-    border: 2px solid #FFFFFF;
+    border: 2px solid #EEEEEE;
   }
 }
 

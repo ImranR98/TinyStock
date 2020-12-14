@@ -84,7 +84,7 @@ export class ApiService {
   }
 
   sales() {
-    return this.http.post(this.host + '/api/sales', { dataDir: this.dataDir, password: this.password }).toPromise() as Promise<Item[]>
+    return this.http.post(this.host + '/api/sales', { dataDir: this.dataDir, password: this.password }).toPromise() as Promise<Sale[]>
   }
 
   addItem(item: Item) {
