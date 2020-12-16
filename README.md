@@ -1,5 +1,44 @@
 # TinyStock
-Tiny stock keeping App.
+Minimal stock keeping App built with Electron, Node.js and Angular.
+
+## Features
+
+- Password based AES-256 encryption
+- Save data locally or over the Web
+- Responsive UI
+- Dark theme
+
+## Screenshots
+
+### Main Screen
+
+![main](./screenshots/main.png)
+
+### Add Item
+
+![main](./screenshots/addItem.png)
+
+### Items
+
+![main](./screenshots/items.png)
+
+### Sales
+
+![main](./screenshots/sales.png)
+
+### Responsive UI
+
+![main](./screenshots/responsiveUI.png)
+
+### Dark Theme
+
+![main](./screenshots/dark.png)
+
+### Example of Encrypted Data
+
+![main](./screenshots/encrypted.png)
+
+
 
 ## Development
 This is a standard client-server Web app packaged in an Electron container.
