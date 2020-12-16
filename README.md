@@ -4,7 +4,7 @@ Tiny stock keeping App.
 ## Development
 This is a standard client-server Web app packaged in an Electron container.
 
-Although they are meant to be packaged together, the backend and frontend run independently and often do during development.
+Although they are meant to be packaged together, the backend and frontend can run independently and often do during development. As such, the client and server contain code for both Web based and Electron IPC based communication, and the method to use is decided at runtime.
 
 All below commands are run from the root directory.
 

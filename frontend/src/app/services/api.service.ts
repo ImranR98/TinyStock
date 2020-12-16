@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Adjustment, AppError, AppErrorCodes, Item, Sale } from 'tinystock-models'
 import { IpcRenderer } from 'electron'
@@ -9,12 +9,12 @@ import { IpcRenderer } from 'electron'
 })
 export class ApiService {
 
-  private ipc: IpcRenderer
+  private ipc: IpcRenderer | undefined
 
   constructor(private http: HttpClient) {
-    if ((<any>window).require) {
+    if (window.require) {
       console.log('Running as Electron client')
-      this.ipc = (<any>window).require('electron').ipcRenderer
+      this.ipc = window.require('electron').ipcRenderer
     } else {
       console.log('Running as Web client')
     }

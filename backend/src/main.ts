@@ -15,11 +15,14 @@ import { configureEvent, addItemEvent, findItemEvent, makeSaleEvent, editItemEve
 let win: BrowserWindow | null
 const createWindow = () => {
   win = new BrowserWindow({
-    width: 1080,
+    width: 1280,
     height: 720,
     backgroundColor: '#ffffff',
     autoHideMenuBar: true,
-    show: false
+    show: false,
+    webPreferences: {
+      nodeIntegration: true
+    }
   })
   win.maximize()
   win.show()
