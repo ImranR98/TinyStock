@@ -36,22 +36,20 @@ const createWindow = () => {
     win = null
   })
 }
-if (app) {
-  console.log(`Electron app launched`)
-  app.on('ready', () => {
+
+app?.on('ready', () => {
+  createWindow()
+})
+app?.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') { // It is common for MacOS apps to keep running
+    app.quit()
+  }
+})
+app?.on('activate', () => {
+  if (win === null) {
     createWindow()
-  })
-  app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') { // It is common for MacOS apps to keep running
-      app.quit()
-    }
-  })
-  app.on('activate', () => {
-    if (win === null) {
-      createWindow()
-    }
-  })
-}
+  }
+})
 
 // Prepping Express
 const expressApp: express.Application = express()
@@ -65,7 +63,7 @@ const PORT = 7259
 // As such, each event function from events.ts is referenced twice below, once for the Electron IPC response, and a second time for the Express Web response
 
 // Event: configure
-ipcMain.on('configure', async (event, body) => {
+ipcMain?.on('configure', async (event, body) => {
   try {
     win?.webContents.send('configureResponse', await configureEvent(body))
   } catch (err) {
@@ -82,7 +80,7 @@ expressApp.post('/api/configure', async (req, res) => {
 })
 
 // Event: items
-ipcMain.on('items', async (event, body) => {
+ipcMain?.on('items', async (event, body) => {
   try {
     win?.webContents.send('itemsResponse', await itemsEvent(body))
   } catch (err) {
@@ -99,7 +97,7 @@ expressApp.post('/api/items', async (req, res) => {
 })
 
 // Event: sales
-ipcMain.on('sales', async (event, body) => {
+ipcMain?.on('sales', async (event, body) => {
   try {
     win?.webContents.send('salesResponse', await salesEvent(body))
   } catch (err) {
@@ -116,7 +114,7 @@ expressApp.post('/api/sales', async (req, res) => {
 })
 
 // Event: addItem
-ipcMain.on('addItem', async (event, body) => {
+ipcMain?.on('addItem', async (event, body) => {
   try {
     win?.webContents.send('addItemResponse', await addItemEvent(body))
   } catch (err) {
@@ -133,7 +131,7 @@ expressApp.post('/api/addItem', async (req, res) => {
 })
 
 // Event: findItem
-ipcMain.on('findItem', async (event, body) => {
+ipcMain?.on('findItem', async (event, body) => {
   try {
     win?.webContents.send('findItemResponse', await findItemEvent(body))
   } catch (err) {
@@ -150,7 +148,7 @@ expressApp.post('/api/findItem', async (req, res) => {
 })
 
 // Event: editItem
-ipcMain.on('editItem', async (event, body) => {
+ipcMain?.on('editItem', async (event, body) => {
   try {
     win?.webContents.send('editItemResponse', await editItemEvent(body))
   } catch (err) {
@@ -167,7 +165,7 @@ expressApp.post('/api/editItem', async (req, res) => {
 })
 
 // Event: deleteItem
-ipcMain.on('deleteItem', async (event, body) => {
+ipcMain?.on('deleteItem', async (event, body) => {
   try {
     win?.webContents.send('deleteItemResponse', await deleteItemEvent(body))
   } catch (err) {
@@ -184,7 +182,7 @@ expressApp.post('/api/deleteItem', async (req, res) => {
 })
 
 // Event: makeSale
-ipcMain.on('makeSale', async (event, body) => {
+ipcMain?.on('makeSale', async (event, body) => {
   try {
     win?.webContents.send('makeSaleResponse', await makeSaleEvent(body))
   } catch (err) {
@@ -201,7 +199,7 @@ expressApp.post('/api/makeSale', async (req, res) => {
 })
 
 // Event: changePassword
-ipcMain.on('changePassword', async (event, body) => {
+ipcMain?.on('changePassword', async (event, body) => {
   try {
     win?.webContents.send('changePasswordResponse', await changePasswordEvent(body))
   } catch (err) {
@@ -218,7 +216,7 @@ expressApp.post('/api/changePassword', async (req, res) => {
 })
 
 // Event: importData
-ipcMain.on('importData', async (event, body) => {
+ipcMain?.on('importData', async (event, body) => {
   try {
     win?.webContents.send('importDataResponse', await importDataEvent(body))
   } catch (err) {
@@ -242,4 +240,4 @@ if (!app) { // Only start the server if Electron is not running
   expressApp.listen(process.env.PORT || PORT, () => {
     console.log(`Express server launched (port ${process.env.PORT || PORT})`)
   })
-}
+} else console.log(`Electron app launched`)
