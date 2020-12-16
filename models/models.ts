@@ -150,6 +150,7 @@ export enum AppErrorCodes {
     INVALID_ENCRYPTED_JSON,
     MISSING_ARGUMENT,
     INVALID_ARGUMENT,
+    ELECTRON_TIME_OUT
 }
 
 export class AppError {

@@ -35,7 +35,7 @@ export class AppComponent implements OnInit {
     })
     this.matIconRegistry.addSvgIcon(
       "back",
-      this.domSanitizer.bypassSecurityTrustResourceUrl("../assets/back.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/back.svg")
     )
     this.themeService.themeSource.subscribe((theme: themes) => {
       switch (theme) {

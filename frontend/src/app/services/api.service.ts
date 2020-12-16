@@ -1,16 +1,28 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { Adjustment, Item, Sale } from 'tinystock-models'
+import { Adjustment, AppError, AppErrorCodes, Item, Sale } from 'tinystock-models'
+import { IpcRenderer } from 'electron'
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
 
-  constructor(private http: HttpClient) { }
+  private ipc: IpcRenderer | undefined
+
+  constructor(private http: HttpClient) {
+    if (window.require) {
+      console.log('Running as Electron client')
+      this.ipc = window.require('electron').ipcRenderer
+    } else {
+      console.log('Running as Web client')
+    }
+  }
 
   minPasswordLength = 5
+
+  electronWaitTime = 5000 // How many ms to wait for responses (only used in Electron mode, not when in a browser)
 
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -75,45 +87,190 @@ export class ApiService {
     localStorage.removeItem('password')
   }
 
+  // This client may run either in a Web browser or an Electron container
+  // Therefore, requests to the 'backend' may either be Electron IPC requests or Web requests to a server
+  // All below requests check for the presence of the Electron IPC variable and then use the appropriate method
+  // The Web request version is used if the container is not Electron OR if the user has specified a host URL
+
   configure(host: string, dataDir: string, password: string) {
-    return this.http.post(host + '/api/configure', { dataDir, password }).toPromise()
+    const body = { dataDir, password }
+    if (this.ipc && host?.trim().length == 0) {
+      return new Promise<null>((resolve, reject) => {
+        this.ipc.once('configureResponse', (event, response) => {
+          resolve(response)
+        })
+        this.ipc.once('configureError', (event, error) => {
+          reject(error)
+        })
+        this.ipc.send('configure', body)
+        setTimeout(() => {
+          reject(new AppError(AppErrorCodes.ELECTRON_TIME_OUT))
+        }, this.electronWaitTime)
+      })
+    } else return this.http.post(host + '/api/configure', body).toPromise() as Promise<null>
   }
 
   items() {
-    return this.http.post(this.host + '/api/items', { dataDir: this.dataDir, password: this.password }).toPromise() as Promise<Item[]>
+    const body = { dataDir: this.dataDir, password: this.password }
+    if (this.ipc && this.host?.trim().length == 0) {
+      return new Promise<Item[]>((resolve, reject) => {
+        this.ipc.once('itemsResponse', (event, response) => {
+          resolve(response)
+        })
+        this.ipc.once('itemsError', (event, error) => {
+          reject(error)
+        })
+        this.ipc.send('items', body)
+        setTimeout(() => {
+          reject(new AppError(AppErrorCodes.ELECTRON_TIME_OUT))
+        }, this.electronWaitTime)
+      })
+    } else return this.http.post(this.host + '/api/items', body).toPromise() as Promise<Item[]>
   }
 
   sales() {
-    return this.http.post(this.host + '/api/sales', { dataDir: this.dataDir, password: this.password }).toPromise() as Promise<Sale[]>
+    const body = { dataDir: this.dataDir, password: this.password }
+    if (this.ipc && this.host?.trim().length == 0) {
+      return new Promise<Sale[]>((resolve, reject) => {
+        this.ipc.once('salesResponse', (event, response) => {
+          resolve(response)
+        })
+        this.ipc.once('salesError', (event, error) => {
+          reject(error)
+        })
+        this.ipc.send('sales', body)
+        setTimeout(() => {
+          reject(new AppError(AppErrorCodes.ELECTRON_TIME_OUT))
+        }, this.electronWaitTime)
+      })
+    } else return this.http.post(this.host + '/api/sales', body).toPromise() as Promise<Sale[]>
   }
 
   addItem(item: Item) {
     if (typeof item.setQuantity == 'string') item.setQuantity = null
-    return this.http.post(this.host + '/api/addItem', { dataDir: this.dataDir, password: this.password, item }).toPromise()
+    const body = { dataDir: this.dataDir, password: this.password, item }
+    if (this.ipc && this.host?.trim().length == 0) {
+      return new Promise<null>((resolve, reject) => {
+        this.ipc.once('addItemResponse', (event, response) => {
+          resolve(response)
+        })
+        this.ipc.once('addItemError', (event, error) => {
+          reject(error)
+        })
+        this.ipc.send('addItem', body)
+        setTimeout(() => {
+          reject(new AppError(AppErrorCodes.ELECTRON_TIME_OUT))
+        }, this.electronWaitTime)
+      })
+    } else return this.http.post(this.host + '/api/addItem', body).toPromise() as Promise<null>
   }
 
   findItem(code: string, setQuantity: string | null) {
-    return this.http.post(this.host + '/api/findItem', { dataDir: this.dataDir, password: this.password, code, setQuantity }).toPromise() as Promise<Item>
+    const body = { dataDir: this.dataDir, password: this.password, code, setQuantity }
+    if (this.ipc && this.host?.trim().length == 0) {
+      return new Promise<Item>((resolve, reject) => {
+        this.ipc.once('findItemResponse', (event, response) => {
+          resolve(response)
+        })
+        this.ipc.once('findItemError', (event, error) => {
+          reject(error)
+        })
+        this.ipc.send('findItem', body)
+        setTimeout(() => {
+          reject(new AppError(AppErrorCodes.ELECTRON_TIME_OUT))
+        }, this.electronWaitTime)
+      })
+    } else return this.http.post(this.host + '/api/findItem', body).toPromise() as Promise<Item>
   }
 
   editItem(item: Item) {
     if (typeof item.setQuantity == 'string') item.setQuantity = null
-    return this.http.post(this.host + '/api/editItem', { dataDir: this.dataDir, password: this.password, item }).toPromise()
+    const body = { dataDir: this.dataDir, password: this.password, item }
+    if (this.ipc && this.host?.trim().length == 0) {
+      return new Promise<null>((resolve, reject) => {
+        this.ipc.once('editItemResponse', (event, response) => {
+          resolve(response)
+        })
+        this.ipc.once('editItemError', (event, error) => {
+          reject(error)
+        })
+        this.ipc.send('editItem', body)
+        setTimeout(() => {
+          reject(new AppError(AppErrorCodes.ELECTRON_TIME_OUT))
+        }, this.electronWaitTime)
+      })
+    } else return this.http.post(this.host + '/api/editItem', body).toPromise() as Promise<null>
   }
 
   deleteItem(code: string, setQuantity: string | null) {
-    return this.http.post(this.host + '/api/deleteItem', { dataDir: this.dataDir, password: this.password, code, setQuantity }).toPromise()
+    const body = { dataDir: this.dataDir, password: this.password, code, setQuantity }
+    if (this.ipc && this.host?.trim().length == 0) {
+      return new Promise<null>((resolve, reject) => {
+        this.ipc.once('deleteItemResponse', (event, response) => {
+          resolve(response)
+        })
+        this.ipc.once('deleteItemError', (event, error) => {
+          reject(error)
+        })
+        this.ipc.send('deleteItem', body)
+        setTimeout(() => {
+          reject(new AppError(AppErrorCodes.ELECTRON_TIME_OUT))
+        }, this.electronWaitTime)
+      })
+    } else return this.http.post(this.host + '/api/deleteItem', body).toPromise() as Promise<null>
   }
 
   makeSale(saleItems: Item[], adjustments: Adjustment[]) {
-    return this.http.post(this.host + '/api/makeSale', { dataDir: this.dataDir, password: this.password, saleItems, adjustments }).toPromise() as Promise<Sale>
+    const body = { dataDir: this.dataDir, password: this.password, saleItems, adjustments }
+    if (this.ipc && this.host?.trim().length == 0) {
+      return new Promise<Sale>((resolve, reject) => {
+        this.ipc.once('makeSaleResponse', (event, response) => {
+          resolve(response)
+        })
+        this.ipc.once('makeSaleError', (event, error) => {
+          reject(error)
+        })
+        this.ipc.send('makeSale', body)
+        setTimeout(() => {
+          reject(new AppError(AppErrorCodes.ELECTRON_TIME_OUT))
+        }, this.electronWaitTime)
+      })
+    } else return this.http.post(this.host + '/api/makeSale', body).toPromise() as Promise<Sale>
   }
 
   changePassword(password: string, newPassword: string) {
-    return this.http.post(this.host + '/api/changePassword', { dataDir: this.dataDir, password, newPassword }).toPromise() as Promise<Sale>
+    const body = { dataDir: this.dataDir, password, newPassword }
+    if (this.ipc && this.host?.trim().length == 0) {
+      return new Promise<null>((resolve, reject) => {
+        this.ipc.once('changePasswordResponse', (event, response) => {
+          resolve(response)
+        })
+        this.ipc.once('changePasswordError', (event, error) => {
+          reject(error)
+        })
+        this.ipc.send('changePassword', body)
+        setTimeout(() => {
+          reject(new AppError(AppErrorCodes.ELECTRON_TIME_OUT))
+        }, this.electronWaitTime)
+      })
+    } else return this.http.post(this.host + '/api/changePassword', body).toPromise() as Promise<null>
   }
 
   importData(items: Item[], sales: Sale[]) {
-    return this.http.post(this.host + '/api/changePassword', { dataDir: this.dataDir, password: this.password, items, sales }).toPromise() as Promise<Sale>
+    const body = { dataDir: this.dataDir, password: this.password, items, sales }
+    if (this.ipc && this.host?.trim().length == 0) {
+      return new Promise<null>((resolve, reject) => {
+        this.ipc.once('importDataResponse', (event, response) => {
+          resolve(response)
+        })
+        this.ipc.once('importDataError', (event, error) => {
+          reject(error)
+        })
+        this.ipc.send('importData', body)
+        setTimeout(() => {
+          reject(new AppError(AppErrorCodes.ELECTRON_TIME_OUT))
+        }, this.electronWaitTime)
+      })
+    } else return this.http.post(this.host + '/api/importData', body).toPromise() as Promise<null>
   }
 }
