@@ -4,7 +4,7 @@
 import fs from 'fs'
 import path from 'path'
 
-import { Item, Sale, instanceOfItem, instanceOfSale, AppErrorCodes, AppError, instanceOfEncryptedData, EncryptedData, instanceOfItems, instanceOfSales } from 'tinystock-models'
+import { Item, Sale, AppErrorCodes, AppError, instanceOfEncryptedData, EncryptedData, instanceOfItems, instanceOfSales } from 'tinystock-models'
 
 import { encrypt, decrypt, hashPassword } from './crypto'
 

@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { ApiService } from '../services/api.service';
 import { ErrorService } from '../services/error.service';
-import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-configuration',
@@ -16,7 +15,7 @@ export class ConfigurationComponent implements OnInit {
   @ViewChild('password') passwordElement: ElementRef;
   @ViewChild('dataDir') dataDirElement: ElementRef;
 
-  constructor(private apiService: ApiService, private errorService: ErrorService, private router: Router, private location: Location, private Http: HttpClient) { }
+  constructor(private apiService: ApiService, private errorService: ErrorService, private router: Router, private location: Location) { }
 
   submitting = false
 
