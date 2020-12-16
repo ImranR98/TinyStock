@@ -90,10 +90,11 @@ export class ApiService {
   // This client may run either in a Web browser or an Electron container
   // Therefore, requests to the 'backend' may either be Electron IPC requests or Web requests to a server
   // All below requests check for the presence of the Electron IPC variable and then use the appropriate method
+  // The Web request version is used if the container is not Electron OR if the user has specified a host URL
 
   configure(host: string, dataDir: string, password: string) {
     const body = { dataDir, password }
-    if (this.ipc) {
+    if (this.ipc && host?.trim().length == 0) {
       return new Promise<null>((resolve, reject) => {
         this.ipc.once('configureResponse', (event, response) => {
           resolve(response)
@@ -111,7 +112,7 @@ export class ApiService {
 
   items() {
     const body = { dataDir: this.dataDir, password: this.password }
-    if (this.ipc) {
+    if (this.ipc && this.host?.trim().length == 0) {
       return new Promise<Item[]>((resolve, reject) => {
         this.ipc.once('itemsResponse', (event, response) => {
           resolve(response)
@@ -129,7 +130,7 @@ export class ApiService {
 
   sales() {
     const body = { dataDir: this.dataDir, password: this.password }
-    if (this.ipc) {
+    if (this.ipc && this.host?.trim().length == 0) {
       return new Promise<Sale[]>((resolve, reject) => {
         this.ipc.once('salesResponse', (event, response) => {
           resolve(response)
@@ -148,7 +149,7 @@ export class ApiService {
   addItem(item: Item) {
     if (typeof item.setQuantity == 'string') item.setQuantity = null
     const body = { dataDir: this.dataDir, password: this.password, item }
-    if (this.ipc) {
+    if (this.ipc && this.host?.trim().length == 0) {
       return new Promise<null>((resolve, reject) => {
         this.ipc.once('addItemResponse', (event, response) => {
           resolve(response)
@@ -166,7 +167,7 @@ export class ApiService {
 
   findItem(code: string, setQuantity: string | null) {
     const body = { dataDir: this.dataDir, password: this.password, code, setQuantity }
-    if (this.ipc) {
+    if (this.ipc && this.host?.trim().length == 0) {
       return new Promise<Item>((resolve, reject) => {
         this.ipc.once('findItemResponse', (event, response) => {
           resolve(response)
@@ -185,7 +186,7 @@ export class ApiService {
   editItem(item: Item) {
     if (typeof item.setQuantity == 'string') item.setQuantity = null
     const body = { dataDir: this.dataDir, password: this.password, item }
-    if (this.ipc) {
+    if (this.ipc && this.host?.trim().length == 0) {
       return new Promise<null>((resolve, reject) => {
         this.ipc.once('editItemResponse', (event, response) => {
           resolve(response)
@@ -203,7 +204,7 @@ export class ApiService {
 
   deleteItem(code: string, setQuantity: string | null) {
     const body = { dataDir: this.dataDir, password: this.password, code, setQuantity }
-    if (this.ipc) {
+    if (this.ipc && this.host?.trim().length == 0) {
       return new Promise<null>((resolve, reject) => {
         this.ipc.once('deleteItemResponse', (event, response) => {
           resolve(response)
@@ -221,7 +222,7 @@ export class ApiService {
 
   makeSale(saleItems: Item[], adjustments: Adjustment[]) {
     const body = { dataDir: this.dataDir, password: this.password, saleItems, adjustments }
-    if (this.ipc) {
+    if (this.ipc && this.host?.trim().length == 0) {
       return new Promise<Sale>((resolve, reject) => {
         this.ipc.once('makeSaleResponse', (event, response) => {
           resolve(response)
@@ -239,7 +240,7 @@ export class ApiService {
 
   changePassword(password: string, newPassword: string) {
     const body = { dataDir: this.dataDir, password, newPassword }
-    if (this.ipc) {
+    if (this.ipc && this.host?.trim().length == 0) {
       return new Promise<null>((resolve, reject) => {
         this.ipc.once('changePasswordResponse', (event, response) => {
           resolve(response)
@@ -257,7 +258,7 @@ export class ApiService {
 
   importData(items: Item[], sales: Sale[]) {
     const body = { dataDir: this.dataDir, password: this.password, items, sales }
-    if (this.ipc) {
+    if (this.ipc && this.host?.trim().length == 0) {
       return new Promise<null>((resolve, reject) => {
         this.ipc.once('importDataResponse', (event, response) => {
           resolve(response)
