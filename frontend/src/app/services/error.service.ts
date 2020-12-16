@@ -74,6 +74,9 @@ export class ErrorService {
       case AppErrorCodes.INVALID_ARGUMENT:
         return 'One or more arguments are invalid'
         break;
+      case AppErrorCodes.ELECTRON_TIME_OUT:
+        return 'Response took too long'
+        break;
       default:
         return 'Unknown application error'
         break;

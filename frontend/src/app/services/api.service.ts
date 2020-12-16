@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { Adjustment, Item, Sale } from 'tinystock-models'
+import { Adjustment, AppError, AppErrorCodes, Item, Sale } from 'tinystock-models'
 import { IpcRenderer } from 'electron'
 
 @Injectable({
@@ -9,7 +9,9 @@ import { IpcRenderer } from 'electron'
 })
 export class ApiService {
 
-  constructor(private http: HttpClient, private ipc: IpcRenderer) {
+  private ipc: IpcRenderer
+
+  constructor(private http: HttpClient) {
     if ((<any>window).require) {
       console.log('Running as Electron client')
       this.ipc = (<any>window).require('electron').ipcRenderer
@@ -19,6 +21,8 @@ export class ApiService {
   }
 
   minPasswordLength = 5
+
+  electronWaitTime = 5000 // How many ms to wait for responses (only used in Electron mode, not when in a browser)
 
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -98,6 +102,9 @@ export class ApiService {
           reject(error)
         })
         this.ipc.send('configure', body)
+        setTimeout(() => {
+          reject(new AppError(AppErrorCodes.ELECTRON_TIME_OUT))
+        }, this.electronWaitTime)
       })
     } else return this.http.post(host + '/api/configure', body).toPromise() as Promise<null>
   }
@@ -113,6 +120,9 @@ export class ApiService {
           reject(error)
         })
         this.ipc.send('items', body)
+        setTimeout(() => {
+          reject(new AppError(AppErrorCodes.ELECTRON_TIME_OUT))
+        }, this.electronWaitTime)
       })
     } else return this.http.post(this.host + '/api/items', body).toPromise() as Promise<Item[]>
   }
@@ -128,6 +138,9 @@ export class ApiService {
           reject(error)
         })
         this.ipc.send('sales', body)
+        setTimeout(() => {
+          reject(new AppError(AppErrorCodes.ELECTRON_TIME_OUT))
+        }, this.electronWaitTime)
       })
     } else return this.http.post(this.host + '/api/sales', body).toPromise() as Promise<Sale[]>
   }
@@ -144,6 +157,9 @@ export class ApiService {
           reject(error)
         })
         this.ipc.send('addItem', body)
+        setTimeout(() => {
+          reject(new AppError(AppErrorCodes.ELECTRON_TIME_OUT))
+        }, this.electronWaitTime)
       })
     } else return this.http.post(this.host + '/api/addItem', body).toPromise() as Promise<null>
   }
@@ -159,6 +175,9 @@ export class ApiService {
           reject(error)
         })
         this.ipc.send('findItem', body)
+        setTimeout(() => {
+          reject(new AppError(AppErrorCodes.ELECTRON_TIME_OUT))
+        }, this.electronWaitTime)
       })
     } else return this.http.post(this.host + '/api/findItem', body).toPromise() as Promise<Item>
   }
@@ -175,6 +194,9 @@ export class ApiService {
           reject(error)
         })
         this.ipc.send('editItem', body)
+        setTimeout(() => {
+          reject(new AppError(AppErrorCodes.ELECTRON_TIME_OUT))
+        }, this.electronWaitTime)
       })
     } else return this.http.post(this.host + '/api/editItem', body).toPromise() as Promise<null>
   }
@@ -190,6 +212,9 @@ export class ApiService {
           reject(error)
         })
         this.ipc.send('deleteItem', body)
+        setTimeout(() => {
+          reject(new AppError(AppErrorCodes.ELECTRON_TIME_OUT))
+        }, this.electronWaitTime)
       })
     } else return this.http.post(this.host + '/api/deleteItem', body).toPromise() as Promise<null>
   }
@@ -205,6 +230,9 @@ export class ApiService {
           reject(error)
         })
         this.ipc.send('makeSale', body)
+        setTimeout(() => {
+          reject(new AppError(AppErrorCodes.ELECTRON_TIME_OUT))
+        }, this.electronWaitTime)
       })
     } else return this.http.post(this.host + '/api/makeSale', body).toPromise() as Promise<Sale>
   }
@@ -220,6 +248,9 @@ export class ApiService {
           reject(error)
         })
         this.ipc.send('changePassword', body)
+        setTimeout(() => {
+          reject(new AppError(AppErrorCodes.ELECTRON_TIME_OUT))
+        }, this.electronWaitTime)
       })
     } else return this.http.post(this.host + '/api/changePassword', body).toPromise() as Promise<null>
   }
@@ -235,6 +266,9 @@ export class ApiService {
           reject(error)
         })
         this.ipc.send('importData', body)
+        setTimeout(() => {
+          reject(new AppError(AppErrorCodes.ELECTRON_TIME_OUT))
+        }, this.electronWaitTime)
       })
     } else return this.http.post(this.host + '/api/importData', body).toPromise() as Promise<null>
   }
