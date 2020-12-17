@@ -69,7 +69,7 @@ export class AppComponent implements OnInit, OnDestroy {
       }
     }))
     this.themeService.loadTheme()
-    this.keyboardShortcutService.addShortcut({ keys: 'Alt./' }).subscribe(() => {
+    this.keyboardShortcutService.addShortcut({ keys: 'Alt./' }).subscribe((res) => {
       this.showShortcuts()
     })
     this.keyboardShortcutService.addShortcut({ keys: 'Alt.arrowleft' }).subscribe((res) => {
