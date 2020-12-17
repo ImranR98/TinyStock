@@ -26,7 +26,7 @@ export class AppComponent implements OnInit {
     return outlet && outlet.activatedRouteData && outlet.activatedRouteData['animation'];
   }
 
-  constructor(private apiService: ApiService, private router: Router, private matIconRegistry: MatIconRegistry, private domSanitizer: DomSanitizer, public overlayContainer: OverlayContainer, private themeService: ThemeService, private location: Location, private shortcuts: KeyboardShortcutsService) { }
+  constructor(private apiService: ApiService, private router: Router, private matIconRegistry: MatIconRegistry, private domSanitizer: DomSanitizer, public overlayContainer: OverlayContainer, private themeService: ThemeService) { }
 
   ngOnInit() {
     this.apiService.dataDirValue.subscribe(dataDir => {
@@ -55,12 +55,6 @@ export class AppComponent implements OnInit {
       }
     })
     this.themeService.loadTheme()
-    this.shortcuts.addShortcut({ keys: 'shift.arrowleft' }).subscribe((res) => {
-      this.back()
-    })
-    this.shortcuts.addShortcut({ keys: 'shift.arrowright' }).subscribe((res) => {
-      this.forward()
-    })
   }
 
   setTheme(theme) {
@@ -71,14 +65,6 @@ export class AppComponent implements OnInit {
     }
     overlayContainerClasses.add(theme)
     this.componentCssClass = theme
-  }
-
-  back() {
-    this.location.back()
-  }
-
-  forward() {
-    this.location.forward()
   }
 
 }

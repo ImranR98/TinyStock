@@ -1,4 +1,4 @@
-import { DOCUMENT } from '@angular/common'
+import { DOCUMENT, Location } from '@angular/common'
 import { Inject, Injectable } from '@angular/core'
 import { MatDialog, MatDialogRef } from '@angular/material/dialog'
 import { EventManager } from '@angular/platform-browser'
@@ -19,17 +19,23 @@ export class KeyboardShortcutsService {
   }
 
   shortcutsDisplay: Map<string, string> = new Map<string, string>([
-    ['Shift + ?', 'Show Keyboard Shortcuts'],
-    ['Shift + Left Arrow', 'Go Back'],
-    ['Shift + Right Arrow', 'Go Forward']
+    ['Control + /', 'Show Keyboard Shortcuts'],
+    ['Control + Left Arrow', 'Go Back'],
+    ['Control + Right Arrow', 'Go Forward']
   ])
 
   shortcutsDialog: MatDialogRef<KeyboardShortcutsComponent, any> | null = null
 
   constructor(private eventManager: EventManager, private dialog: MatDialog,
-    @Inject(DOCUMENT) private document: Document) {
+    @Inject(DOCUMENT) private document: Document, private location: Location) {
     this.addShortcut({ keys: 'shift.?' }).subscribe(() => {
       this.showShortcuts()
+    })
+    this.addShortcut({ keys: 'Shift.arrowleft' }).subscribe((res) => {
+      this.back()
+    })
+    this.addShortcut({ keys: 'Shift.arrowright' }).subscribe((res) => {
+      this.forward()
     })
   }
 
@@ -43,8 +49,8 @@ export class KeyboardShortcutsService {
         observer.next(e)
       }
 
-      const dispose = this.eventManager.addEventListener(
-        merged.element, event, handler
+      const dispose = this.eventManager.addGlobalEventListener(
+        'document', event, handler
       )
 
       return () => {
@@ -62,5 +68,13 @@ export class KeyboardShortcutsService {
       this.shortcutsDialog.close()
       this.shortcutsDialog = null
     }
+  }
+
+  back() {
+    this.location.back()
+  }
+
+  forward() {
+    this.location.forward()
   }
 }
