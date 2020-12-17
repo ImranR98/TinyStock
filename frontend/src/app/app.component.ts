@@ -9,6 +9,10 @@ import { fader } from './route-animations'
 import { themes, ThemeService } from './services/theme.service';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { Subscription } from 'rxjs';
+import { KeyboardShortcutsService } from './services/keyboard-shortcuts.service';
+import { Location } from '@angular/common';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { KeyboardShortcutsComponent } from './keyboard-shortcuts/keyboard-shortcuts.component'
 
 @Component({
   selector: 'app-root',
@@ -23,11 +27,20 @@ export class AppComponent implements OnInit, OnDestroy {
 
   @HostBinding('class') componentCssClass;
 
+  shortcutsDisplay: Map<string, string> = new Map<string, string>([
+    ['Alt + /', 'Show keyboard shortcuts'],
+    ['Alt + Left Arrow', 'Go back'],
+    ['Alt + Right Arrow', 'Go forward'],
+    ['Alt + T', 'Switch to next theme']
+  ])
+
+  shortcutsDialog: MatDialogRef<KeyboardShortcutsComponent, any> | null = null
+
   prepareRoute(outlet: RouterOutlet) {
     return outlet && outlet.activatedRouteData && outlet.activatedRouteData['animation'];
   }
 
-  constructor(private apiService: ApiService, private router: Router, private matIconRegistry: MatIconRegistry, private domSanitizer: DomSanitizer, public overlayContainer: OverlayContainer, private themeService: ThemeService) { }
+  constructor(private apiService: ApiService, private router: Router, private matIconRegistry: MatIconRegistry, private domSanitizer: DomSanitizer, public overlayContainer: OverlayContainer, private themeService: ThemeService, private keyboardShortcutService: KeyboardShortcutsService, private dialog: MatDialog, private location: Location) { }
 
   ngOnInit() {
     this.subscriptions.push(this.apiService.dataDirValue.subscribe(dataDir => {
@@ -56,6 +69,30 @@ export class AppComponent implements OnInit, OnDestroy {
       }
     }))
     this.themeService.loadTheme()
+    this.keyboardShortcutService.addShortcut({ keys: 'Alt./' }).subscribe(() => {
+      this.showShortcuts()
+    })
+    this.keyboardShortcutService.addShortcut({ keys: 'Alt.arrowleft' }).subscribe((res) => {
+      this.back()
+    })
+    this.keyboardShortcutService.addShortcut({ keys: 'Alt.arrowright' }).subscribe((res) => {
+      this.forward()
+    })
+    this.keyboardShortcutService.addShortcut({ keys: 'Alt.t' }).subscribe((res) => {
+      switch (this.themeService.themeSource.value) {
+        case themes.lightTheme:
+          this.themeService.updateTheme(themes.darkTheme)
+          break;
+        case themes.darkTheme:
+          this.themeService.updateTheme(themes.responsiveTheme)
+          break;
+        case themes.responsiveTheme:
+          this.themeService.updateTheme(themes.lightTheme)
+          break;
+        default:
+          break;
+      }
+    })
   }
 
   setTheme(theme) {
@@ -67,9 +104,28 @@ export class AppComponent implements OnInit, OnDestroy {
     overlayContainerClasses.add(theme)
     this.componentCssClass = theme
   }
-  
+
   ngOnDestroy() {
     this.subscriptions.forEach(sub => sub.unsubscribe())
+  }
+
+  showShortcuts() {
+    if (!this.shortcutsDialog) {
+      this.shortcutsDialog = this.dialog.open(KeyboardShortcutsComponent, {
+        data: this.shortcutsDisplay
+      })
+    } else {
+      this.shortcutsDialog.close()
+      this.shortcutsDialog = null
+    }
+  }
+
+  back() {
+    this.location.back()
+  }
+
+  forward() {
+    this.location.forward()
   }
 
 }
