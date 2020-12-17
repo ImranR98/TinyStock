@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { Sale } from 'tinystock-models';
@@ -18,11 +18,16 @@ export class SalesComponent implements OnInit {
 
   displayedSales = new BehaviorSubject(this.sales)
 
-  columnsToDisplay = ['date', 'items', 'adjustments'];
+  columnsToDisplay = ['date', 'items', 'adjustments']
+
+  @ViewChild('makeSale', { read: ElementRef }) makeSaleElement: ElementRef
 
   constructor(private apiService: ApiService, private errorService: ErrorService, private router: Router, private location: Location) { }
 
   ngOnInit(): void {
+    setTimeout(() => {
+      this.makeSaleElement.nativeElement.focus()
+    })
     this.loading = true
     this.apiService.sales().then(sales => {
       this.loading = false

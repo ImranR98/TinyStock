@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
@@ -13,6 +13,8 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./edit-item.component.scss']
 })
 export class EditItemComponent implements OnInit {
+
+  @ViewChild('quantity') quantityElement: ElementRef;
 
   constructor(private apiService: ApiService, private errorService: ErrorService, private route: ActivatedRoute, private router: Router, private location: Location) { }
 
@@ -30,6 +32,9 @@ export class EditItemComponent implements OnInit {
   });
 
   ngOnInit() {
+    setTimeout(() => {
+      this.quantityElement.nativeElement.focus()
+    })
     this.subscriptions.push(this.route.queryParams.subscribe(params => {
       if (!params.code) {
         this.errorService.showSimpleSnackBar('Code not specified')

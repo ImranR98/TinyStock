@@ -9,7 +9,7 @@
     <form [formGroup]="addItemForm" fxLayout="column" fxLayoutGap="1em">
         <div fxLayout="row" fxLayoutGap="1em" fxLayout.lt-sm="column">
             <mat-form-field fxFlex="fill">
-                <input matInput formControlName="code" placeholder="Item Code" type="text" required autofocus #codeInput>
+                <input matInput formControlName="code" placeholder="Item Code" type="text" required #code>
             </mat-form-field>
             <mat-form-field fxFlex="fill">
                 <input matInput formControlName="quantity" placeholder="Quantity" type="number" required>
@@ -30,7 +30,7 @@
         </mat-form-field>
         <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutAlign="center">
             <button mat-raised-button color="primary" [disabled]="!addItemForm.valid || submitting"
-                (click)="add(); codeInput.focus()">Add</button>
+                (click)="add(); code.focus()">Add</button>
         </div>
     </form>
 </div>

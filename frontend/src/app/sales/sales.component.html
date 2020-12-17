@@ -8,7 +8,7 @@
     <mat-divider></mat-divider>
     <div fxLayout="row" fxLayoutGap="1em" fxLayoutAlign="space-between center">
         <span>{{(displayedSales | async).length}} Sales</span>
-        <button mat-raised-button color="primary" routerLink="/makeSale">Make Sale</button>
+        <button mat-raised-button color="primary" routerLink="/makeSale" #makeSale>Make Sale</button>
     </div>
     <div class="autoOverflow" *ngIf="displayedSales.value.length > 0">
         <table mat-table [dataSource]="displayedSales" fxFill>

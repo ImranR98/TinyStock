@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { Item } from 'tinystock-models';
@@ -18,11 +18,16 @@ export class ItemsComponent implements OnInit {
 
   displayedItems = new BehaviorSubject(this.items)
 
-  columnsToDisplay = ['code', 'setQuantity', 'description', 'quantity', 'category', 'price', 'edit'];
+  columnsToDisplay = ['code', 'setQuantity', 'description', 'quantity', 'category', 'price', 'edit']
+
+  @ViewChild('addItem', { read: ElementRef }) addItemElement: ElementRef
 
   constructor(private apiService: ApiService, private errorService: ErrorService, private router: Router, private location: Location) { }
 
   ngOnInit(): void {
+    setTimeout(() => {
+      this.addItemElement.nativeElement.focus()
+    })
     this.loading = true
     this.apiService.items().then(items => {
       this.loading = false

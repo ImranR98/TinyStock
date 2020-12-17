@@ -1,0 +1,10 @@
+<table style="width: 100%;">
+    <tbody>
+        <tr *ngFor="let keys of hotkeys">
+            <td>{{ keys[1] }}</td>
+            <td style="text-align: right;">
+                <kbd>{{ keys[0] }}</kbd>
+            </td>
+        </tr>
+    </tbody>
+</table>

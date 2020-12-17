@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Location } from '@angular/common';
 import { ApiService } from '../services/api.service';
@@ -9,7 +9,9 @@ import { ErrorService } from '../services/error.service';
   templateUrl: './add-item.component.html',
   styleUrls: ['./add-item.component.scss']
 })
-export class AddItemComponent {
+export class AddItemComponent implements OnInit {
+
+  @ViewChild('code') codeElement: ElementRef
 
   constructor(private apiService: ApiService, private errorService: ErrorService, private location: Location) { }
 
@@ -23,6 +25,12 @@ export class AddItemComponent {
     category: new FormControl('', Validators.required),
     price: new FormControl('', Validators.required),
   });
+
+  ngOnInit() {
+    setTimeout(() => {
+      this.codeElement.nativeElement.focus()
+    })
+  }
 
   add() {
     if (this.addItemForm.valid) {
