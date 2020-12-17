@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { ApiService } from '../services/api.service';
 import { themes, ThemeService } from '../services/theme.service';
 
@@ -12,10 +13,12 @@ export class HomeComponent implements OnInit {
 
   theme: themes
 
+  subscriptions: Subscription[] = []
+
   ngOnInit() {
-    this.themeService.themeSource.subscribe(theme => {
+    this.subscriptions.push(this.themeService.themeSource.subscribe(theme => {
       this.theme = theme
-    })
+    }))
   }
 
   getTimePhrase = (now: Date = new Date()) => {
@@ -26,5 +29,9 @@ export class HomeComponent implements OnInit {
 
   switchTheme(theme: themes) {
     this.themeService.updateTheme(theme)
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe())
   }
 }

@@ -4,7 +4,7 @@ import { Location } from '@angular/common';
 import { ApiService } from '../services/api.service';
 import { ErrorService } from '../services/error.service';
 import { Adjustment, Item } from 'tinystock-models'
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-make-sale',
@@ -35,11 +35,13 @@ export class MakeSaleComponent implements OnInit {
 
   total: number = 0
 
+  subscriptions: Subscription[] = []
+  
   ngOnInit() {
-    this.saleItems.subscribe(saleItems => {
+    this.subscriptions.push(this.saleItems.subscribe(saleItems => {
       this.total = 0
       saleItems.forEach(saleItem => this.total += saleItem.price * saleItem.quantity)
-    })
+    }))
   }
 
   addItem() {
@@ -112,4 +114,7 @@ export class MakeSaleComponent implements OnInit {
     this.location.back()
   }
 
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe())
+  }
 }

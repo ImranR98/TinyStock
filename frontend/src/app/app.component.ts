@@ -1,4 +1,4 @@
-import { Component, HostBinding, OnInit } from '@angular/core';
+import { Component, HostBinding, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiService } from './services/api.service';
 import { MatIconRegistry } from '@angular/material/icon'
@@ -8,6 +8,7 @@ import { RouterOutlet } from '@angular/router';
 import { fader } from './route-animations'
 import { themes, ThemeService } from './services/theme.service';
 import { OverlayContainer } from '@angular/cdk/overlay';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -15,8 +16,10 @@ import { OverlayContainer } from '@angular/cdk/overlay';
   styleUrls: ['./app.component.scss'],
   animations: [fader]
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   title = 'TinyStock';
+
+  subscriptions: Subscription[] = []
 
   @HostBinding('class') componentCssClass;
 
@@ -27,17 +30,17 @@ export class AppComponent implements OnInit {
   constructor(private apiService: ApiService, private router: Router, private matIconRegistry: MatIconRegistry, private domSanitizer: DomSanitizer, public overlayContainer: OverlayContainer, private themeService: ThemeService) { }
 
   ngOnInit() {
-    this.apiService.dataDirValue.subscribe(dataDir => {
+    this.subscriptions.push(this.apiService.dataDirValue.subscribe(dataDir => {
       if (!dataDir) this.router.navigate(['configuration'])
-    })
-    this.apiService.passwordValue.subscribe(password => {
+    }))
+    this.subscriptions.push(this.apiService.passwordValue.subscribe(password => {
       if (!password) this.router.navigate(['configuration'])
-    })
+    }))
     this.matIconRegistry.addSvgIcon(
       "back",
       this.domSanitizer.bypassSecurityTrustResourceUrl("assets/back.svg")
     )
-    this.themeService.themeSource.subscribe((theme: themes) => {
+    this.subscriptions.push(this.themeService.themeSource.subscribe((theme: themes) => {
       switch (theme) {
         case themes.darkTheme:
           this.setTheme('darkTheme')
@@ -51,7 +54,7 @@ export class AppComponent implements OnInit {
         default:
           break;
       }
-    })
+    }))
     this.themeService.loadTheme()
   }
 
@@ -63,6 +66,10 @@ export class AppComponent implements OnInit {
     }
     overlayContainerClasses.add(theme)
     this.componentCssClass = theme
+  }
+  
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe())
   }
 
 }

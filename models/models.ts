@@ -17,6 +17,7 @@ export class Item {
 }
 
 export function instanceOfItem(object: any): object is Item {
+    if (typeof object != 'object') return false
     let hasProps = (
         'code' in object &&
         'description' in object &&
@@ -66,6 +67,7 @@ export class Adjustment { // In case an amount ever needs to be manually adjuste
 }
 
 export function instanceOfAdjustment(object: any): object is Adjustment {
+    if (typeof object != 'object') return false
     let hasProps = (
         'note' in object &&
         'amount' in object
@@ -97,6 +99,7 @@ export class Sale {
 }
 
 export function instanceOfSale(object: any): object is Sale {
+    if (typeof object != 'object') return false
     let hasProps = (
         'id' in object &&
         'date' in object &&
@@ -164,6 +167,7 @@ export class AppError {
 }
 
 export function instanceOfAppError(object: any): object is AppError {
+    if (typeof object != 'object') return false
     let hasProps = (
         'code' in object &&
         'data' in object
@@ -193,6 +197,7 @@ export class EncryptedData {
 }
 
 export function instanceOfEncryptedData(object: any): object is EncryptedData {
+    if (typeof object != 'object') return false
     let hasProps = (
         'iv' in object &&
         'content' in object &&
