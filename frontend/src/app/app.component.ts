@@ -8,6 +8,8 @@ import { RouterOutlet } from '@angular/router';
 import { fader } from './route-animations'
 import { themes, ThemeService } from './services/theme.service';
 import { OverlayContainer } from '@angular/cdk/overlay';
+import { KeyboardShortcutsService } from './services/keyboard-shortcuts.service';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-root',
@@ -24,7 +26,7 @@ export class AppComponent implements OnInit {
     return outlet && outlet.activatedRouteData && outlet.activatedRouteData['animation'];
   }
 
-  constructor(private apiService: ApiService, private router: Router, private matIconRegistry: MatIconRegistry, private domSanitizer: DomSanitizer, public overlayContainer: OverlayContainer, private themeService: ThemeService) { }
+  constructor(private apiService: ApiService, private router: Router, private matIconRegistry: MatIconRegistry, private domSanitizer: DomSanitizer, public overlayContainer: OverlayContainer, private themeService: ThemeService, private location: Location, private shortcuts: KeyboardShortcutsService) { }
 
   ngOnInit() {
     this.apiService.dataDirValue.subscribe(dataDir => {
@@ -53,6 +55,12 @@ export class AppComponent implements OnInit {
       }
     })
     this.themeService.loadTheme()
+    this.shortcuts.addShortcut({ keys: 'shift.arrowleft' }).subscribe((res) => {
+      this.back()
+    })
+    this.shortcuts.addShortcut({ keys: 'shift.arrowright' }).subscribe((res) => {
+      this.forward()
+    })
   }
 
   setTheme(theme) {
@@ -63,6 +71,14 @@ export class AppComponent implements OnInit {
     }
     overlayContainerClasses.add(theme)
     this.componentCssClass = theme
+  }
+
+  back() {
+    this.location.back()
+  }
+
+  forward() {
+    this.location.forward()
   }
 
 }

@@ -23,12 +23,14 @@ import { MatCardModule } from '@angular/material/card'
 import { MatCheckboxModule } from '@angular/material/checkbox'
 import { MatDividerModule } from '@angular/material/divider'
 import { MatTooltipModule } from '@angular/material/tooltip'
+import { MatDialogModule } from '@angular/material/dialog'
 
 import { ItemsComponent } from './items/items.component';
 import { AddItemComponent } from './add-item/add-item.component';
 import { EditItemComponent } from './edit-item/edit-item.component';
 import { MakeSaleComponent } from './make-sale/make-sale.component';
 import { SalesComponent } from './sales/sales.component';
+import { KeyboardShortcutsComponent } from './keyboard-shortcuts/keyboard-shortcuts.component';
 
 @NgModule({
   declarations: [
@@ -39,7 +41,8 @@ import { SalesComponent } from './sales/sales.component';
     AddItemComponent,
     EditItemComponent,
     MakeSaleComponent,
-    SalesComponent
+    SalesComponent,
+    KeyboardShortcutsComponent
   ],
   imports: [
     BrowserModule,
@@ -57,7 +60,8 @@ import { SalesComponent } from './sales/sales.component';
     MatCardModule,
     MatCheckboxModule,
     MatDividerModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatDialogModule
   ],
   providers: [],
   bootstrap: [AppComponent]

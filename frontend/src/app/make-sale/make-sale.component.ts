@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Location } from '@angular/common';
 import { ApiService } from '../services/api.service';
@@ -12,6 +12,8 @@ import { BehaviorSubject } from 'rxjs';
   styleUrls: ['./make-sale.component.scss']
 })
 export class MakeSaleComponent implements OnInit {
+
+  @ViewChild('codeInput') codeElement: ElementRef;
 
   constructor(private apiService: ApiService, private errorService: ErrorService, private location: Location) { }
 
@@ -36,6 +38,9 @@ export class MakeSaleComponent implements OnInit {
   total: number = 0
 
   ngOnInit() {
+    setTimeout(() => {
+      this.codeElement.nativeElement.focus()
+    })
     this.saleItems.subscribe(saleItems => {
       this.total = 0
       saleItems.forEach(saleItem => this.total += saleItem.price * saleItem.quantity)

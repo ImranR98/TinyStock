@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ApiService } from '../services/api.service';
 import { themes, ThemeService } from '../services/theme.service';
 
@@ -10,9 +10,14 @@ import { themes, ThemeService } from '../services/theme.service';
 export class HomeComponent implements OnInit {
   constructor(private themeService: ThemeService) { }
 
+  @ViewChild('makeSale', { read: ElementRef }) makeSaleElement: ElementRef
+
   theme: themes
 
   ngOnInit() {
+    setTimeout(() => {
+      this.makeSaleElement.nativeElement.focus()
+    })
     this.themeService.themeSource.subscribe(theme => {
       this.theme = theme
     })
