@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { ApiService } from '../services/api.service';
+import { Subscription } from 'rxjs';
 import { themes, ThemeService } from '../services/theme.service';
 
 @Component({
@@ -14,13 +14,15 @@ export class HomeComponent implements OnInit {
 
   theme: themes
 
+  subscriptions: Subscription[] = []
+
   ngOnInit() {
     setTimeout(() => {
       this.makeSaleElement.nativeElement.focus()
     })
-    this.themeService.themeSource.subscribe(theme => {
+    this.subscriptions.push(this.themeService.themeSource.subscribe(theme => {
       this.theme = theme
-    })
+    }))
   }
 
   getTimePhrase = (now: Date = new Date()) => {
@@ -31,5 +33,9 @@ export class HomeComponent implements OnInit {
 
   switchTheme(theme: themes) {
     this.themeService.updateTheme(theme)
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe())
   }
 }

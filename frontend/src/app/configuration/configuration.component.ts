@@ -1,16 +1,17 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { ApiService } from '../services/api.service';
 import { ErrorService } from '../services/error.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-configuration',
   templateUrl: './configuration.component.html',
   styleUrls: ['./configuration.component.scss']
 })
-export class ConfigurationComponent implements OnInit {
+export class ConfigurationComponent implements OnInit, OnDestroy {
 
   @ViewChild('password') passwordElement: ElementRef;
   @ViewChild('dataDir') dataDirElement: ElementRef;
@@ -43,17 +44,19 @@ export class ConfigurationComponent implements OnInit {
 
   directoryExists = false
 
+  subscriptions: Subscription[] = []
+
   ngOnInit() {
-    this.configForm.controls['dataDir'].valueChanges.subscribe((value: string) => {
+    this.subscriptions.push(this.configForm.controls['dataDir'].valueChanges.subscribe((value: string) => {
       this.needDataDir = (value.trim() == '')
-    })
-    this.configForm.controls['password'].valueChanges.subscribe((value: string) => {
+    }))
+    this.subscriptions.push(this.configForm.controls['password'].valueChanges.subscribe((value: string) => {
       this.needPassword = (value.length < this.apiService.minPasswordLength)
-    })
-    this.changePasswordForm.controls['newPassword'].valueChanges.subscribe((value: string) => {
+    }))
+    this.subscriptions.push(this.changePasswordForm.controls['newPassword'].valueChanges.subscribe((value: string) => {
       this.needNewPassword = (value.length < this.apiService.minPasswordLength)
-    })
-    this.apiService.dataDirValue.subscribe(dataDir => {
+    }))
+    this.subscriptions.push(this.apiService.dataDirValue.subscribe(dataDir => {
       this.configForm.controls['dataDir'].setValue(dataDir)
       setTimeout(() => {
         if (dataDir.trim().length == 0) {
@@ -65,16 +68,16 @@ export class ConfigurationComponent implements OnInit {
           this.directoryExists = true
         }
       })
-    })
-    this.apiService.passwordValue.subscribe(password => {
+    }))
+    this.subscriptions.push(this.apiService.passwordValue.subscribe(password => {
       this.configForm.controls['password'].setValue(password)
-    })
-    this.apiService.hostValue.subscribe(host => {
+    }))
+    this.subscriptions.push(this.apiService.hostValue.subscribe(host => {
       this.configForm.controls['host'].setValue(host)
-    })
-    this.apiService.rememberPasswordValue.subscribe(rememberPassword => {
+    }))
+    this.subscriptions.push(this.apiService.rememberPasswordValue.subscribe(rememberPassword => {
       this.configForm.controls['rememberPassword'].setValue(rememberPassword)
-    })
+    }))
   }
 
   save() {
@@ -194,6 +197,10 @@ export class ConfigurationComponent implements OnInit {
 
   getMinPasswordLength() {
     return this.apiService.minPasswordLength
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe())
   }
 
 }

@@ -5,6 +5,7 @@ import { Location } from '@angular/common';
 import { ApiService } from '../services/api.service';
 import { ErrorService } from '../services/error.service';
 import { Item } from 'tinystock-models';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-edit-item',
@@ -19,6 +20,8 @@ export class EditItemComponent implements OnInit {
 
   loading = false
 
+  subscriptions: Subscription[] = []
+
   editItemForm = new FormGroup({
     code: new FormControl({ value: '', disabled: true }, Validators.required),
     setQuantity: new FormControl({ value: null, disabled: true }),
@@ -32,7 +35,7 @@ export class EditItemComponent implements OnInit {
     setTimeout(() => {
       this.quantityElement.nativeElement.focus()
     })
-    this.route.queryParams.subscribe(params => {
+    this.subscriptions.push(this.route.queryParams.subscribe(params => {
       if (!params.code) {
         this.errorService.showSimpleSnackBar('Code not specified')
         this.location.back()
@@ -51,8 +54,7 @@ export class EditItemComponent implements OnInit {
         this.errorService.showError(err)
         this.location.back()
       })
-    }
-    );
+    }))
   }
 
   edit() {
@@ -89,6 +91,10 @@ export class EditItemComponent implements OnInit {
 
   back() {
     this.location.back()
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe())
   }
 
 }

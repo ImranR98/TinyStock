@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Subscription } from 'rxjs';
 import { instanceOfAppError, AppErrorCodes } from 'tinystock-models'
 import { ApiService } from './api.service';
 
@@ -10,6 +11,8 @@ import { ApiService } from './api.service';
 export class ErrorService {
 
   constructor(private snackBar: MatSnackBar, private apiService: ApiService) { }
+
+  subscriptions: Subscription[] = []
 
   showSimpleSnackBar(message: string) {
     this.snackBar.dismiss()
@@ -128,17 +131,17 @@ export class ErrorService {
       actionText = 'Retry'
     }
     if (duration) {
-      this.snackBar.open(error.message, actionText, { duration: duration }).onAction().subscribe(() => {
+      this.subscriptions.push(this.snackBar.open(error.message, actionText, { duration: duration }).onAction().subscribe(() => {
         if (callback) {
           callback()
         }
-      })
+      }))
     } else {
-      this.snackBar.open(error.message, actionText).onAction().subscribe(() => {
+      this.subscriptions.push(this.snackBar.open(error.message, actionText).onAction().subscribe(() => {
         if (callback) {
           callback()
         }
-      })
+      }))
     }
     if (error.fixedCallback) {
       error.fixedCallback()
@@ -147,5 +150,9 @@ export class ErrorService {
 
   clearError() {
     this.snackBar.dismiss()
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe())
   }
 }
