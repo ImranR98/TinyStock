@@ -5,6 +5,7 @@ import { BehaviorSubject } from 'rxjs';
 import { Transaction, TransactionTypes } from 'tinystock-models';
 import { ApiService } from '../services/api.service';
 import { ErrorService } from '../services/error.service';
+import { HelperService } from '../services/helper.service';
 
 @Component({
   selector: 'app-transactions',
@@ -18,23 +19,24 @@ export class TransactionsComponent implements OnInit {
 
   displayedTransactions = new BehaviorSubject(this.transactions)
 
-  columnsToDisplay = ['date', 'items', 'adjustments']
+  columnsToDisplay = ['date', 'items', 'adjustments', 'total']
 
   type: TransactionTypes = TransactionTypes.SALE;
+  noun: string = ''
+  verb: string = ''
 
-  @ViewChild('addTransaction', { read: ElementRef }) addTransactionElement: ElementRef
-
-  constructor(private apiService: ApiService, private errorService: ErrorService, private router: Router, private route: ActivatedRoute, private location: Location) { }
+  constructor(private apiService: ApiService, private errorService: ErrorService, private router: Router, private route: ActivatedRoute, private location: Location, private helper: HelperService) { }
 
   ngOnInit(): void {
     this.route.data.subscribe(data => {
       if (!(data.type in TransactionTypes)) {
         this.errorService.showSimpleSnackBar('Transaction type is not valid.')
         this.router.navigate(['/'])
-      } else this.type = data.type
-    })
-    setTimeout(() => {
-      this.addTransactionElement.nativeElement.focus()
+      } else {
+        this.type = data.type
+        this.noun = this.helper.getTransactionTypeNoun(this.type)
+        this.verb = this.helper.getTransactionTypeVerb(this.type)
+      }
     })
     this.loading = true
     this.apiService.transactions().then(transactions => {
@@ -49,15 +51,13 @@ export class TransactionsComponent implements OnInit {
     })
   }
 
-  getTransactionTypeString() {
-    switch (this.type) {
-      case TransactionTypes.SALE:
-        return 'Sale'
-        break;
-      case TransactionTypes.PURCHASE:
-        return 'Purchase'
-        break;
-    }
+  commafy(num: number) { return this.helper.commafy(num) }
+
+  getTransactionTotal(transaction: Transaction) {
+    let total = 0
+    transaction.items.forEach(item => total += item.price * item.quantity)
+    transaction.adjustments.forEach(adjustment => total += adjustment.amount)
+    return total
   }
 
   toDateString(dateString) {

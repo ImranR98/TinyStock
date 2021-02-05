@@ -12,7 +12,8 @@
                 <mat-hint>You can only change this by deleting and recreating the item</mat-hint>
             </mat-form-field>
             <mat-form-field fxFlex="fill">
-                <input matInput formControlName="quantity" placeholder="Quantity" type="number" required #quantity>
+                <input matInput formControlName="quantity" placeholder="Quantity" type="number" required>
+                <mat-hint>You can only change this by buying or selling the item</mat-hint>
             </mat-form-field>
         </div>
         <mat-form-field>
@@ -22,7 +23,7 @@
             <input matInput formControlName="category" placeholder="Category" type="text" required>
         </mat-form-field>
         <mat-form-field>
-            <input matInput formControlName="price" placeholder="Price" type="number" required>
+            <input matInput formControlName="price" placeholder="Price" type="number" required #price>
         </mat-form-field>
         <mat-form-field *ngIf="editItemForm.controls['setQuantity'].value">
             <input matInput formControlName="setQuantity" placeholder="Set Quantity" type="number">

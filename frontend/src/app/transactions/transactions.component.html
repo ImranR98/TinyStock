@@ -3,12 +3,12 @@
         <button mat-icon-button (click)="back()">
             <mat-icon svgIcon="back"></mat-icon>
         </button>
-        <span class="bigText">{{getTransactionTypeString()}}s</span>
+        <span class="bigText">{{noun}}s</span>
     </div>
     <mat-divider></mat-divider>
     <div fxLayout="row" fxLayoutGap="1em" fxLayoutAlign="space-between center">
-        <span>{{(displayedTransactions | async).length}} {{getTransactionTypeString()}}s</span>
-        <button mat-raised-button color="primary" routerLink="/addTransaction" #addTransaction>Make {{getTransactionTypeString()}}</button>
+        <span>{{commafy((displayedTransactions | async).length)}} {{noun}}s</span>
+        <button mat-raised-button color="primary" [routerLink]="'/' + verb.toLowerCase()" #addTransaction>{{verb}}</button>
     </div>
     <div class="autoOverflow" *ngIf="displayedTransactions.value.length > 0">
         <table mat-table [dataSource]="displayedTransactions" fxFill>
@@ -23,8 +23,9 @@
                 <td mat-cell *matCellDef="let transaction">
                     <div fxLayout="column" fxLayoutGap="1em" class="stdPadding">
                         <span *ngFor="let item of transaction.items"><b>{{item.description}}
-                                {{item.setQuantity ? '( set of ' + item.setQuantity + ')' : ''}}</b> - {{item.quantity}}
-                            units @ {{item.price}} each.</span>
+                                {{item.setQuantity ? '( set of ' + commafy(item.setQuantity) + ')' : ''}}</b> -
+                            {{commafy(item.quantity)}}
+                            units @ {{commafy(item.price)}} each.</span>
                     </div>
                 </td>
             </ng-container>
@@ -32,10 +33,15 @@
                 <th mat-header-cell *matHeaderCellDef> Adjustments </th>
                 <td mat-cell *matCellDef="let transaction">
                     <div fxLayout="column" fxLayoutGap="1em" class="stdPadding">
-                        <span *ngFor="let adjustment of transaction.adjustments"><b>{{adjustment.amount < 0 ? adjustment.amount : '+' + adjustment.amount}}</b> -
-                            {{adjustment.note}}</span>
+                        <span *ngFor="let adjustment of transaction.adjustments"><b>{{adjustment.amount < 0 ?
+                                    commafy(adjustment.amount) : '+' + commafy(adjustment.amount)}}</b> -
+                                    {{adjustment.note}}</span>
                     </div>
                 </td>
+            </ng-container>
+            <ng-container matColumnDef="total">
+                <th mat-header-cell *matHeaderCellDef> Total </th>
+                <td mat-cell *matCellDef="let transaction">{{commafy(getTransactionTotal(transaction))}}</td>
             </ng-container>
         </table>
     </div>

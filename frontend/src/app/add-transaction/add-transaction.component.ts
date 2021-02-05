@@ -6,6 +6,7 @@ import { ErrorService } from '../services/error.service';
 import { Adjustment, Item, TransactionTypes } from 'tinystock-models'
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
+import { HelperService } from '../services/helper.service';
 
 @Component({
   selector: 'app-add-transaction',
@@ -16,11 +17,12 @@ export class AddTransactionComponent implements OnInit {
 
   @ViewChild('codeInput') codeElement: ElementRef;
 
-  constructor(private apiService: ApiService, private errorService: ErrorService, private router: Router, private route: ActivatedRoute, private location: Location) { }
+  constructor(private apiService: ApiService, private errorService: ErrorService, private router: Router, private route: ActivatedRoute, private location: Location, private helper: HelperService) { }
 
   submitting = false
 
   type: TransactionTypes = TransactionTypes.SALE;
+  verb: string = ''
 
   transactionItems: BehaviorSubject<Item[]> = new BehaviorSubject<Item[]>([])
   adjustments: BehaviorSubject<Adjustment[]> = new BehaviorSubject<Adjustment[]>([])
@@ -47,7 +49,10 @@ export class AddTransactionComponent implements OnInit {
       if (!(data.type in TransactionTypes)) {
         this.errorService.showSimpleSnackBar('Transaction type is not valid.')
         this.router.navigate(['/'])
-      } else this.type = data.type
+      } else {
+        this.type = data.type
+        this.verb = this.helper.getTransactionTypeVerb(this.type)
+      }
     })
     setTimeout(() => {
       this.codeElement.nativeElement.focus()
@@ -58,17 +63,8 @@ export class AddTransactionComponent implements OnInit {
     }))
   }
 
-  getTransactionTypeString() {
-    switch (this.type) {
-      case TransactionTypes.SALE:
-        return 'Sell'
-        break;
-      case TransactionTypes.PURCHASE:
-        return 'Buy'
-        break;
-    }
-  }
-
+  commafy(num: number) { return this.helper.commafy(num) }
+  
   addItem() {
     if (this.itemForm.valid) {
       this.submitting = true

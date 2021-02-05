@@ -194,7 +194,7 @@ ipcMain?.on('makeTransaction', async (event, body) => {
 })
 expressApp.post('/api/makeTransaction', async (req, res) => {
   try {
-    res.send(await makeTransactionEvent(req.body.dataDir))
+    res.send(await makeTransactionEvent(req.body))
   } catch (err) {
     if (instanceOfAppError(err)) res.status(400).send(err)
     else res.status(500).send(err)

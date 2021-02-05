@@ -63,7 +63,7 @@ export async function makeTransactionEvent(body: any) {
     if (!instanceOfItem(body.transactionItems[i])) throw new AppError(AppErrorCodes.INVALID_ITEM)
   for (let i = 0; i < body.adjustments.length; i++)
     if (!instanceOfAdjustment(body.adjustments[i])) throw new AppError(AppErrorCodes.INVALID_ADJUSTMENT)
-  return addTransaction(body.dataDir, body.transactionItems, body.adjustments, body.password, body.type)
+  return addTransaction(body.dataDir, body.transactionItems, body.adjustments, body.type, body.password)
 }
 
 export async function changePasswordEvent(body: any) {
