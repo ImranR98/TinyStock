@@ -1,8 +1,8 @@
 // Contains functions used by events.ts
 // References functions from io.ts
 
-import { Adjustment, AppError, AppErrorCodes, Item, Sale } from 'tinystock-models'
-import { readItems, readSales, writeItems, writeSales, createOrCheckDataDirectory, changeEncryptionPassword, validatePassword } from './io'
+import { Adjustment, AppError, AppErrorCodes, Item, Transaction, TransactionTypes } from 'tinystock-models'
+import { readItems, readTransactions, writeItems, writeTransactions, createOrCheckDataDirectory, changeEncryptionPassword, validatePassword } from './io'
 
 export function configure(dataDir: string, password: string) {
     return createOrCheckDataDirectory(dataDir, password)
@@ -12,8 +12,8 @@ export function items(dataDir: string, password: string) {
     return readItems(dataDir, password)
 }
 
-export function sales(dataDir: string, password: string) {
-    return readSales(dataDir, password)
+export function transactions(dataDir: string, password: string) {
+    return readTransactions(dataDir, password)
 }
 
 export function findItem(dataDir: string, code: string, setQuantity: number | null, password: string) {
@@ -30,6 +30,7 @@ function findItemIndex(items: Item[], code: string, setQuantity: number | null) 
 }
 
 export function addItem(dataDir: string, newItem: Item, password: string) {
+    newItem.quantity = 0
     let items = readItems(dataDir, password)
     try {
         findItemIndex(items, newItem.code, newItem.setQuantity)
@@ -45,6 +46,7 @@ export function addItem(dataDir: string, newItem: Item, password: string) {
 export function editItem(dataDir: string, item: Item, password: string) {
     let items = readItems(dataDir, password)
     let itemIndex = findItemIndex(items, item.code, item.setQuantity)
+    item.quantity = items[itemIndex].quantity
     items[itemIndex] = item
     writeItems(dataDir, items, password)
 }
@@ -56,27 +58,29 @@ export function deleteItem(dataDir: string, code: string, setQuantity: number | 
     writeItems(dataDir, items, password)
 }
 
-export function makeSale(dataDir: string, saleItems: Item[], adjustments: Adjustment[], password: string) {
+export function addTransaction(dataDir: string, transactionItems: Item[], adjustments: Adjustment[], type: TransactionTypes, password: string) {
     let items = readItems(dataDir, password)
-    let sales = readSales(dataDir, password)
-    saleItems.forEach(saleItem => {
-        let itemIndex = findItemIndex(items, saleItem.code, saleItem.setQuantity)
-        if (items[itemIndex].quantity < saleItem.quantity) throw new AppError(AppErrorCodes.QUANTITY_TOO_LOW, { saleItem, item: items[itemIndex] })
-        items[itemIndex].quantity -= saleItem.quantity
+    let transactions = readTransactions(dataDir, password)
+    transactionItems.forEach(transactionItem => {
+        let itemIndex = findItemIndex(items, transactionItem.code, transactionItem.setQuantity)
+        if (type == TransactionTypes.SALE) {
+            if (items[itemIndex].quantity < transactionItem.quantity) throw new AppError(AppErrorCodes.QUANTITY_TOO_LOW, { transactionItem: transactionItem, item: items[itemIndex] })
+            items[itemIndex].quantity -= transactionItem.quantity
+        } else items[itemIndex].quantity += transactionItem.quantity
     })
-    let sale = new Sale(null, new Date(), saleItems, adjustments)
-    sales.push(sale)
+    let transaction = new Transaction(null, new Date(), transactionItems, adjustments, type)
+    transactions.push(transaction)
     writeItems(dataDir, items, password)
-    writeSales(dataDir, sales, password)
-    return sale
+    writeTransactions(dataDir, transactions, password)
+    return transaction
 }
 
 export function changePassword(dataDir: string, password: string, newPassword: string) {
     changeEncryptionPassword(dataDir, password, newPassword)
 }
 
-export function importData(dataDir: string, password: string, items: Item[], sales: Sale[]) {
+export function importData(dataDir: string, password: string, items: Item[], transactions: Transaction[]) {
     validatePassword(dataDir, password)
     writeItems(dataDir, items, password)
-    writeSales(dataDir, sales, password)
+    writeTransactions(dataDir, transactions, password)
 }

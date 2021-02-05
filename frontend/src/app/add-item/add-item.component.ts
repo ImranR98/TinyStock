@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Location } from '@angular/common';
 import { ApiService } from '../services/api.service';
 import { ErrorService } from '../services/error.service';
+import { HelperService } from '../services/helper.service';
 
 @Component({
   selector: 'app-add-item',
@@ -21,8 +22,8 @@ export class AddItemComponent implements OnInit {
     code: new FormControl('', Validators.required),
     setQuantity: new FormControl(''),
     description: new FormControl('', Validators.required),
-    quantity: new FormControl('', Validators.required),
     category: new FormControl('', Validators.required),
+    cost: new FormControl('', Validators.required),
     price: new FormControl('', Validators.required),
   });
 
@@ -34,9 +35,11 @@ export class AddItemComponent implements OnInit {
 
   add() {
     if (this.addItemForm.valid) {
-      if ((!this.addItemForm.controls['setQuantity'].value || this.addItemForm.controls['setQuantity'].value > 0) && this.addItemForm.controls['quantity'].value >= 0 && this.addItemForm.controls['price'].value >= 0) {
+      if ((!this.addItemForm.controls['setQuantity'].value || this.addItemForm.controls['setQuantity'].value > 0) && this.addItemForm.controls['price'].value >= 0 && this.addItemForm.controls['cost'].value >= 0) {
         this.submitting = true
-        this.apiService.addItem(this.addItemForm.value).then(() => {
+        let item = this.addItemForm.value
+        item.quantity = 0
+        this.apiService.addItem(item).then(() => {
           this.submitting = false
           this.addItemForm.reset()
           this.errorService.showSimpleSnackBar('Added')

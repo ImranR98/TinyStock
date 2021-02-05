@@ -5,6 +5,7 @@ import { Item } from 'tinystock-models';
 import { Location } from '@angular/common';
 import { ApiService } from '../services/api.service';
 import { ErrorService } from '../services/error.service';
+import { HelperService } from '../services/helper.service';
 
 @Component({
   selector: 'app-items',
@@ -18,11 +19,11 @@ export class ItemsComponent implements OnInit {
 
   displayedItems = new BehaviorSubject(this.items)
 
-  columnsToDisplay = ['code', 'setQuantity', 'description', 'quantity', 'category', 'price', 'edit']
+  columnsToDisplay = ['code', 'setQuantity', 'description', 'quantity', 'category', 'cost', 'price', 'edit']
 
   @ViewChild('addItem', { read: ElementRef }) addItemElement: ElementRef
 
-  constructor(private apiService: ApiService, private errorService: ErrorService, private router: Router, private location: Location) { }
+  constructor(private apiService: ApiService, private errorService: ErrorService, private router: Router, private location: Location, private helper: HelperService) { }
 
   ngOnInit(): void {
     setTimeout(() => {
@@ -40,6 +41,8 @@ export class ItemsComponent implements OnInit {
       this.displayedItems.next(this.items)
     })
   }
+
+  commafy(num: number) { return this.helper.commafy(num) }
 
   edit(code: string, setQuantity: number | null) {
     this.router.navigate(['/editItem'], { queryParams: { code, setQuantity } })

@@ -4,8 +4,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { ApiService } from '../services/api.service';
 import { ErrorService } from '../services/error.service';
-import { Item } from 'tinystock-models';
 import { Subscription } from 'rxjs';
+import { HelperService } from '../services/helper.service';
 
 @Component({
   selector: 'app-edit-item',
@@ -14,9 +14,9 @@ import { Subscription } from 'rxjs';
 })
 export class EditItemComponent implements OnInit {
 
-  @ViewChild('quantity') quantityElement: ElementRef;
+  @ViewChild('price') priceElement: ElementRef;
 
-  constructor(private apiService: ApiService, private errorService: ErrorService, private route: ActivatedRoute, private router: Router, private location: Location) { }
+  constructor(private apiService: ApiService, private errorService: ErrorService, private route: ActivatedRoute, private location: Location) { }
 
   loading = false
 
@@ -26,14 +26,15 @@ export class EditItemComponent implements OnInit {
     code: new FormControl({ value: '', disabled: true }, Validators.required),
     setQuantity: new FormControl({ value: null, disabled: true }),
     description: new FormControl({ value: '', disabled: this.loading }, Validators.required),
-    quantity: new FormControl({ value: '', disabled: this.loading }, Validators.required),
+    quantity: new FormControl({ value: '', disabled: true }, Validators.required),
     category: new FormControl({ value: '', disabled: this.loading }, Validators.required),
+    cost: new FormControl({ value: '', disabled: this.loading }, Validators.required),
     price: new FormControl({ value: '', disabled: this.loading }, Validators.required),
   });
 
   ngOnInit() {
     setTimeout(() => {
-      this.quantityElement.nativeElement.focus()
+      this.priceElement.nativeElement.focus()
     })
     this.subscriptions.push(this.route.queryParams.subscribe(params => {
       if (!params.code) {
@@ -47,6 +48,7 @@ export class EditItemComponent implements OnInit {
         this.editItemForm.controls['description'].setValue(item.description)
         this.editItemForm.controls['quantity'].setValue(item.quantity)
         this.editItemForm.controls['category'].setValue(item.category)
+        this.editItemForm.controls['cost'].setValue(item.cost)
         this.editItemForm.controls['price'].setValue(item.price)
         this.loading = false
       }).catch(err => {
@@ -59,10 +61,11 @@ export class EditItemComponent implements OnInit {
 
   edit() {
     if (this.editItemForm.valid && !this.loading) {
-      if ((!this.editItemForm.controls['setQuantity'].value || this.editItemForm.controls['setQuantity'].value > 0) && this.editItemForm.controls['quantity'].value >= 0 && this.editItemForm.controls['price'].value >= 0) {
+      if ((!this.editItemForm.controls['setQuantity'].value || this.editItemForm.controls['setQuantity'].value > 0) && this.editItemForm.controls['price'].value >= 0 && this.editItemForm.controls['cost'].value >= 0) {
         this.loading = true
         let item: any = this.editItemForm.value
         item.code = this.editItemForm.controls['code'].value
+        item.quantity = this.editItemForm.controls['quantity'].value
         item.setQuantity = this.editItemForm.controls['setQuantity'].value
         this.apiService.editItem(item).then(() => {
           this.loading = false

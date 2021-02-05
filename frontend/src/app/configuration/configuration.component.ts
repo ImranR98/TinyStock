@@ -34,8 +34,8 @@ export class ConfigurationComponent implements OnInit, OnDestroy {
   importForm = new FormGroup({
     itemsInput: new FormControl('', Validators.required),
     items: new FormControl('', Validators.required),
-    salesInput: new FormControl('', Validators.required),
-    sales: new FormControl('', Validators.required)
+    transactionsInput: new FormControl('', Validators.required),
+    transactions: new FormControl('', Validators.required)
   })
 
   needDataDir = true
@@ -122,11 +122,11 @@ export class ConfigurationComponent implements OnInit, OnDestroy {
     }
   }
 
-  onSalesFileChange(event) {
+  onTransactionsFileChange(event) {
     if (event.target.files.length > 0) {
       const file = event.target.files[0];
       this.importForm.patchValue({
-        sales: file
+        transactions: file
       });
     }
   }
@@ -161,9 +161,9 @@ export class ConfigurationComponent implements OnInit, OnDestroy {
   async export() {
     try {
       let items = await this.apiService.items()
-      let sales = await this.apiService.sales()
+      let transactions = await this.apiService.transactions()
       this.downloadJSONObject(items, 'items.json')
-      this.downloadJSONObject(sales, 'sales.json')
+      this.downloadJSONObject(transactions, 'transactions.json')
     } catch (err) {
       this.errorService.showError(err)
     }
@@ -172,15 +172,15 @@ export class ConfigurationComponent implements OnInit, OnDestroy {
   async importFiles() {
     if (this.importForm.valid && confirm('Import these data files? Any existing data will be irreversibly replaced.')) {
       let items = []
-      let sales = []
+      let transactions = []
       try {
         items = JSON.parse(await this.readFile(this.importForm.get('items').value))
-        sales = JSON.parse(await this.readFile(this.importForm.get('items').value))
+        transactions = JSON.parse(await this.readFile(this.importForm.get('items').value))
       } catch (err) {
         this.errorService.showError(err)
       }
       this.submitting = true
-      this.apiService.importData(items, sales).then(() => {
+      this.apiService.importData(items, transactions).then(() => {
         this.submitting = false
         this.errorService.showSimpleSnackBar('Data Imported')
         this.router.navigate(['/home'])

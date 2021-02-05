@@ -10,7 +10,7 @@ import { themes, ThemeService } from '../services/theme.service';
 export class HomeComponent implements OnInit {
   constructor(private themeService: ThemeService) { }
 
-  @ViewChild('makeSale', { read: ElementRef }) makeSaleElement: ElementRef
+  @ViewChild('sell', { read: ElementRef }) sellElement: ElementRef
 
   theme: themes
 
@@ -18,7 +18,7 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     setTimeout(() => {
-      this.makeSaleElement.nativeElement.focus()
+      this.sellElement.nativeElement.focus()
     })
     this.subscriptions.push(this.themeService.themeSource.subscribe(theme => {
       this.theme = theme

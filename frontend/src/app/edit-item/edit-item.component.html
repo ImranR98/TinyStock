@@ -12,7 +12,8 @@
                 <mat-hint>You can only change this by deleting and recreating the item</mat-hint>
             </mat-form-field>
             <mat-form-field fxFlex="fill">
-                <input matInput formControlName="quantity" placeholder="Quantity" type="number" required #quantity>
+                <input matInput formControlName="quantity" placeholder="Quantity" type="number" required>
+                <mat-hint>You can only change this by buying or selling the item</mat-hint>
             </mat-form-field>
         </div>
         <mat-form-field>
@@ -21,9 +22,14 @@
         <mat-form-field>
             <input matInput formControlName="category" placeholder="Category" type="text" required>
         </mat-form-field>
-        <mat-form-field>
-            <input matInput formControlName="price" placeholder="Price" type="number" required>
-        </mat-form-field>
+        <div fxLayout="row" fxLayoutGap="1em" fxLayout.lt-sm="column">
+            <mat-form-field fxFlex="fill">
+                <input matInput formControlName="cost" placeholder="Cost" type="number" required>
+            </mat-form-field>
+            <mat-form-field fxFlex="fill">
+                <input matInput formControlName="price" placeholder="Price" type="number" required #price>
+            </mat-form-field>
+        </div>
         <mat-form-field *ngIf="editItemForm.controls['setQuantity'].value">
             <input matInput formControlName="setQuantity" placeholder="Set Quantity" type="number">
             <mat-hint>You can only change this by deleting and recreating the item</mat-hint>
@@ -32,8 +38,7 @@
         <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutAlign="center" fxLayoutGap="1em">
             <button mat-raised-button color="primary" [disabled]="!editItemForm.valid || loading"
                 (click)="edit()">Save</button>
-            <button mat-raised-button color="warn" [disabled]="loading"
-                (click)="delete()">Delete</button>
+            <button mat-raised-button color="warn" [disabled]="loading" (click)="delete()">Delete</button>
         </div>
     </form>
 </div>

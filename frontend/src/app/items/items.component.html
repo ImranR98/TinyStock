@@ -7,7 +7,7 @@
     </div>
     <mat-divider></mat-divider>
     <div fxLayout="row" fxLayoutGap="1em" fxLayoutAlign="space-between center">
-        <span>{{(displayedItems | async).length}} Items</span>
+        <span>{{commafy((displayedItems | async).length)}} Items</span>
         <button mat-raised-button color="primary" routerLink="/addItem" #addItem>Add Item</button>
     </div>
     <div class="autoOverflow" *ngIf="displayedItems.value.length > 0">
@@ -24,19 +24,23 @@
             </ng-container>
             <ng-container matColumnDef="quantity">
                 <th mat-header-cell *matHeaderCellDef> Quantity </th>
-                <td mat-cell *matCellDef="let item"> {{item.quantity}} </td>
+                <td mat-cell *matCellDef="let item"> {{commafy(item.quantity)}} </td>
             </ng-container>
             <ng-container matColumnDef="setQuantity">
                 <th mat-header-cell *matHeaderCellDef> Set Quantity </th>
-                <td mat-cell *matCellDef="let item"> {{item.setQuantity ? item.setQuantity : 'N/A'}} </td>
+                <td mat-cell *matCellDef="let item"> {{item.setQuantity ? commafy(item.setQuantity) : 'Not a Set'}} </td>
             </ng-container>
             <ng-container matColumnDef="category">
                 <th mat-header-cell *matHeaderCellDef> Category </th>
                 <td mat-cell *matCellDef="let item"> {{item.category}} </td>
             </ng-container>
+            <ng-container matColumnDef="cost">
+                <th mat-header-cell *matHeaderCellDef> Cost </th>
+                <td mat-cell *matCellDef="let item"> {{commafy(item.cost)}} </td>
+            </ng-container>
             <ng-container matColumnDef="price">
                 <th mat-header-cell *matHeaderCellDef> Price </th>
-                <td mat-cell *matCellDef="let item"> {{item.price}} </td>
+                <td mat-cell *matCellDef="let item"> {{commafy(item.price)}} </td>
             </ng-container>
             <ng-container matColumnDef="edit">
                 <th mat-header-cell *matHeaderCellDef> </th>

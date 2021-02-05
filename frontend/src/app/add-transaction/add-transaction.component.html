@@ -3,11 +3,11 @@
         <button mat-icon-button (click)="back()">
             <mat-icon svgIcon="back"></mat-icon>
         </button>
-        <span class="bigText">Make Sale</span>
+        <span class="bigText">{{verb}}</span>
     </div>
     <mat-divider></mat-divider>
-    <div *ngIf="saleItems.value.length > 0" class="autoOverflow">
-        <table mat-table [dataSource]="saleItems" fxFill>
+    <div *ngIf="transactionItems.value.length > 0" class="autoOverflow">
+        <table mat-table [dataSource]="transactionItems" fxFill>
             <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
             <tr mat-row *matRowDef="let myRowData; columns: columnsToDisplay"></tr>
             <tr mat-footer-row *matFooterRowDef="columnsToDisplay"></tr>
@@ -23,12 +23,12 @@
             </ng-container>
             <ng-container matColumnDef="quantity">
                 <th mat-header-cell *matHeaderCellDef> Quantity </th>
-                <td mat-cell *matCellDef="let item"> {{item.quantity}} </td>
+                <td mat-cell *matCellDef="let item"> {{commafy(item.quantity)}} </td>
                 <td mat-footer-cell *matFooterCellDef></td>
             </ng-container>
             <ng-container matColumnDef="setQuantity">
                 <th mat-header-cell *matHeaderCellDef> Set Quantity </th>
-                <td mat-cell *matCellDef="let item"> {{item.setQuantity ? item.setQuantity : 'N/A'}} </td>
+                <td mat-cell *matCellDef="let item"> {{item.setQuantity ? commafy(item.setQuantity) : 'N/A'}} </td>
                 <td mat-footer-cell *matFooterCellDef></td>
             </ng-container>
             <ng-container matColumnDef="category">
@@ -37,14 +37,16 @@
                 <td mat-footer-cell *matFooterCellDef></td>
             </ng-container>
             <ng-container matColumnDef="itemprice">
-                <th mat-header-cell *matHeaderCellDef> Item Price </th>
-                <td mat-cell *matCellDef="let item"> {{item.price}} </td>
+                <th mat-header-cell *matHeaderCellDef> Item {{isPurchaseType() ? 'Cost' : 'Price'}} </th>
+                <td mat-cell *matCellDef="let item"> {{commafy(item.price)}} </td>
                 <td mat-footer-cell *matFooterCellDef></td>
             </ng-container>
             <ng-container matColumnDef="totalprice">
                 <th mat-header-cell *matHeaderCellDef> Total </th>
-                <td mat-cell *matCellDef="let item"> {{item.price * item.quantity}}</td>
-                <td mat-footer-cell *matFooterCellDef><b><i>{{adjustments.value.length == 0 ? '' : '* '}}</i>{{adjustments.value.length == 0 ? this.total : this.total + adjustments.value[0].amount}}</b></td>
+                <td mat-cell *matCellDef="let item"> {{commafy((isPurchaseType() ? item.cost : item.price) * item.quantity)}}</td>
+                <td mat-footer-cell *matFooterCellDef><b><i>{{adjustments.value.length == 0 ? '' : '*
+                            '}}</i>{{adjustments.value.length == 0 ? commafy(this.total) : commafy(this.total +
+                        adjustments.value[0].amount)}}</b></td>
             </ng-container>
             <ng-container matColumnDef="remove">
                 <th mat-header-cell *matHeaderCellDef> </th>
@@ -69,15 +71,17 @@
         <button mat-raised-button color="accent" [disabled]="!itemForm.valid || submitting"
             (click)="addItem(); codeInput.focus()">Add</button>
     </form>
-    <div *ngIf="adjustments.value.length > 0" fxLayout="row" fxLayout.lt-md="column" fxLayoutAlign="center center" fxLayoutGap="1em">
+    <div *ngIf="adjustments.value.length > 0" fxLayout="row" fxLayout.lt-md="column" fxLayoutAlign="center center"
+        fxLayoutGap="1em">
         <b><i>* Manual Adjustment: {{adjustments.value[0].amount}} ({{adjustments.value[0].note}})</i></b>
         <button mat-button color="warn" [disabled]="submitting" (click)="removeAdjustment();">Remove Adjustment</button>
     </div>
     <div fxLayout="row" fxLayout.lt-md="column" fxLayoutGap="1em">
         <button *ngIf="adjustments.value.length == 0" fxFlex="20%" mat-raised-button color="accent"
-            [disabled]="saleItems.value.length == 0 || submitting" (click)="adjust();">Manual
+            [disabled]="transactionItems.value.length == 0 || submitting" (click)="adjust();">Manual
             Adjustment</button>
-        <button fxFlex="100%" mat-raised-button color="primary" [disabled]="saleItems.value.length == 0 || submitting"
-            (click)="makeSale(); codeInput.focus()">Sell</button>
+        <button fxFlex="100%" mat-raised-button color="primary"
+            [disabled]="transactionItems.value.length == 0 || submitting"
+            (click)="addTransaction(); codeInput.focus()">{{verb}}</button>
     </div>
 </div>

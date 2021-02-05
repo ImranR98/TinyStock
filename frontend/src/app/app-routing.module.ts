@@ -5,8 +5,9 @@ import { ConfigurationComponent } from './configuration/configuration.component'
 import { EditItemComponent } from './edit-item/edit-item.component';
 import { HomeComponent } from './home/home.component';
 import { ItemsComponent } from './items/items.component';
-import { MakeSaleComponent } from './make-sale/make-sale.component';
-import { SalesComponent } from './sales/sales.component';
+import { AddTransactionComponent } from './add-transaction/add-transaction.component';
+import { TransactionsComponent } from './transactions/transactions.component';
+import { TransactionTypes } from 'tinystock-models';
 
 const routes: Routes = [
   {
@@ -40,14 +41,24 @@ const routes: Routes = [
     data: { animation: 'editItem' }
   },
   {
-    path: 'makeSale',
-    component: MakeSaleComponent,
-    data: { animation: 'makeSale' }
+    path: 'buy',
+    component: AddTransactionComponent,
+    data: { animation: 'buy', type: TransactionTypes.PURCHASE }
   },
   {
     path: 'sales',
-    component: SalesComponent,
-    data: { animation: 'sales' }
+    component: TransactionsComponent,
+    data: { animation: 'sales', type: TransactionTypes.SALE }
+  },
+  {
+    path: 'sell',
+    component: AddTransactionComponent,
+    data: { animation: 'sell', type: TransactionTypes.SALE }
+  },
+  {
+    path: 'purchases',
+    component: TransactionsComponent,
+    data: { animation: 'purchases', type: TransactionTypes.PURCHASE }
   },
   {
     path: '**',
