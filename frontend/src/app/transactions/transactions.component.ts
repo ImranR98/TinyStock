@@ -1,8 +1,8 @@
 import { Location } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
-import { Transaction } from 'tinystock-models';
+import { Transaction, TransactionTypes } from 'tinystock-models';
 import { ApiService } from '../services/api.service';
 import { ErrorService } from '../services/error.service';
 
@@ -20,25 +20,44 @@ export class TransactionsComponent implements OnInit {
 
   columnsToDisplay = ['date', 'items', 'adjustments']
 
-  @ViewChild('makeTransaction', { read: ElementRef }) makeTransactionElement: ElementRef
+  type: TransactionTypes = TransactionTypes.SALE;
 
-  constructor(private apiService: ApiService, private errorService: ErrorService, private router: Router, private location: Location) { }
+  @ViewChild('addTransaction', { read: ElementRef }) addTransactionElement: ElementRef
+
+  constructor(private apiService: ApiService, private errorService: ErrorService, private router: Router, private route: ActivatedRoute, private location: Location) { }
 
   ngOnInit(): void {
+    this.route.data.subscribe(data => {
+      if (!(data.type in TransactionTypes)) {
+        this.errorService.showSimpleSnackBar('Transaction type is not valid.')
+        this.router.navigate(['/'])
+      } else this.type = data.type
+    })
     setTimeout(() => {
-      this.makeTransactionElement.nativeElement.focus()
+      this.addTransactionElement.nativeElement.focus()
     })
     this.loading = true
     this.apiService.transactions().then(transactions => {
       this.loading = false
       this.transactions = transactions
-      this.displayedTransactions.next(this.transactions)
+      this.displayedTransactions.next(this.transactions.filter(transaction => transaction.type == this.type))
     }).catch(err => {
       this.loading = false
       this.transactions = []
       this.errorService.showError(err)
       this.displayedTransactions.next(this.transactions)
     })
+  }
+
+  getTransactionTypeString() {
+    switch (this.type) {
+      case TransactionTypes.SALE:
+        return 'Sale'
+        break;
+      case TransactionTypes.PURCHASE:
+        return 'Purchase'
+        break;
+    }
   }
 
   toDateString(dateString) {

@@ -3,7 +3,7 @@
         <button mat-icon-button (click)="back()">
             <mat-icon svgIcon="back"></mat-icon>
         </button>
-        <span class="bigText">Add Transaction</span>
+        <span class="bigText">{{getTransactionTypeString()}}</span>
     </div>
     <mat-divider></mat-divider>
     <div *ngIf="transactionItems.value.length > 0" class="autoOverflow">
@@ -78,6 +78,6 @@
             [disabled]="transactionItems.value.length == 0 || submitting" (click)="adjust();">Manual
             Adjustment</button>
         <button fxFlex="100%" mat-raised-button color="primary" [disabled]="transactionItems.value.length == 0 || submitting"
-            (click)="addTransaction(); codeInput.focus()">Sell</button>
+            (click)="addTransaction(); codeInput.focus()">{{getTransactionTypeString()}}</button>
     </div>
 </div>

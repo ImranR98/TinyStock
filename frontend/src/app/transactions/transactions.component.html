@@ -3,12 +3,12 @@
         <button mat-icon-button (click)="back()">
             <mat-icon svgIcon="back"></mat-icon>
         </button>
-        <span class="bigText">Transactions</span>
+        <span class="bigText">{{getTransactionTypeString()}}s</span>
     </div>
     <mat-divider></mat-divider>
     <div fxLayout="row" fxLayoutGap="1em" fxLayoutAlign="space-between center">
-        <span>{{(displayedTransactions | async).length}} Transactions</span>
-        <button mat-raised-button color="primary" routerLink="/addTransaction" #addTransaction>Make Transaction</button>
+        <span>{{(displayedTransactions | async).length}} {{getTransactionTypeString()}}s</span>
+        <button mat-raised-button color="primary" routerLink="/addTransaction" #addTransaction>Make {{getTransactionTypeString()}}</button>
     </div>
     <div class="autoOverflow" *ngIf="displayedTransactions.value.length > 0">
         <table mat-table [dataSource]="displayedTransactions" fxFill>

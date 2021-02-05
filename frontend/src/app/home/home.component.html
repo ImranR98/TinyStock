@@ -15,9 +15,11 @@
         <span class="bigText">Good {{getTimePhrase()}}!</span>
         <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap="1em">
             <button mat-raised-button color="accent" routerLink="/items">Items</button>
-            <button mat-raised-button color="accent" routerLink="/transactions">Transactions</button>
+            <button mat-raised-button color="accent" routerLink="/sales">Sales</button>
+            <button mat-raised-button color="accent" routerLink="/purchases">Purchases</button>
             <button mat-raised-button color="primary" routerLink="/addItem">Add Item</button>
-            <button mat-raised-button color="primary" routerLink="/addTransaction" #addTransaction>Add Transaction</button>
+            <button mat-raised-button color="primary" routerLink="/buy">Buy</button>
+            <button mat-raised-button color="primary" routerLink="/sell" #sell>Sell</button>
         </div>
         <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap="1em">
             <button mat-raised-button routerLink="/configuration">Configuration</button>

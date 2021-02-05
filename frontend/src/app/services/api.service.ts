@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { Adjustment, AppError, AppErrorCodes, Item, Transaction } from 'tinystock-models'
+import { Adjustment, AppError, AppErrorCodes, Item, Transaction, TransactionTypes } from 'tinystock-models'
 import { IpcRenderer } from 'electron'
 
 @Injectable({
@@ -220,8 +220,8 @@ export class ApiService {
     } else return this.http.post(this.host + '/api/deleteItem', body).toPromise() as Promise<null>
   }
 
-  makeTransaction(transactionItems: Item[], adjustments: Adjustment[]) {
-    const body = { dataDir: this.dataDir, password: this.password, transactionItems, adjustments }
+  makeTransaction(transactionItems: Item[], adjustments: Adjustment[], type: TransactionTypes) {
+    const body = { dataDir: this.dataDir, password: this.password, transactionItems, adjustments, type }
     if (this.ipc && this.host?.trim().length == 0) {
       return new Promise<Transaction>((resolve, reject) => {
         this.ipc.once('makeTransactionResponse', (event, response) => {

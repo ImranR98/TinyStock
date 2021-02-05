@@ -3,8 +3,9 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Location } from '@angular/common';
 import { ApiService } from '../services/api.service';
 import { ErrorService } from '../services/error.service';
-import { Adjustment, Item } from 'tinystock-models'
+import { Adjustment, Item, TransactionTypes } from 'tinystock-models'
 import { BehaviorSubject, Subscription } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-add-transaction',
@@ -15,9 +16,11 @@ export class AddTransactionComponent implements OnInit {
 
   @ViewChild('codeInput') codeElement: ElementRef;
 
-  constructor(private apiService: ApiService, private errorService: ErrorService, private location: Location) { }
+  constructor(private apiService: ApiService, private errorService: ErrorService, private router: Router, private route: ActivatedRoute, private location: Location) { }
 
   submitting = false
+
+  type: TransactionTypes = TransactionTypes.SALE;
 
   transactionItems: BehaviorSubject<Item[]> = new BehaviorSubject<Item[]>([])
   adjustments: BehaviorSubject<Adjustment[]> = new BehaviorSubject<Adjustment[]>([])
@@ -38,8 +41,14 @@ export class AddTransactionComponent implements OnInit {
   total: number = 0
 
   subscriptions: Subscription[] = []
-  
+
   ngOnInit() {
+    this.route.data.subscribe(data => {
+      if (!(data.type in TransactionTypes)) {
+        this.errorService.showSimpleSnackBar('Transaction type is not valid.')
+        this.router.navigate(['/'])
+      } else this.type = data.type
+    })
     setTimeout(() => {
       this.codeElement.nativeElement.focus()
     })
@@ -49,22 +58,34 @@ export class AddTransactionComponent implements OnInit {
     }))
   }
 
+  getTransactionTypeString() {
+    switch (this.type) {
+      case TransactionTypes.SALE:
+        return 'Sell'
+        break;
+      case TransactionTypes.PURCHASE:
+        return 'Buy'
+        break;
+    }
+  }
+
   addItem() {
     if (this.itemForm.valid) {
       this.submitting = true
       this.apiService.findItem(this.itemForm.controls['code'].value, this.itemForm.controls['setQuantity'].value).then(item => {
-        if (item.quantity < this.itemForm.controls['quantity'].value) {
-          this.errorService.showSimpleSnackBar(`Can\'t add ${this.itemForm.controls['quantity'].value} units as only ${item.quantity} left in stock`)
+        let existingQuantity = item.quantity
+        item.quantity = this.itemForm.controls['quantity'].value
+        let tempSI = this.transactionItems.value
+        let existingIndex = this.transactionItems.value.findIndex(item => item.code == this.itemForm.controls['code'].value && item.setQuantity == (this.itemForm.controls['setQuantity'].value ? this.itemForm.controls['setQuantity'].value : null))
+        if (existingIndex < 0) {
+          tempSI.push(item)
+          existingIndex = tempSI.length - 1
+        } else tempSI[existingIndex].quantity += item.quantity
+        if (this.type == TransactionTypes.SALE && existingQuantity < tempSI[existingIndex].quantity) {
+          this.errorService.showSimpleSnackBar(`Can\'t add ${this.itemForm.controls['quantity'].value} more units as only ${item.quantity} left in stock`)
         } else {
-          item.quantity = this.itemForm.controls['quantity'].value
-          if (!this.transactionItems.value.find(item => item.code == this.itemForm.controls['code'].value && item.setQuantity == (this.itemForm.controls['setQuantity'].value ? this.itemForm.controls['setQuantity'].value : null))) {
-            let tempSI = this.transactionItems.value
-            tempSI.push(item)
-            this.transactionItems.next(tempSI)
-            this.itemForm.reset()
-          } else {
-            this.errorService.showSimpleSnackBar('Item already in list')
-          }
+          this.transactionItems.next(tempSI)
+          this.itemForm.reset()
         }
         this.submitting = false
       }).catch(err => {
@@ -102,7 +123,7 @@ export class AddTransactionComponent implements OnInit {
   addTransaction() {
     if (confirm('Finalize this transaction?') && this.transactionItems.value.length > 0) {
       this.submitting = true
-      this.apiService.makeTransaction(this.transactionItems.value, this.adjustments.value).then(transaction => {
+      this.apiService.makeTransaction(this.transactionItems.value, this.adjustments.value, this.type).then(transaction => {
         this.submitting = false
         this.errorService.showSimpleSnackBar('Transaction saved')
         this.itemForm.reset()
