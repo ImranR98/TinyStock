@@ -59,11 +59,12 @@ export class AddTransactionComponent implements OnInit {
     })
     this.subscriptions.push(this.transactionItems.subscribe(transactionItems => {
       this.total = 0
-      transactionItems.forEach(transactionItem => this.total += transactionItem.price * transactionItem.quantity)
+      transactionItems.forEach(transactionItem => this.total += (this.isPurchaseType() ? transactionItem.cost : transactionItem.price) * transactionItem.quantity)
     }))
   }
 
   commafy(num: number) { return this.helper.commafy(num) }
+  isPurchaseType() { return this.helper.isPurchaseType(this.type) }
   
   addItem() {
     if (this.itemForm.valid) {

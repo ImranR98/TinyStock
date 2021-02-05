@@ -52,10 +52,11 @@ export class TransactionsComponent implements OnInit {
   }
 
   commafy(num: number) { return this.helper.commafy(num) }
+  isPurchaseType() { return this.helper.isPurchaseType(this.type) }
 
   getTransactionTotal(transaction: Transaction) {
     let total = 0
-    transaction.items.forEach(item => total += item.price * item.quantity)
+    transaction.items.forEach(item => total += (this.isPurchaseType() ? item.cost : item.price) * item.quantity)
     transaction.adjustments.forEach(adjustment => total += adjustment.amount)
     return total
   }

@@ -5,14 +5,16 @@ export class Item {
     quantity: number
     category: string
     price: number
+    cost: number
 
-    constructor(code: string, description: string, setQuantity: number | null, quantity: number, category: string, price: number) {
+    constructor(code: string, description: string, setQuantity: number | null, quantity: number, category: string, price: number, cost: number) {
         this.code = code.trim()
         this.description = description.trim()
         this.setQuantity = setQuantity
         this.quantity = quantity
         this.category = category.trim()
         this.price = price
+        this.cost = cost
     }
 }
 
@@ -24,7 +26,8 @@ export function instanceOfItem(object: any): object is Item {
         'setQuantity' in object &&
         'quantity' in object &&
         'category' in object &&
-        'price' in object
+        'price' in object &&
+        'cost' in object
     )
     if (!hasProps) return false
     let goodPropTypes = (
@@ -33,6 +36,7 @@ export function instanceOfItem(object: any): object is Item {
         typeof object.quantity == 'number' &&
         typeof object.category == 'string' &&
         typeof object.price == 'number' &&
+        typeof object.cost == 'number' &&
         (typeof object.setQuantity == 'number' || object.setQuantity == null)
     )
     if (!goodPropTypes) return false
@@ -42,6 +46,7 @@ export function instanceOfItem(object: any): object is Item {
         object.quantity >= 0 &&
         object.category.trim() != '' &&
         object.price >= 0 &&
+        object.cost >= 0 &&
         (object.setQuantity > 0 || object.setQuantity == null)
     )
     return validProps

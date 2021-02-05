@@ -30,6 +30,10 @@ export class HelperService {
     }
   }
 
+  isPurchaseType(type: TransactionTypes) {
+    return type == TransactionTypes.PURCHASE
+  }
+
   commafy(num: number) {
     let str = num.toString().split('.')
     if (str[0].length >= 4)

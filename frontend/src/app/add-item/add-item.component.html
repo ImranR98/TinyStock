@@ -7,23 +7,23 @@
     </div>
     <mat-divider></mat-divider>
     <form [formGroup]="addItemForm" fxLayout="column" fxLayoutGap="1em">
-        <div fxLayout="row" fxLayoutGap="1em" fxLayout.lt-sm="column">
-            <mat-form-field fxFlex="fill">
-                <input matInput formControlName="code" placeholder="Item Code" type="text" required #code>
-            </mat-form-field>
-            <mat-form-field fxFlex="fill">
-                <input matInput formControlName="quantity" placeholder="Quantity" type="number" required>
-            </mat-form-field>
-        </div>
+        <mat-form-field>
+            <input matInput formControlName="code" placeholder="Item Code" type="text" required #code>
+        </mat-form-field>
         <mat-form-field>
             <input matInput formControlName="description" placeholder="Description" type="text" required>
         </mat-form-field>
         <mat-form-field>
             <input matInput formControlName="category" placeholder="Category" type="text" required>
         </mat-form-field>
-        <mat-form-field>
-            <input matInput formControlName="price" placeholder="Price" type="number" required>
-        </mat-form-field>
+        <div fxLayout="row" fxLayoutGap="1em" fxLayout.lt-sm="column">
+            <mat-form-field fxFlex="fill">
+                <input matInput formControlName="cost" placeholder="Cost" type="number" required>
+            </mat-form-field>
+            <mat-form-field fxFlex="fill">
+                <input matInput formControlName="price" placeholder="Price" type="number" required>
+            </mat-form-field>
+        </div>
         <mat-form-field>
             <input matInput formControlName="setQuantity" placeholder="Set Quantity" type="number">
             <mat-hint>Leave this empty if the item is not a set</mat-hint>

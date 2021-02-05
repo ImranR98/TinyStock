@@ -25,7 +25,7 @@
                         <span *ngFor="let item of transaction.items"><b>{{item.description}}
                                 {{item.setQuantity ? '( set of ' + commafy(item.setQuantity) + ')' : ''}}</b> -
                             {{commafy(item.quantity)}}
-                            units @ {{commafy(item.price)}} each.</span>
+                            units @ {{commafy(isPurchaseType() ? item.cost : item.price)}} each.</span>
                     </div>
                 </td>
             </ng-container>
