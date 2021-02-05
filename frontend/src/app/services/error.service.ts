@@ -35,20 +35,20 @@ export class ErrorService {
       case AppErrorCodes.CORRUPT_ITEMS_JSON:
         return 'The items data is not valid JSON'
         break;
-      case AppErrorCodes.CORRUPT_SALES_JSON:
-        return 'The sales data is not valid JSON'
+      case AppErrorCodes.CORRUPT_TRANSACTIONS_JSON:
+        return 'The transactions data is not valid JSON'
         break;
       case AppErrorCodes.MISSING_ITEMS_ARRAY:
         return 'The items file does not contain an array'
         break;
-      case AppErrorCodes.MISSING_SALES_ARRAY:
-        return 'The sales file does not contain an array'
+      case AppErrorCodes.MISSING_TRANSACTIONS_ARRAY:
+        return 'The transactions file does not contain an array'
         break;
       case AppErrorCodes.CORRUPT_ITEM_IN_JSON:
         return 'An item in the items file is invalid'
         break;
-      case AppErrorCodes.CORRUPT_SALE_IN_JSON:
-        return 'A sale in the sales file is invalid'
+      case AppErrorCodes.CORRUPT_TRANSACTION_IN_JSON:
+        return 'A transaction in the transactions file is invalid'
         break;
       case AppErrorCodes.ITEM_NOT_FOUND:
         return 'The item does not exist'
@@ -65,8 +65,8 @@ export class ErrorService {
       case AppErrorCodes.INVALID_ADJUSTMENT:
         return 'The adjustment is invalid'
         break;
-      case AppErrorCodes.INVALID_SALE:
-        return 'This sale is invalid'
+      case AppErrorCodes.INVALID_TRANSACTION:
+        return 'This transaction is invalid'
         break;
       case AppErrorCodes.INVALID_ENCRYPTED_JSON:
         return 'The encrypted file is valid JSON but not in the correct format'

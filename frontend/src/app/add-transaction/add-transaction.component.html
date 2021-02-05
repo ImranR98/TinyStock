@@ -3,11 +3,11 @@
         <button mat-icon-button (click)="back()">
             <mat-icon svgIcon="back"></mat-icon>
         </button>
-        <span class="bigText">Make Sale</span>
+        <span class="bigText">Add Transaction</span>
     </div>
     <mat-divider></mat-divider>
-    <div *ngIf="saleItems.value.length > 0" class="autoOverflow">
-        <table mat-table [dataSource]="saleItems" fxFill>
+    <div *ngIf="transactionItems.value.length > 0" class="autoOverflow">
+        <table mat-table [dataSource]="transactionItems" fxFill>
             <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
             <tr mat-row *matRowDef="let myRowData; columns: columnsToDisplay"></tr>
             <tr mat-footer-row *matFooterRowDef="columnsToDisplay"></tr>
@@ -75,9 +75,9 @@
     </div>
     <div fxLayout="row" fxLayout.lt-md="column" fxLayoutGap="1em">
         <button *ngIf="adjustments.value.length == 0" fxFlex="20%" mat-raised-button color="accent"
-            [disabled]="saleItems.value.length == 0 || submitting" (click)="adjust();">Manual
+            [disabled]="transactionItems.value.length == 0 || submitting" (click)="adjust();">Manual
             Adjustment</button>
-        <button fxFlex="100%" mat-raised-button color="primary" [disabled]="saleItems.value.length == 0 || submitting"
-            (click)="makeSale(); codeInput.focus()">Sell</button>
+        <button fxFlex="100%" mat-raised-button color="primary" [disabled]="transactionItems.value.length == 0 || submitting"
+            (click)="addTransaction(); codeInput.focus()">Sell</button>
     </div>
 </div>

@@ -2,42 +2,42 @@ import { Location } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
-import { Sale } from 'tinystock-models';
+import { Transaction } from 'tinystock-models';
 import { ApiService } from '../services/api.service';
 import { ErrorService } from '../services/error.service';
 
 @Component({
-  selector: 'app-sales',
-  templateUrl: './sales.component.html',
-  styleUrls: ['./sales.component.scss']
+  selector: 'app-transactions',
+  templateUrl: './transactions.component.html',
+  styleUrls: ['./transactions.component.scss']
 })
-export class SalesComponent implements OnInit {
+export class TransactionsComponent implements OnInit {
 
-  sales: Sale[] = []
+  transactions: Transaction[] = []
   loading = false
 
-  displayedSales = new BehaviorSubject(this.sales)
+  displayedTransactions = new BehaviorSubject(this.transactions)
 
   columnsToDisplay = ['date', 'items', 'adjustments']
 
-  @ViewChild('makeSale', { read: ElementRef }) makeSaleElement: ElementRef
+  @ViewChild('makeTransaction', { read: ElementRef }) makeTransactionElement: ElementRef
 
   constructor(private apiService: ApiService, private errorService: ErrorService, private router: Router, private location: Location) { }
 
   ngOnInit(): void {
     setTimeout(() => {
-      this.makeSaleElement.nativeElement.focus()
+      this.makeTransactionElement.nativeElement.focus()
     })
     this.loading = true
-    this.apiService.sales().then(sales => {
+    this.apiService.transactions().then(transactions => {
       this.loading = false
-      this.sales = sales
-      this.displayedSales.next(this.sales)
+      this.transactions = transactions
+      this.displayedTransactions.next(this.transactions)
     }).catch(err => {
       this.loading = false
-      this.sales = []
+      this.transactions = []
       this.errorService.showError(err)
-      this.displayedSales.next(this.sales)
+      this.displayedTransactions.next(this.transactions)
     })
   }
 

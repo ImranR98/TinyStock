@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { Adjustment, AppError, AppErrorCodes, Item, Sale } from 'tinystock-models'
+import { Adjustment, AppError, AppErrorCodes, Item, Transaction } from 'tinystock-models'
 import { IpcRenderer } from 'electron'
 
 @Injectable({
@@ -128,22 +128,22 @@ export class ApiService {
     } else return this.http.post(this.host + '/api/items', body).toPromise() as Promise<Item[]>
   }
 
-  sales() {
+  transactions() {
     const body = { dataDir: this.dataDir, password: this.password }
     if (this.ipc && this.host?.trim().length == 0) {
-      return new Promise<Sale[]>((resolve, reject) => {
-        this.ipc.once('salesResponse', (event, response) => {
+      return new Promise<Transaction[]>((resolve, reject) => {
+        this.ipc.once('transactionsResponse', (event, response) => {
           resolve(response)
         })
-        this.ipc.once('salesError', (event, error) => {
+        this.ipc.once('transactionsError', (event, error) => {
           reject(error)
         })
-        this.ipc.send('sales', body)
+        this.ipc.send('transactions', body)
         setTimeout(() => {
           reject(new AppError(AppErrorCodes.ELECTRON_TIME_OUT))
         }, this.electronWaitTime)
       })
-    } else return this.http.post(this.host + '/api/sales', body).toPromise() as Promise<Sale[]>
+    } else return this.http.post(this.host + '/api/transactions', body).toPromise() as Promise<Transaction[]>
   }
 
   addItem(item: Item) {
@@ -220,22 +220,22 @@ export class ApiService {
     } else return this.http.post(this.host + '/api/deleteItem', body).toPromise() as Promise<null>
   }
 
-  makeSale(saleItems: Item[], adjustments: Adjustment[]) {
-    const body = { dataDir: this.dataDir, password: this.password, saleItems, adjustments }
+  makeTransaction(transactionItems: Item[], adjustments: Adjustment[]) {
+    const body = { dataDir: this.dataDir, password: this.password, transactionItems, adjustments }
     if (this.ipc && this.host?.trim().length == 0) {
-      return new Promise<Sale>((resolve, reject) => {
-        this.ipc.once('makeSaleResponse', (event, response) => {
+      return new Promise<Transaction>((resolve, reject) => {
+        this.ipc.once('makeTransactionResponse', (event, response) => {
           resolve(response)
         })
-        this.ipc.once('makeSaleError', (event, error) => {
+        this.ipc.once('makeTransactionError', (event, error) => {
           reject(error)
         })
-        this.ipc.send('makeSale', body)
+        this.ipc.send('makeTransaction', body)
         setTimeout(() => {
           reject(new AppError(AppErrorCodes.ELECTRON_TIME_OUT))
         }, this.electronWaitTime)
       })
-    } else return this.http.post(this.host + '/api/makeSale', body).toPromise() as Promise<Sale>
+    } else return this.http.post(this.host + '/api/makeTransaction', body).toPromise() as Promise<Transaction>
   }
 
   changePassword(password: string, newPassword: string) {
@@ -256,8 +256,8 @@ export class ApiService {
     } else return this.http.post(this.host + '/api/changePassword', body).toPromise() as Promise<null>
   }
 
-  importData(items: Item[], sales: Sale[]) {
-    const body = { dataDir: this.dataDir, password: this.password, items, sales }
+  importData(items: Item[], transactions: Transaction[]) {
+    const body = { dataDir: this.dataDir, password: this.password, items, transactions }
     if (this.ipc && this.host?.trim().length == 0) {
       return new Promise<null>((resolve, reject) => {
         this.ipc.once('importDataResponse', (event, response) => {

@@ -56,7 +56,7 @@ export function instanceOfItems(object: any): object is Item[] {
     return itemsValid
 }
 
-export class Adjustment { // In case an amount ever needs to be manually adjusted at time of sale
+export class Adjustment { // In case an amount ever needs to be manually adjusted at time of transaction
     note: string
     amount: number
 
@@ -84,27 +84,35 @@ export function instanceOfAdjustment(object: any): object is Adjustment {
     return validProps
 }
 
-export class Sale {
+export enum TransactionTypes {
+    SALE,
+    PURCHASE
+}
+
+export class Transaction {
     id: string
     date: Date
     items: Item[]
     adjustments: Adjustment[]
+    type: TransactionTypes
 
-    constructor(id: string | null, date: Date, items: Item[], adjustments: Adjustment[]) {
+    constructor(id: string | null, date: Date, items: Item[], adjustments: Adjustment[], type: TransactionTypes) {
         this.id = id ? id.trim() : Math.round(Math.random() * 10000000000000000).toString(),
             this.date = date,
             this.items = items,
-            this.adjustments = adjustments
+            this.adjustments = adjustments,
+            this.type = type
     }
 }
 
-export function instanceOfSale(object: any): object is Sale {
+export function instanceOfTransaction(object: any): object is Transaction {
     if (typeof object != 'object') return false
     let hasProps = (
         'id' in object &&
         'date' in object &&
         'items' in object &&
-        'adjustments' in object
+        'adjustments' in object &&
+        'type' in object
     )
     if (!hasProps) return false
     let goodPropTypes = typeof object.id == 'string'
@@ -122,16 +130,17 @@ export function instanceOfSale(object: any): object is Sale {
     for (let i = 0; i < object.adjustments.length && goodPropTypes; i++) {
         if (!instanceOfAdjustment(object.adjustments[i])) goodPropTypes = false
     }
+    if (goodPropTypes && !(object.type in TransactionTypes)) goodPropTypes = false
     return goodPropTypes
 }
 
-export function instanceOfSales(object: any): object is Sale[] {
+export function instanceOfTransactions(object: any): object is Transaction[] {
     if (!Array.isArray(object)) return false
-    let salesValid = true
-    for (let i = 0; i < object.length && salesValid; i++) {
-        if (!instanceOfSale(object[i])) salesValid = false
+    let transactionsValid = true
+    for (let i = 0; i < object.length && transactionsValid; i++) {
+        if (!instanceOfTransaction(object[i])) transactionsValid = false
     }
-    return salesValid
+    return transactionsValid
 }
 
 export enum AppErrorCodes {
@@ -139,17 +148,17 @@ export enum AppErrorCodes {
     CORRUPT_ENCRYPTED_JSON,
     WRONG_DECRYPTION_PASSWORD,
     CORRUPT_ITEMS_JSON,
-    CORRUPT_SALES_JSON,
+    CORRUPT_TRANSACTIONS_JSON,
     MISSING_ITEMS_ARRAY,
-    MISSING_SALES_ARRAY,
+    MISSING_TRANSACTIONS_ARRAY,
     CORRUPT_ITEM_IN_JSON,
-    CORRUPT_SALE_IN_JSON,
+    CORRUPT_TRANSACTION_IN_JSON,
     ITEM_NOT_FOUND,
     QUANTITY_TOO_LOW,
     ITEM_EXISTS,
     INVALID_ITEM,
     INVALID_ADJUSTMENT,
-    INVALID_SALE,
+    INVALID_TRANSACTION,
     INVALID_ENCRYPTED_JSON,
     MISSING_ARGUMENT,
     INVALID_ARGUMENT,

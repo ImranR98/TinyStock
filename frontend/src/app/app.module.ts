@@ -28,8 +28,8 @@ import { MatDialogModule } from '@angular/material/dialog'
 import { ItemsComponent } from './items/items.component';
 import { AddItemComponent } from './add-item/add-item.component';
 import { EditItemComponent } from './edit-item/edit-item.component';
-import { MakeSaleComponent } from './make-sale/make-sale.component';
-import { SalesComponent } from './sales/sales.component';
+import { AddTransactionComponent } from './add-transaction/add-transaction.component';
+import { TransactionsComponent } from './transactions/transactions.component';
 import { KeyboardShortcutsComponent } from './keyboard-shortcuts/keyboard-shortcuts.component';
 
 @NgModule({
@@ -40,8 +40,8 @@ import { KeyboardShortcutsComponent } from './keyboard-shortcuts/keyboard-shortc
     ItemsComponent,
     AddItemComponent,
     EditItemComponent,
-    MakeSaleComponent,
-    SalesComponent,
+    AddTransactionComponent,
+    TransactionsComponent,
     KeyboardShortcutsComponent
   ],
   imports: [

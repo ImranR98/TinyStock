@@ -4,7 +4,7 @@
 import fs from 'fs'
 import path from 'path'
 
-import { Item, Sale, AppErrorCodes, AppError, instanceOfEncryptedData, EncryptedData, instanceOfItems, instanceOfSales } from 'tinystock-models'
+import { Item, Transaction, AppErrorCodes, AppError, instanceOfEncryptedData, EncryptedData, instanceOfItems, instanceOfTransactions } from 'tinystock-models'
 
 import { encrypt, decrypt, hashPassword } from './crypto'
 
@@ -40,7 +40,7 @@ export function createOrCheckDataDirectory(dataDir: string, password: string) {
     else {
         writeEncryptedFile(path.join(dataDir, '/' + markerFileName), markerFileContent, password)
         writeEncryptedFile(path.join(dataDir, '/items.json'), '[]', password)
-        writeEncryptedFile(path.join(dataDir, '/sales.json'), '[]', password)
+        writeEncryptedFile(path.join(dataDir, '/transactions.json'), '[]', password)
     }
 }
 
@@ -68,22 +68,22 @@ export function readItems(dataDir: string, password: string): Item[] {
     return items
 }
 
-export function readSales(dataDir: string, password: string): Sale[] {
+export function readTransactions(dataDir: string, password: string): Transaction[] {
     createOrCheckDataDirectory(dataDir, password)
 
-    let salesJSON: any
+    let transactionsJSON: any
 
     try {
-        salesJSON = JSON.parse(readEncryptedFile(path.join(dataDir, '/sales.json'), password))
+        transactionsJSON = JSON.parse(readEncryptedFile(path.join(dataDir, '/transactions.json'), password))
     } catch (err) {
-        throw new AppError(AppErrorCodes.CORRUPT_SALES_JSON)
+        throw new AppError(AppErrorCodes.CORRUPT_TRANSACTIONS_JSON)
     }
 
-    if (!instanceOfSales(salesJSON)) throw new AppError(AppErrorCodes.CORRUPT_ITEM_IN_JSON)
+    if (!instanceOfTransactions(transactionsJSON)) throw new AppError(AppErrorCodes.CORRUPT_ITEM_IN_JSON)
 
-    let sales: Sale[] = salesJSON
+    let transactions: Transaction[] = transactionsJSON
 
-    return sales
+    return transactions
 }
 
 export function writeItems(dataDir: string, items: Item[], password: string) {
@@ -91,17 +91,17 @@ export function writeItems(dataDir: string, items: Item[], password: string) {
     writeEncryptedFile(path.join(dataDir, '/items.json'), JSON.stringify(items, null, '\t'), password)
 }
 
-export function writeSales(dataDir: string, sales: Sale[], password: string) {
+export function writeTransactions(dataDir: string, transactions: Transaction[], password: string) {
     createOrCheckDataDirectory(dataDir, password)
-    writeEncryptedFile(path.join(dataDir, '/sales.json'), JSON.stringify(sales, null, '\t'), password)
+    writeEncryptedFile(path.join(dataDir, '/transactions.json'), JSON.stringify(transactions, null, '\t'), password)
 }
 
 export function changeEncryptionPassword(dataDir: string, password: string, newPassword: string) {
     const items = readItems(dataDir, password)
-    const sales = readSales(dataDir, password)
+    const transactions = readTransactions(dataDir, password)
     const marker = readEncryptedFile(path.join(dataDir, '/' + markerFileName), password)
     if (marker != markerFileContent) throw new AppError(AppErrorCodes.WRONG_DECRYPTION_PASSWORD)
     writeEncryptedFile(path.join(dataDir, '/' + markerFileName), markerFileContent, newPassword)
     writeItems(dataDir, items, newPassword)
-    writeSales(dataDir, sales, newPassword)
+    writeTransactions(dataDir, transactions, newPassword)
 }

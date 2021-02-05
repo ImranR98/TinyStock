@@ -7,11 +7,11 @@ import { Adjustment, Item } from 'tinystock-models'
 import { BehaviorSubject, Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-make-sale',
-  templateUrl: './make-sale.component.html',
-  styleUrls: ['./make-sale.component.scss']
+  selector: 'app-add-transaction',
+  templateUrl: './add-transaction.component.html',
+  styleUrls: ['./add-transaction.component.scss']
 })
-export class MakeSaleComponent implements OnInit {
+export class AddTransactionComponent implements OnInit {
 
   @ViewChild('codeInput') codeElement: ElementRef;
 
@@ -19,7 +19,7 @@ export class MakeSaleComponent implements OnInit {
 
   submitting = false
 
-  saleItems: BehaviorSubject<Item[]> = new BehaviorSubject<Item[]>([])
+  transactionItems: BehaviorSubject<Item[]> = new BehaviorSubject<Item[]>([])
   adjustments: BehaviorSubject<Adjustment[]> = new BehaviorSubject<Adjustment[]>([])
 
   columnsToDisplay = ['code', 'setQuantity', 'description', 'quantity', 'category', 'itemprice', 'totalprice', 'remove'];
@@ -43,9 +43,9 @@ export class MakeSaleComponent implements OnInit {
     setTimeout(() => {
       this.codeElement.nativeElement.focus()
     })
-    this.subscriptions.push(this.saleItems.subscribe(saleItems => {
+    this.subscriptions.push(this.transactionItems.subscribe(transactionItems => {
       this.total = 0
-      saleItems.forEach(saleItem => this.total += saleItem.price * saleItem.quantity)
+      transactionItems.forEach(transactionItem => this.total += transactionItem.price * transactionItem.quantity)
     }))
   }
 
@@ -57,10 +57,10 @@ export class MakeSaleComponent implements OnInit {
           this.errorService.showSimpleSnackBar(`Can\'t add ${this.itemForm.controls['quantity'].value} units as only ${item.quantity} left in stock`)
         } else {
           item.quantity = this.itemForm.controls['quantity'].value
-          if (!this.saleItems.value.find(item => item.code == this.itemForm.controls['code'].value && item.setQuantity == (this.itemForm.controls['setQuantity'].value ? this.itemForm.controls['setQuantity'].value : null))) {
-            let tempSI = this.saleItems.value
+          if (!this.transactionItems.value.find(item => item.code == this.itemForm.controls['code'].value && item.setQuantity == (this.itemForm.controls['setQuantity'].value ? this.itemForm.controls['setQuantity'].value : null))) {
+            let tempSI = this.transactionItems.value
             tempSI.push(item)
-            this.saleItems.next(tempSI)
+            this.transactionItems.next(tempSI)
             this.itemForm.reset()
           } else {
             this.errorService.showSimpleSnackBar('Item already in list')
@@ -75,11 +75,11 @@ export class MakeSaleComponent implements OnInit {
   }
 
   deleteItem(code: string, setQuantity: number | null) {
-    let ind = this.saleItems.value.findIndex(item => item.code == code && item.setQuantity == setQuantity)
-    let tempSI = this.saleItems.value
+    let ind = this.transactionItems.value.findIndex(item => item.code == code && item.setQuantity == setQuantity)
+    let tempSI = this.transactionItems.value
     if (ind >= 0) tempSI.splice(ind)
-    this.saleItems.next(tempSI)
-    if (this.saleItems.value.length == 0) this.removeAdjustment()
+    this.transactionItems.next(tempSI)
+    if (this.transactionItems.value.length == 0) this.removeAdjustment()
   }
 
   adjust() {
@@ -99,14 +99,14 @@ export class MakeSaleComponent implements OnInit {
     if (this.adjustments.value.length > 0) this.adjustments.next([])
   }
 
-  makeSale() {
-    if (confirm('Finalize this sale?') && this.saleItems.value.length > 0) {
+  addTransaction() {
+    if (confirm('Finalize this transaction?') && this.transactionItems.value.length > 0) {
       this.submitting = true
-      this.apiService.makeSale(this.saleItems.value, this.adjustments.value).then(sale => {
+      this.apiService.makeTransaction(this.transactionItems.value, this.adjustments.value).then(transaction => {
         this.submitting = false
-        this.errorService.showSimpleSnackBar('Sale saved')
+        this.errorService.showSimpleSnackBar('Transaction saved')
         this.itemForm.reset()
-        this.saleItems.next([])
+        this.transactionItems.next([])
         this.adjustments.next([])
       }).catch(err => {
         this.submitting = false

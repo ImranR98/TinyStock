@@ -9,7 +9,7 @@ import url from 'url'
 
 import { instanceOfAppError } from 'tinystock-models'
 
-import { configureEvent, addItemEvent, findItemEvent, makeSaleEvent, editItemEvent, deleteItemEvent, changePasswordEvent, importDataEvent, itemsEvent, salesEvent } from './events'
+import { configureEvent, addItemEvent, findItemEvent, makeTransactionEvent, editItemEvent, deleteItemEvent, changePasswordEvent, importDataEvent, itemsEvent, transactionsEvent } from './events'
 
 // Prepping Electron
 let win: BrowserWindow | null
@@ -99,17 +99,17 @@ expressApp.post('/api/items', async (req, res) => {
   }
 })
 
-// Event: sales
-ipcMain?.on('sales', async (event, body) => {
+// Event: transactions
+ipcMain?.on('transactions', async (event, body) => {
   try {
-    win?.webContents.send('salesResponse', await salesEvent(body))
+    win?.webContents.send('transactionsResponse', await transactionsEvent(body))
   } catch (err) {
-    win?.webContents.send('salesError', err)
+    win?.webContents.send('transactionsError', err)
   }
 })
-expressApp.post('/api/sales', async (req, res) => {
+expressApp.post('/api/transactions', async (req, res) => {
   try {
-    res.send(await salesEvent(req.body))
+    res.send(await transactionsEvent(req.body))
   } catch (err) {
     if (instanceOfAppError(err)) res.status(400).send(err)
     else res.status(500).send(err)
@@ -184,17 +184,17 @@ expressApp.post('/api/deleteItem', async (req, res) => {
   }
 })
 
-// Event: makeSale
-ipcMain?.on('makeSale', async (event, body) => {
+// Event: makeTransaction
+ipcMain?.on('makeTransaction', async (event, body) => {
   try {
-    win?.webContents.send('makeSaleResponse', await makeSaleEvent(body))
+    win?.webContents.send('makeTransactionResponse', await makeTransactionEvent(body))
   } catch (err) {
-    win?.webContents.send('makeSaleError', err)
+    win?.webContents.send('makeTransactionError', err)
   }
 })
-expressApp.post('/api/makeSale', async (req, res) => {
+expressApp.post('/api/makeTransaction', async (req, res) => {
   try {
-    res.send(await makeSaleEvent(req.body.dataDir))
+    res.send(await makeTransactionEvent(req.body.dataDir))
   } catch (err) {
     if (instanceOfAppError(err)) res.status(400).send(err)
     else res.status(500).send(err)
