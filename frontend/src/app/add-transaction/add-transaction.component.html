@@ -43,7 +43,8 @@
             </ng-container>
             <ng-container matColumnDef="totalprice">
                 <th mat-header-cell *matHeaderCellDef> Total </th>
-                <td mat-cell *matCellDef="let item"> {{commafy((isPurchaseType() ? item.cost : item.price) * item.quantity)}}</td>
+                <td mat-cell *matCellDef="let item"> {{commafy((isPurchaseType() ? item.cost : item.price) *
+                    item.quantity)}}</td>
                 <td mat-footer-cell *matFooterCellDef><b><i>{{adjustments.value.length == 0 ? '' : '*
                             '}}</i>{{adjustments.value.length == 0 ? commafy(this.total) : commafy(this.total +
                         adjustments.value[0].amount)}}</b></td>
@@ -56,21 +57,8 @@
             </ng-container>
         </table>
     </div>
-    <form [formGroup]="itemForm" fxLayout="row" fxLayoutGap="1em" fxLayout.lt-md="column" fxLayoutAlign="default center"
-        fxLayoutAlign.lt-md="default default">
-        <mat-form-field fxFlex="fill">
-            <input matInput formControlName="code" placeholder="Item Code" type="text" required #codeInput>
-        </mat-form-field>
-        <mat-form-field fxFlex="fill">
-            <input matInput formControlName="quantity" placeholder="Quantity" type="number" required>
-        </mat-form-field>
-        <mat-form-field fxFlex="fill">
-            <input matInput formControlName="setQuantity" placeholder="Set Quantity" type="number">
-            <mat-hint>Leave this empty if the item is not a set</mat-hint>
-        </mat-form-field>
-        <button mat-raised-button color="accent" [disabled]="!itemForm.valid || submitting"
-            (click)="addItem(); codeInput.focus()">Add</button>
-    </form>
+    <app-item-search [buttonText]="'Add'" [submitting]="submitting" (error)="searchError($event)"
+        (item)="addItem($event)" [reset]="resetSearchSubject.asObservable()"></app-item-search>
     <div *ngIf="adjustments.value.length > 0" fxLayout="row" fxLayout.lt-md="column" fxLayoutAlign="center center"
         fxLayoutGap="1em">
         <b><i>* Manual Adjustment: {{adjustments.value[0].amount}} ({{adjustments.value[0].note}})</i></b>
@@ -82,6 +70,6 @@
             Adjustment</button>
         <button fxFlex="100%" mat-raised-button color="primary"
             [disabled]="transactionItems.value.length == 0 || submitting"
-            (click)="addTransaction(); codeInput.focus()">{{verb}}</button>
+            (click)="addTransaction()">{{verb}}</button>
     </div>
 </div>

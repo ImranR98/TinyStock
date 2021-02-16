@@ -165,7 +165,7 @@ export class ApiService {
     } else return this.http.post(this.host + '/api/addItem', body).toPromise() as Promise<null>
   }
 
-  findItem(code: string, setQuantity: string | null) {
+  findItem(code: string, setQuantity: number | null) {
     const body = { dataDir: this.dataDir, password: this.password, code, setQuantity }
     if (this.ipc && this.host?.trim().length == 0) {
       return new Promise<Item>((resolve, reject) => {

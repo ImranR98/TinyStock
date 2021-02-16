@@ -71,7 +71,8 @@ Once all modules have been built, the application can be run in an electron cont
 The electron app can be compiled using `npm run app-build-linux`, `npm run app-build-windows`, or `npm run app-build-mac` for Linux, Windows, or MacOS respectively. Build artifacts are stored in the `build` directory.
 
 ## TODO
-- On the 'Add Sale' and 'Add Purchase' pages, the item code input should have a dropdown with all existing item codes.
-- On the 'Add Sale' and 'Add Purchase' pages, items should be searchable by description as an alternative to the code input.
+- Add a button on the Item Search component that opens the Add Item component in a modal, allowing the User to add a new item in the middle of a transaction.
+- Test the App with thousands of items/sales/purchases to make sure performance scales well. If not, some changes could be made:
+    - Switch to a regular SQL DB instead of relying on files. Files are portable and allow the App to be self-contained without having to rely on an external database, but using them may not scale well. This needs to be tested.
+    - Improve search speed, perhaps using hashes or other data structures.
 - Add a 'Report' screen with various settings that can be tuned to generate specific reports. This page would replace the existing 'Sales' (and 'Purchases') screen(s). The report would, by default, show all sales and purchases for all items for all time. It could be tuned to only show data within a specific date range, or to only show either sales or purchases, or to only show data for a specific item (in which case it would show more detail such as the opening quantity of the item and the new quantity after each sale/purchase).
-- Once all of the above has been implemented, think about switching to a regular database instead of relying on files. The main benefit of files is that they are portable and allow the App to be self-contained without having to rely on an external database, but this may not perform well at scale and needs to be tested.

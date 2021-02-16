@@ -1,0 +1,17 @@
+<form [formGroup]="itemForm" fxLayout="row" fxLayoutGap="1em" fxLayout.lt-md="column" fxLayoutAlign="default center"
+    fxLayoutAlign.lt-md="default default">
+    <mat-form-field fxFlex="fill">
+        <input matInput formControlName="item" placeholder="Item" type="text" [matAutocomplete]="auto" required
+            #codeInput>
+    </mat-form-field>
+    <mat-form-field fxFlex="fill">
+        <input matInput formControlName="quantity" placeholder="Quantity" type="number" required>
+    </mat-form-field>
+    <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+        <mat-option *ngFor="let item of filteredOptions | async" [value]="displayFn(item)">
+            {{displayFn(item)}}
+        </mat-option>
+    </mat-autocomplete>
+    <button mat-raised-button color="accent" [disabled]="!itemForm.valid || loading || submitting || !selectedItem"
+        (click)="submit(); codeInput.focus()">{{buttonText}}</button>
+</form>
