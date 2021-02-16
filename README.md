@@ -9,7 +9,7 @@ Minimal stock keeping App built with Electron, Node.js and Angular.
 - Dark theme
 
 ## Screenshots
-
+> These are slightly out of date
 ### Main Screen
 
 ![main](./screenshots/main.png)
@@ -75,4 +75,4 @@ The electron app can be compiled using `npm run app-build-linux`, `npm run app-b
 - Test the App with thousands of items/sales/purchases to make sure performance scales well. If not, some changes could be made:
     - Switch to a regular SQL DB instead of relying on files. Files are portable and allow the App to be self-contained without having to rely on an external database, but using them may not scale well. This needs to be tested.
     - Improve search speed, perhaps using hashes or other data structures.
-- Add a 'Report' screen with various settings that can be tuned to generate specific reports. This page would replace the existing 'Sales' (and 'Purchases') screen(s). The report would, by default, show all sales and purchases for all items for all time. It could be tuned to only show data within a specific date range, or to only show either sales or purchases, or to only show data for a specific item (in which case it would show more detail such as the opening quantity of the item and the new quantity after each sale/purchase).
+- Replace the existing Sales and Purchases pages with a single 'Report' page that would show all sales and purchases on one table. The table should feature a couple of check boxes for 'Show Sales Only'/'Show Purchases Only', a date picker or two to filter for transactions from a certain timeframe, and a search box to filter transactions based on item or adjustment details. The total transaction amounts for the chosen timeframe would be shown. A modified version of the Item Search component would also be there to allow for filtering based on item. When item filtering is done, the opening and closing quantities for the item are shown.
