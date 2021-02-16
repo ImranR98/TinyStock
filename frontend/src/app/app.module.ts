@@ -24,6 +24,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox'
 import { MatDividerModule } from '@angular/material/divider'
 import { MatTooltipModule } from '@angular/material/tooltip'
 import { MatDialogModule } from '@angular/material/dialog'
+import { MatAutocompleteModule } from '@angular/material/autocomplete'
 
 import { ItemsComponent } from './items/items.component';
 import { AddItemComponent } from './add-item/add-item.component';
@@ -31,6 +32,7 @@ import { EditItemComponent } from './edit-item/edit-item.component';
 import { AddTransactionComponent } from './add-transaction/add-transaction.component';
 import { TransactionsComponent } from './transactions/transactions.component';
 import { KeyboardShortcutsComponent } from './keyboard-shortcuts/keyboard-shortcuts.component';
+import { ItemSearchComponent } from './item-search/item-search.component';
 
 @NgModule({
   declarations: [
@@ -42,7 +44,8 @@ import { KeyboardShortcutsComponent } from './keyboard-shortcuts/keyboard-shortc
     EditItemComponent,
     AddTransactionComponent,
     TransactionsComponent,
-    KeyboardShortcutsComponent
+    KeyboardShortcutsComponent,
+    ItemSearchComponent
   ],
   imports: [
     BrowserModule,
@@ -61,7 +64,8 @@ import { KeyboardShortcutsComponent } from './keyboard-shortcuts/keyboard-shortc
     MatCheckboxModule,
     MatDividerModule,
     MatTooltipModule,
-    MatDialogModule
+    MatDialogModule,
+    MatAutocompleteModule
   ],
   providers: [],
   bootstrap: [AppComponent]

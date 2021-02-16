@@ -29,16 +29,15 @@ export class AddTransactionComponent implements OnInit {
 
   columnsToDisplay = ['code', 'setQuantity', 'description', 'quantity', 'category', 'itemprice', 'totalprice', 'remove'];
 
-  itemForm = new FormGroup({
-    code: new FormControl('', Validators.required),
-    quantity: new FormControl('', Validators.required),
-    setQuantity: new FormControl('')
-  })
-
   adjustmentForm = new FormGroup({
     note: new FormControl('', Validators.required),
     amount: new FormControl('', Validators.required)
   });
+
+  resetSearchSubject: BehaviorSubject<void> = new BehaviorSubject<void>(null)
+  resetSearch() {
+    this.resetSearchSubject.next()
+  }
 
   total: number = 0
 
@@ -54,9 +53,6 @@ export class AddTransactionComponent implements OnInit {
         this.verb = this.helper.getTransactionTypeVerb(this.type)
       }
     })
-    setTimeout(() => {
-      this.codeElement.nativeElement.focus()
-    })
     this.subscriptions.push(this.transactionItems.subscribe(transactionItems => {
       this.total = 0
       transactionItems.forEach(transactionItem => this.total += (this.isPurchaseType() ? transactionItem.cost : transactionItem.price) * transactionItem.quantity)
@@ -65,31 +61,26 @@ export class AddTransactionComponent implements OnInit {
 
   commafy(num: number) { return this.helper.commafy(num) }
   isPurchaseType() { return this.helper.isPurchaseType(this.type) }
-  
-  addItem() {
-    if (this.itemForm.valid) {
-      this.submitting = true
-      this.apiService.findItem(this.itemForm.controls['code'].value, this.itemForm.controls['setQuantity'].value).then(item => {
-        let existingQuantity = item.quantity
-        item.quantity = this.itemForm.controls['quantity'].value
-        let tempSI = this.transactionItems.value
-        let existingIndex = this.transactionItems.value.findIndex(item => item.code == this.itemForm.controls['code'].value && item.setQuantity == (this.itemForm.controls['setQuantity'].value ? this.itemForm.controls['setQuantity'].value : null))
-        if (existingIndex < 0) {
-          tempSI.push(item)
-          existingIndex = tempSI.length - 1
-        } else tempSI[existingIndex].quantity += item.quantity
-        if (this.type == TransactionTypes.SALE && existingQuantity < tempSI[existingIndex].quantity) {
-          this.errorService.showSimpleSnackBar(`Can\'t add ${this.itemForm.controls['quantity'].value} more units as only ${item.quantity} left in stock`)
-        } else {
-          this.transactionItems.next(tempSI)
-          this.itemForm.reset()
-        }
-        this.submitting = false
-      }).catch(err => {
-        this.submitting = false
-        this.errorService.showError(err)
-      })
+
+  addItem({ item, quantityAvailable }: { item: Item, quantityAvailable: number }) {
+    this.submitting = true
+    let tempTI = this.transactionItems.value
+    let existingIndex = this.transactionItems.value.findIndex(existingItem => existingItem.code == item.code && existingItem.setQuantity == item.setQuantity)
+    if (existingIndex < 0) {
+      tempTI.push(item)
+      existingIndex = tempTI.length - 1
+    } else tempTI[existingIndex].quantity += item.quantity
+    if (this.type == TransactionTypes.SALE && quantityAvailable < tempTI[existingIndex].quantity) {
+      this.errorService.showSimpleSnackBar(`Can\'t add ${item.quantity} more units as only ${quantityAvailable} left in stock`)
+    } else {
+      this.transactionItems.next(tempTI)
     }
+    this.submitting = false
+  }
+
+  searchError(err: any) {
+    this.errorService.showError(err)
+    this.back()
   }
 
   deleteItem(code: string, setQuantity: number | null) {
@@ -123,7 +114,7 @@ export class AddTransactionComponent implements OnInit {
       this.apiService.makeTransaction(this.transactionItems.value, this.adjustments.value, this.type).then(transaction => {
         this.submitting = false
         this.errorService.showSimpleSnackBar('Transaction saved')
-        this.itemForm.reset()
+        this.resetSearch()
         this.transactionItems.next([])
         this.adjustments.next([])
       }).catch(err => {
