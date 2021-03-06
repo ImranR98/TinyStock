@@ -1,6 +1,9 @@
 <div fxLayout="column" fxLayoutGap="1em" class="stdPadding">
     <div fxLayout="row" fxLayoutGap="1em" fxLayoutAlign="default center">
-        <button mat-icon-button (click)="back()">
+        <button *ngIf="isModal" mat-icon-button (click)="closeModal.emit()">
+            <mat-icon svgIcon="back"></mat-icon>
+        </button>
+        <button *ngIf="!isModal" mat-icon-button (click)="back()">
             <mat-icon svgIcon="back"></mat-icon>
         </button>
         <span class="bigText">Add Item</span>

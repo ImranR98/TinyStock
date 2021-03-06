@@ -33,6 +33,7 @@ import { AddTransactionComponent } from './add-transaction/add-transaction.compo
 import { TransactionsComponent } from './transactions/transactions.component';
 import { KeyboardShortcutsComponent } from './keyboard-shortcuts/keyboard-shortcuts.component';
 import { ItemSearchComponent } from './item-search/item-search.component';
+import { AddItemModalComponent } from './add-item/add-item-modal/add-item-modal.component';
 
 @NgModule({
   declarations: [
@@ -45,7 +46,8 @@ import { ItemSearchComponent } from './item-search/item-search.component';
     AddTransactionComponent,
     TransactionsComponent,
     KeyboardShortcutsComponent,
-    ItemSearchComponent
+    ItemSearchComponent,
+    AddItemModalComponent
   ],
   imports: [
     BrowserModule,
