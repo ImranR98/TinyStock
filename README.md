@@ -71,7 +71,6 @@ Once all modules have been built, the application can be run in an electron cont
 The electron app can be compiled using `npm run app-build-linux`, `npm run app-build-windows`, or `npm run app-build-mac` for Linux, Windows, or MacOS respectively. Build artifacts are stored in the `build` directory.
 
 ## TODO
-- Add a button on the Item Search component that opens the Add Item component in a modal, allowing the User to add a new item in the middle of a transaction.
 - Test the App with thousands of items/sales/purchases to make sure performance scales well. If not, some changes could be made:
     - Switch to a regular SQL DB instead of relying on files. Files are portable and allow the App to be self-contained without having to rely on an external database, but using them may not scale well. This needs to be tested.
     - Improve search speed, perhaps using hashes or other data structures.

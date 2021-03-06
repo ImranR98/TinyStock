@@ -20,7 +20,7 @@ export class AddItemModalComponent implements OnInit {
 }
 
 /*
-  constructor(private themeService: ThemeService, private dialog: MatDialog) { }
+  constructor(private dialog: MatDialog) { }
 
   addDialog: MatDialogRef<AddItemModalComponent, any> | null = null
 

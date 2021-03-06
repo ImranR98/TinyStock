@@ -4,6 +4,8 @@ import { Observable } from 'rxjs';
 import { Item } from 'tinystock-models';
 import { ApiService } from '../services/api.service';
 import { startWith, map } from 'rxjs/operators'
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { AddItemModalComponent } from '../add-item/add-item-modal/add-item-modal.component';
 
 @Component({
   selector: 'app-item-search',
@@ -18,7 +20,9 @@ export class ItemSearchComponent implements OnInit, AfterViewInit {
   @Output() item = new EventEmitter<{ item: Item, quantityAvailable: number }>()
   @ViewChild('codeInput') codeInput: ElementRef
 
-  constructor(private apiService: ApiService) { }
+  constructor(private apiService: ApiService, private dialog: MatDialog) { }
+
+  addDialog: MatDialogRef<AddItemModalComponent, any> | null = null
 
   itemForm = new FormGroup({
     item: new FormControl('', Validators.required),
@@ -33,9 +37,8 @@ export class ItemSearchComponent implements OnInit, AfterViewInit {
 
   selectedItem: Item | null = null
 
-  ngOnInit(): void {
+  loadItems() {
     this.itemForm.controls['item'].disable()
-    this.itemForm.controls['quantity'].disable()
     this.loading = true
     this.apiService.items().then(items => {
       this.items = items
@@ -48,6 +51,23 @@ export class ItemSearchComponent implements OnInit, AfterViewInit {
       this.itemForm.controls['item'].enable()
       this.error.emit(err)
     })
+  }
+
+  addItem() {
+    if (!this.addDialog) {
+      this.addDialog = this.dialog.open(AddItemModalComponent)
+      this.addDialog.afterClosed().subscribe(() => {
+        this.loadItems()
+        this.addDialog = null
+      })
+    } else {
+      this.addDialog.close()
+    }
+  }
+
+  ngOnInit(): void {
+    this.itemForm.controls['quantity'].disable()
+    this.loadItems()
     this.itemForm.controls['item'].valueChanges.subscribe(value => {
       let item = null
       for (let i = 0; i < this.items.length; i++) {
@@ -88,7 +108,7 @@ export class ItemSearchComponent implements OnInit, AfterViewInit {
 
   resetSearch() {
     this.itemForm.reset()
-    this.codeInput.nativeElement.focus()
+    this.codeInput?.nativeElement.focus()
   }
 
   submit() {
